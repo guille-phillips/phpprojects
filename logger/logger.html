@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			div {
+				border:1px solid black;
+			}
+			.tasklist {
+				width:100%;
+			}
+			.taskname {
+				width:400px;
+				height:50px;
+			}
+			.description {
+				display:inline-block;
+				vertical-align: top;
+				width:300px;
+			}
+			.remover {
+				display:inline-block;
+				vertical-align: top;
+				width:75px;
+			}
+                  .active {
+                        background-color: red;
+                  }
+                  .passive {
+                        background-color: green;
+                  }
+		</style>
+		<script>
+	        var xmlhttp;
+            if (window.XMLHttpRequest) {
+                xmlhttp=new XMLHttpRequest();
+            } else {
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+         
+            function Ajax() {
+            	var params = [];
+            	for (i=0;i<arguments.length;i++) {
+            		params.push('prm['+i+']='+arguments[i]);
+            	}
+
+            	xmlhttp.open("GET","logger.php?"+params.join("&")+"&nocache="+(Date.now()),false);
+                xmlhttp.send();
+                alert(xmlhttp.responseText);
+				return xmlhttp.responseText;
+            }
+
+            function Initialise() {
+            	var tasks = JSON.parse(Ajax("load",0,1));
+
+            	for (i in tasks) {
+            		AppendTaskDOM(tasks[i].description, tasks[i].task_id, tasks[i].state);
+            	}
+            }
+
+            function AddTask() {
+            	var description_text = document.getElementById("create").value;
+            	var new_id = Ajax('add',description_text);
+
+            	AppendTaskDOM(description_text,new_id,0)
+            }
+
+            function AppendTaskDOM(description_text,new_id,state) {
+            	var element = document.createElement("div");
+            	element.id = "task_"+new_id;
+            	element.dataset.key = new_id;
+            	element.className = 'taskname '+((state==0)?'active':'passive');
+            	
+            	var description = document.createElement("div");
+            	description.className = "description";
+            	description.innerHTML = description_text;
+			description.onclick = function() {ToggleTask(this.parentNode.dataset.key)};
+
+            	var remover = document.createElement("div");
+            	remover.className = "remover";
+            	remover.innerHTML = "X";
+            	remover.onclick = function() {RemoveTask(this.parentNode.dataset.key)};
+
+            	element.appendChild(description);
+            	element.appendChild(remover);
+
+            	var list = document.getElementById("task_list");
+            	list.appendChild(element);            	
+            }
+
+            function RemoveTask(id) {
+            	alert("Remove:"+id)
+            	Ajax('remove',id);
+
+            	document.getElementById('task_list').removeChild(document.getElementById('task_'+id));
+            }
+            function ToggleTask(id) {
+                  Ajax('start',id);
+
+                  for (i in document.getElementById)
+            }
+
+            window.addEventListener('load', Initialise);
+		</script>
+
+	</head>
+	<body>
+		<input id="create" value="" onkeyup="e=event||window.event;if(e.keyCode==13) AddTask();">
+		<input type="button" value="Add" onclick="AddTask()">
+		<div id='task_list'>
+		</div>
+	</body>
+</html>
