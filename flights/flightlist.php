@@ -127,7 +127,6 @@
 			}
 			
 			function initialize() {
-				console.log("initialize");
 				var options = {
 				  enableHighAccuracy: true,
 				  timeout: 5000,
@@ -146,6 +145,7 @@
 
 			function location_error(err) {		
 				// do nothing
+				alert("Error getting location");
 			}
 
 			function CentreChanged() {
@@ -221,6 +221,11 @@
 				for (key in strips) {
 					var strip = strips[key];
 					
+					if (!CheckAltitudeBand(parseInt(strip.altitude))) {continue};
+
+					strip.colour = ColourOf(strip.callsign);
+					
+					style = {style:'background-color:'+strip.colour};
 					var div = document.createElement('div');
 					div.className = 'strip';
 					div.innerHTML = 
@@ -228,11 +233,12 @@
 						strip.distance.toFixed(1),
 						strip.model,
 						strip.reg,
-						strip.origin+'-'+strip.destination,
+						strip.origin,
+						strip.destination,
 						strip.altitude.toFixed(0),
 						strip.speed,
-						strip.heading
-						].join("/");
+						strip.heading.pad(3)
+						].map(function(content,index,arr){return (content.toString()==''?'&nbsp':content.toString()).tag('div',style);}).join('');
 					div.key = key;
 					/*
 					(function (thiskey,lat,lon) {
@@ -245,8 +251,12 @@
 			}
 			
 
-			String.prototype.tag = function(tag_name){
-				return "<"+tag_name+">"+this+"</"+tag_name+">";
+			String.prototype.tag = function(tag_name,attributes){
+				var atts = '';
+				for (var a in attributes) {
+					atts += a+"='"+attributes[a]+"' ";
+				}
+				return "<"+tag_name+" "+atts+">"+this+"</"+tag_name+">";
 			}
 			
             Number.prototype.whole = function () {
@@ -385,6 +395,15 @@
 				}
 			}
 
+			function ColourOf(text) {
+				var hash = 0;
+				for (i=0;i<text.length;i++) {
+					hash += text.charCodeAt(i)*5;
+				}
+				hash = hash%8;
+				return ['#329462','#336687','#D39547','#D36947','#51AC7E','#4F7E9C','#F5BC73','#F59373'][hash];
+			}
+
 			function Regression(history, variable) {
 				var sumx = 0;
 				var sumy = 0;
@@ -455,8 +474,13 @@
 			}
 		</script>
 		<style>
+			html {
+				width:100%;
+			}
 			body {
 				font-family: Sans-Serif;
+				font-size:200%;
+				width:100%;
 			}
 
 			#info {
@@ -464,22 +488,46 @@
 			}
 
 			.strip {
-				background-color: #0000FF;
-				color:white;
 				width:100%;
-				height:20px;
-				margin-bottom: 4px;
-				padding:3px;
+				/*height:20px;*/
+				margin-bottom: 1px;
 				cursor:pointer;
 			}
-			
+			.strip > div {
+				background-color: #0000FF;
+				color:white;
+				display:inline-block;
+				height:2ex;
+				margin-right:3px;
+				padding-left:5px;
+				padding-top:7px;
+				padding-bottom:3px;
+				padding-right:5px;
+			}
+
+			.strip > div:nth-of-type(1) {width:15%;border-top-left-radius:6px;border-bottom-left-radius: 6px;}
+			.strip > div:nth-of-type(2) {width:8%;text-align: right;}
+			.strip > div:nth-of-type(3) {width:10%;}
+			.strip > div:nth-of-type(4) {width:15%;}
+			.strip > div:nth-of-type(5) {width:7%;}
+			.strip > div:nth-of-type(6) {width:7%;}
+			.strip > div:nth-of-type(7) {width:10%;text-align: right;}
+			.strip > div:nth-of-type(8) {width:6%;text-align: right;}
+			.strip > div:nth-of-type(9) {width:6%;text-align: right;border-top-right-radius:6px;border-bottom-right-radius:6px;}
+
 			.strip:hover {
-				background-color: #0080FF;
+				/*background-color: #0080FF;*/
 			}
 
 			#search_div {
 				width:170px;
 				height:25px;
+			}
+
+			#options_panel {
+				margin-top:10px;
+				height:5ex;
+				padding-right:20px;
 			}
 		</style>		
 	</head>
