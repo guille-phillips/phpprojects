@@ -1,4 +1,4 @@
-airports = [];
+var airports = [];
 
 airports["AAR"] = ["Aarhus", "Denmark"];
 airports["ABD"] = ["Abadan", "Iran"];
