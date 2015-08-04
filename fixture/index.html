@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="description" content="Fixture Wheel">
+		<meta charset="utf-8">
+		<title>Fixture Wheel</title>
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script>
+			var canvas;
+			var userEventController;
+
+			EVENT_GRAB = 0;
+			EVENT_DRAG = 1;
+			EVENT_MOVE = 2;
+			EVENT_RELEASE = 3;
+			CAPTURE_EVENT = false;
+			PASS_ON_EVENT = true;
+			
+			PI2 = 2*Math.PI;
+			
+			function eventConroller () {
+				this.mouseState = EVENT_RELEASE;
+				this.boundingRectangle = canvas.getBoundingClientRect();
+
+				this.previousCoords = undefined;
+
+				this.delegates = [];
+
+				var self = this;
+
+				this.getCoords = function(event) {
+					var rect = canvas.getBoundingClientRect();
+
+					if (event.changedTouches) {
+						if (event.changedTouches.length==1) {
+							//alert('changedTouches')
+
+							return {x:event.changedTouches[0].pageX, y:event.changedTouches[0].pageY};
+						}
+					} 
+
+					return {x: event.clientX - rect.left, y: event.clientY - rect.top};
+				};
+
+				this.registerDelegate = function (delegate) {
+					this.delegates.push(delegate);
+				};
+
+				this.createEventListeners = function(canvas) {
+					canvas.addEventListener('mousedown',
+						function (event) {
+							self.mouseState = EVENT_GRAB;
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}
+							self.previousCoords = coords;
+						}
+					);
+
+					canvas.addEventListener('mousemove',
+						function (event) {
+							switch (self.mouseState) {
+								case EVENT_GRAB:
+								case EVENT_DRAG:
+									self.mouseState = EVENT_DRAG;
+									break;
+								default:
+									self.mouseState = EVENT_MOVE;
+							}
+
+							var coords = userEventController.getCoords(event);
+							
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}
+
+							self.previousCoords = coords;				
+						}
+					);
+					
+					
+					canvas.addEventListener('mouseup',
+						function (event) {
+							self.mouseState = EVENT_RELEASE;
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}			
+							self.previousCoords = coords;				
+						}
+					);
+
+					canvas.addEventListener('mouseout',
+						function (event) {
+							self.mouseState = EVENT_RELEASE;
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}			
+							self.previousCoords = coords;				
+						}
+					);
+
+					canvas.addEventListener('touchstart',
+						function (event) {
+							self.mouseState = EVENT_GRAB;
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}			
+							self.previousCoords = coords;				
+						}
+					);
+
+					canvas.addEventListener('touchmove',
+						function (event) {
+							if (self.mouseState == EVENT_GRAB || self.mouseState == EVENT_DRAG) {
+								self.mouseState = EVENT_DRAG;
+							} else {
+								self.mouseState = EVENT_MOVE;
+							}
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}			
+							self.previousCoords = coords;				
+						}
+					);
+
+
+					canvas.addEventListener('touchend',
+						function (event) {
+							self.mouseState = EVENT_RELEASE;
+							var coords = userEventController.getCoords(event);
+
+							for (var i = 0; i<self.delegates.length; i++) {
+								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+							}			
+							self.previousCoords = coords;				
+						}
+					);
+
+				};
+			}
+
+
+			function wheel (id, segments, context, centre, radius, renderFunction, list) {
+				this.segments = segments;
+				this.offsetAngle = 0;
+				this.context = context;
+				this.outsideRadius = radius;
+				this.textRadius = 140;
+				this.insideRadius = 100;				
+				//this.spinTimeout = null;
+				//this.spinArcStart = 10;
+				//this.spinTime = 0;
+				//this.spinTimeTotal = 0;
+				this.centre = centre;
+				this.selectedSegment = 3;
+				this.selected = false;
+				this.id = id;
+				this.renderFunction = renderFunction;
+				this.list = list;
+				
+				var self = this;
+
+				this.render = function () {
+					this.context.strokeStyle = "blue";
+					this.context.lineWidth = 3;
+
+					this.context.font = 'bold 20px sans-serif';
+
+					var arc = PI2 / segments;
+					
+					for(var i = 0; i < self.segments; i++) {
+						var angle = self.offsetAngle + i * arc;
+
+						if (i==self.selectedSegment) {
+							this.context.fillStyle = '#808080';
+						} else {
+							this.context.fillStyle = '#3763ca';
+						}
+						
+
+						this.context.beginPath();
+						this.context.arc(this.centre.x, this.centre.y, this.outsideRadius, angle, angle + arc, false);
+						this.context.arc(this.centre.x, this.centre.y, this.insideRadius, angle + arc, angle, true);
+						this.context.stroke();
+						this.context.fill();
+
+						this.context.save();
+						//this.context.shadowOffsetX = -1;
+						//this.context.shadowOffsetY = -1;
+						//this.context.shadowBlur    = 0;
+						//this.context.shadowColor   = "rgb(220,220,220)";
+						this.context.fillStyle = "white";
+						this.context.translate(this.centre.x + Math.cos(angle + arc / 2) * this.outsideRadius, this.centre.y + Math.sin(angle + arc / 2) * this.outsideRadius);
+						this.context.rotate(angle + arc / 2 + Math.PI / 1);
+						
+						var text = self.list[i];
+						if (text) {
+							this.context.fillText(text, 20, 0); // this.context.measureText(text).width
+						}
+						this.context.restore();
+					}
+				};
+
+
+/*
+				this.spin = function () {
+					spinAngleStart = Math.random() * 10 + 10;
+					spinTime = 0;
+					spinTimeTotal = Math.random() * 3 + 4 * 1000;
+					rotateWheel();
+				};
+			  
+				this.rotate = function () {
+					this.spinTime += 30;
+					if(this.spinTime >= this.spinTimeTotal) {
+						this.stopRotateWheel();
+						return;
+					}
+					var spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+					this.offsetAngle += (spinAngle * Math.PI / 180);
+					this.render();
+					this.spinTimeout = setTimeout('rotateWheel()', 30);
+				};
+			  
+				this.stopRotateWheel = function () {
+					clearTimeout(this.spinTimeout);
+					var degrees = currentOffsetAngle * 180 / Math.PI + 90;
+					var arcd = arc * 180 / Math.PI;
+					var index = Math.floor((360 - degrees % 360) / arcd);
+					ctx.save();
+					ctx.font = 'bold 30px sans-serif';
+					var text = restaraunts[index];
+					ctx.fillText(text, 250 - ctx.measureText(text).width / 2, 250 + 10);
+					ctx.restore();
+				};
+			  
+				this.easeOut = function (t, b, c, d) {
+					var ts = (t/=d)*t;
+					var tc = ts*t;
+					return b+c*(tc + -3*ts + 3*t);
+				}
+*/
+				this.remapCoords = function (absoluteCoords) {
+					return {x: absoluteCoords.x - self.centre.x, y: absoluteCoords.y - self.centre.y};
+				};
+
+				this.distance = function (coord) {
+					return Math.sqrt(coord.x*coord.x+coord.y*coord.y);
+				};
+
+				this.polarCoords = function (coords) {
+					return {angle:Math.atan2(coords.y, coords.x),distance:self.distance(coords)};
+				};
+				
+				this.userEvent = function (eventType,coords,previousCoords) {
+					switch (eventType) {
+						case EVENT_GRAB:
+							coords = self.remapCoords(coords);
+							var polar = self.polarCoords(coords);
+
+							if (polar.distance < self.outsideRadius) {
+								self.selected = true;					
+								while (polar.angle<0) polar.angle += PI2;
+								self.selectedSegment = Math.floor(self.segments*(polar.angle-self.offsetAngle)/Math.PI/2)%self.segments;
+								self.renderFunction();
+								return CAPTURE_EVENT;
+							} else {
+								return PASS_ON_EVENT;
+							}
+							break;
+						case EVENT_DRAG:
+							coords = self.remapCoords(coords);
+							previousCoords = self.remapCoords(previousCoords);
+
+							if (self.selected) {
+								var angle = Math.atan2(coords.y, coords.x);
+								var previousAngle = Math.atan2(previousCoords.y, previousCoords.x);
+								self.offsetAngle += angle-previousAngle;
+								self.renderFunction();
+
+								return CAPTURE_EVENT; 
+							} else {
+								return PASS_ON_EVENT;
+							}
+
+							break;
+						case EVENT_MOVE:
+							// do nothing
+							return PASS_ON_EVENT; 
+							break;
+						case EVENT_RELEASE: 
+							self.selected = false;
+							return PASS_ON_EVENT; 
+							break;
+					}
+				};
+			}
+
+			function RenderAll() {
+				ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+
+		  		wheel1.render();
+		  		wheel2.render();
+		  		wheel3.render();
+			}
+
+		  	function initialise() {
+				$('#wheelcanvas').css({
+				  'width': '100%',
+				  'height': '100%',
+				  'border': '1px solid blue'
+				});
+
+		  		canvas = document.getElementById("wheelcanvas");
+		  		
+				if (canvas.getContext) {
+
+			  		ctx = canvas.getContext("2d");
+
+					ctx.font = '30px Arial';
+
+					ctx.canvas.width  = window.innerWidth;
+					ctx.canvas.height = window.innerHeight;
+
+					var middle = window.innerWidth/2;
+					var radius = 1.2*window.innerWidth/2;
+					var spacing = radius/3;
+					var bottom = window.innerHeight;
+
+					wheel1 = new wheel(1, 30, ctx, {x:middle,y:bottom+radius-3*spacing}, radius, RenderAll, ['banana','lemon','orange','pineapple','melon','tomato','potato']);
+					wheel2 = new wheel(2, 30, ctx, {x:middle,y:bottom+radius-2*spacing}, radius, RenderAll, ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']);
+					wheel3 = new wheel(3, 30, ctx, {x:middle,y:bottom+radius-1*spacing}, radius, RenderAll, ['january','february','march','april','may','june','july','august','september','october','november','december']);
+
+			  		userEventController = new eventConroller();
+			  		userEventController.registerDelegate(wheel3.userEvent);			  		
+			  		userEventController.registerDelegate(wheel2.userEvent);
+			  		userEventController.registerDelegate(wheel1.userEvent);
+
+			  		userEventController.createEventListeners(canvas);
+
+			  		RenderAll();
+
+			  	}
+		  	}
+		</script>		
+		
+    </head>
+	<body onload='initialise()'>
+		<canvas id="wheelcanvas" width="1000" height="1000"></canvas>
+		<div id="frame"></div>
+	</body>
+</html>
