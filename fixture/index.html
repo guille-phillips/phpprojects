@@ -59,6 +59,8 @@
 							//alert('changedTouches')
 
 							return {x:event.changedTouches[0].clientX - rect.left, y:event.changedTouches[0].clientY - rect.top};
+						} else {
+							alert('multitouch');
 						}
 					} 
 
@@ -145,6 +147,9 @@
 					canvas.addEventListener('touchstart',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'touchstart';
+
+							if (event.changedTouches.length!=1) return;
+
 							if (mutex) return;
 
 							self.mouseState = EVENT_GRAB;
@@ -160,6 +165,8 @@
 					canvas.addEventListener('touchmove',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'touchmove';
+							if (event.changedTouches.length!=1) return;
+
 							if (mutex) return;
 
 							if (self.mouseState == EVENT_GRAB || self.mouseState == EVENT_DRAG) {
@@ -180,6 +187,8 @@
 					canvas.addEventListener('touchend',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'touchend';
+							if (event.changedTouches.length!=1) return;
+
 							if (mutex) return;
 
 							self.mouseState = EVENT_RELEASE;
@@ -235,10 +244,19 @@
 
 					var ctx = self.context;
 
-					ctx.drawImage(image,self.centre.x-self.outsideRadius-3,self.centre.y-self.outsideRadius-3,self.outsideRadius*2+6,self.outsideRadius*2+6);
+					ctx.drawImage(
+						prerenderCtx.canvas,
+						0,
+						0,
+						prerender.width,
+						prerender.height,
+						self.centre.x-self.outsideRadius-3-40,
+						self.centre.y-self.outsideRadius-3-35,
+						self.outsideRadius*2+6+80,
+						(self.outsideRadius*2)/2+66
+					);
 
 					ctx.strokeStyle = "black";
-					
 
 					var arc = PI2 / segments;
 					
@@ -250,7 +268,8 @@
 							ctx.fillStyle = 'rgba(70,70,70,0.8)';
 							ctx.arc(self.centre.x, self.centre.y, self.outsideRadius, angle, angle + arc, false);
 							ctx.arc(self.centre.x, self.centre.y, self.insideRadius, angle + arc, angle, true);
-							ctx.stroke();
+
+							//ctx.stroke();
 							ctx.fill();
 
 							ctx.font = 'bold 12px sans-serif';
@@ -272,13 +291,8 @@
 						ctx.moveTo(self.centre.x,self.centre.y);
 						ctx.lineTo(self.outsideRadius*Math.cos(angle)+self.centre.x+2,self.outsideRadius*Math.sin(angle)+self.centre.y);
 						ctx.stroke();
-						//ctx.fill();
 
 						ctx.save();
-						//ctx.shadowOffsetX = -1;
-						//ctx.shadowOffsetY = -1;
-						//ctx.shadowBlur    = 0;
-						//ctx.shadowColor   = "rgb(220,220,220)";
 
 						if (i==self.selectedSegment) {
 							ctx.fillStyle = "white";
@@ -293,7 +307,9 @@
 							ctx.fillText(text, 10, 0); // ctx.measureText(text).width
 						}
 						ctx.restore();
+						
 					}
+					
 				};
 
 
@@ -334,11 +350,11 @@
 							if (self.selected) {
 								var angle = Math.atan2(coords.y, coords.x);
 								var previousAngle = Math.atan2(previousCoords.y, previousCoords.x);
-								self.velocity = 0.6*(angle-previousAngle);
+								self.velocity = 0.7*(angle-previousAngle);
 								if (self.velocity>0) {
-									self.acceleration = 0.017;
+									self.acceleration = 0.016;
 								} else {
-									self.acceleration = -0.017;
+									self.acceleration = -0.016;
 								}
 								self.offsetAngle += angle-previousAngle;
 								self.renderFunction();
@@ -361,6 +377,32 @@
 				};
 			}
 
+			function Prerender(width, height, radius) {
+				prerenderCtx.canvas.width = width;
+				prerenderCtx.canvas.height = height;
+
+				prerenderCtx.beginPath;
+				prerenderCtx.shadowBlur = 10;
+				prerenderCtx.shadowColor = "rgb(0,0,0)";
+				prerenderCtx.lineWidth = 30;
+
+				prerenderCtx.arc(radius+30,radius+30,radius-18,-Math.PI,0,false);					
+				prerenderCtx.stroke();
+
+				// Draw the top half of the disc image
+				prerenderCtx.drawImage(
+					image,
+					0,
+					0,
+					image.width,
+					image.height/2,
+					30,
+					30,
+					radius*2,
+					radius
+				);
+			}
+
 			function RenderAll() {
 				ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 
@@ -380,31 +422,100 @@
 			}
 
 		  	function initialise() {
-				$('#wheelcanvas').css({
-				  'position': 'absolute',
-				  'bottom': '0px',
-				  'left' : '0px'
-				});
+		  		document.ontouchmove = function(event){
+				    event.preventDefault();
+				}
 
 				image = document.getElementById("disc");
 		  		canvas = document.getElementById("wheelcanvas");
+		  		prerender = document.getElementById("prerender");
 		  		
 				if (canvas.getContext) {
+					prerenderCtx = prerender.getContext("2d");
+
 			  		ctx = canvas.getContext("2d");
 
 					ctx.font = '30px Arial';
 
-					ctx.canvas.width  = window.innerWidth-5;
-					ctx.canvas.height = 1.2*window.innerWidth/2+10;
+					ctx.canvas.width  = window.innerWidth-1;
+					ctx.canvas.height = 1.2*window.innerWidth/2+30;
 
 					var middle = window.innerWidth/2;
 					var radius = 1.2*window.innerWidth/2;
 					var spacing = radius/3;
 					var bottom = ctx.canvas.height;
 
-					wheel1 = new wheel(1, 12, ctx, {x:middle,y:bottom+radius-3*spacing}, radius, RenderAll, ['banana','lemon','orange','pineapple','melon','tomato','potato','mango','leek','pear','apple']);
-					wheel2 = new wheel(2, 12, ctx, {x:middle,y:bottom+radius-2*spacing}, radius, RenderAll, ['monday','tuesday','wednesday','thursday','friday','saturday','sunday']);
-					wheel3 = new wheel(3, 30, ctx, {x:middle,y:bottom+radius-1*spacing}, radius, RenderAll, ['january','february','march','april','may','june','july','august','september','october','november','december']);
+					Prerender(radius*2+60,radius+30,radius);
+
+					var groups = 
+					['Final',
+					'Semi Finals',
+					'Quarter Finals',
+					'Last 16',
+					'Group H',
+					'Group G',
+					'Group F',
+					'Group E',
+					'Group D',
+					'Group C',
+					'Group B',
+					'Group A'];
+
+					var teams = 
+					['Ajax',
+					'Anderlecht',
+					'APOEL',
+					'Arsenal',
+					'Athletic Bilbau',
+					'Athletico Madrid',
+					'Barcelona',
+					'Basel',
+					'BATE Borisov',
+					'Bayern Leverkusen',
+					'Bayern Munich',
+					'Benfica',
+					'Chelsea',
+					'CSKA Moscow',
+					'Galatasaray',
+					'Juventus',
+					'Liverpool',
+					'Ludogrets',
+					'Malmo FF',
+					'Man City',
+					'Maribor'];
+
+					var dates = 
+					['6 Jun',
+					'13 May',
+					'12 May',
+					'6 May',
+					'5 May',
+					'22 Apr',
+					'21 Apr',
+					'15 Apr',
+					'14 Apr',
+					'18 Mar',
+					'17 Mar',
+					'11 Mar',
+					'10 Mar',
+					'25 Feb',
+					'24 Feb',
+					'18 Feb',
+					'17 Feb',
+					'10 Dec',
+					'9 Dec',
+					'26 Nov',
+					'25 Nov',
+					'5 Nov',
+					'4 Nov',
+					'22 Oct',
+					'21 Oct',
+					'1 Oct'];
+
+
+					wheel1 = new wheel(1, teams.length, ctx, {x:middle,y:bottom+radius-3*spacing}, radius, RenderAll, teams);
+					wheel2 = new wheel(2, dates.length, ctx, {x:middle,y:bottom+radius-2*spacing}, radius, RenderAll, dates);
+					wheel3 = new wheel(3, groups.length, ctx, {x:middle,y:bottom+radius-1*spacing}, radius, RenderAll, groups);
 
 					// rendererer = new renderController();
 					// rendererer.registerDelegate(wheel1.render);
@@ -422,13 +533,34 @@
 			  	}
 		  	}
 		</script>		
-		
+		<style>
+			body {
+				background: url('BT-Sport-Mobile-InSitu.png') no-repeat; 
+				background-size:100%; 
+				background-position: 0px -80px
+			}
+
+			#wheelcanvas {
+				position: absolute;
+				bottom: 0px;
+				left: 0px;
+			}
+			#prerender {
+				border:2px solid red;
+				display: none;
+			}
+			#info1, #info2 {
+				color:white;
+				display:none;
+			}
+		</style>
     </head>
-	<body onload='initialise()' style='background: url(BT-Sport-Mobile-InSitu.png) no-repeat; background-size:100%; background-position: 0px -80px'>
-		<div id='info1' style='color:white;'>xyz</div>
-		<div id='info2' style='color:white;'>abc</div>
+	<body onload='initialise()' onresize='initialise()'>
+		<div id='info1'>xyz</div>
+		<div id='info2'>abc</div>
 		<img id="disc" style="display:none" src="Disc-1080x1080.png">
 		<canvas id="wheelcanvas"></canvas>
+		<canvas id="prerender"></canvas>
 		<div id="frame"></div>
 	</body>
 </html>
