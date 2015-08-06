@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>Fixtures Wheel</title>
 		<meta name="description" content="Fixture Wheel">
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<title>Fixture Wheel</title>
+		<link href='http://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+		<link href="style.css" rel="stylesheet" type="text/css">
 		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script>
 			var canvas;
@@ -41,7 +43,20 @@
 			}
 */
 
-			function eventConroller () {
+			window.requestAnimFrame = (function(callback) {
+			  return (
+			    window.requestAnimationFrame || 
+			    window.webkitRequestAnimationFrame || 
+			    window.mozRequestAnimationFrame || 
+			    window.oRequestAnimationFrame || 
+			    window.msRequestAnimationFrame ||
+			    function(callback) {
+			      window.setTimeout(callback, 30);
+			    }
+			  );
+			})();
+
+			function eventController () {
 				this.mouseState = EVENT_RELEASE;
 				this.boundingRectangle = canvas.getBoundingClientRect();
 
@@ -80,9 +95,9 @@
 
 							self.mouseState = EVENT_GRAB;
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}
 							self.previousCoords = coords;
 						}
@@ -91,7 +106,7 @@
 					canvas.addEventListener('mousemove',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'mousemove';
-							if (mutex) return;
+							if (mutex) return; // throw away event whilst drawing
 
 							switch (self.mouseState) {
 								case EVENT_GRAB:
@@ -105,11 +120,10 @@
 							var coords = self.getCoords(event);
 					
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}
 
-							self.previousCoords = coords;
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);											
+							self.previousCoords = coords;										
 						}
 					);
 					
@@ -117,13 +131,12 @@
 					canvas.addEventListener('mouseup',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'mouseup';
-							if (mutex) return;
-
+							
 							self.mouseState = EVENT_RELEASE;
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}			
 							self.previousCoords = coords;				
 						}
@@ -132,13 +145,12 @@
 					canvas.addEventListener('mouseout',
 						function (event) {
 							document.getElementById('info2').innerHTML = 'mouseout';
-							if (mutex) return;
-
+							
 							self.mouseState = EVENT_RELEASE;
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}			
 							self.previousCoords = coords;				
 						}
@@ -148,15 +160,13 @@
 						function (event) {
 							document.getElementById('info2').innerHTML = 'touchstart';
 
-							if (event.changedTouches.length!=1) return;
-
-							if (mutex) return;
+							if (event.changedTouches.length!=1) return; // ignore multi touch
 
 							self.mouseState = EVENT_GRAB;
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}			
 							self.previousCoords = coords;				
 						}
@@ -167,7 +177,7 @@
 							document.getElementById('info2').innerHTML = 'touchmove';
 							if (event.changedTouches.length!=1) return;
 
-							if (mutex) return;
+							if (mutex) return; // throw away event whilst drawing
 
 							if (self.mouseState == EVENT_GRAB || self.mouseState == EVENT_DRAG) {
 								self.mouseState = EVENT_DRAG;
@@ -175,9 +185,9 @@
 								self.mouseState = EVENT_MOVE;
 							}
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}			
 							self.previousCoords = coords;				
 						}
@@ -189,13 +199,11 @@
 							document.getElementById('info2').innerHTML = 'touchend';
 							if (event.changedTouches.length!=1) return;
 
-							if (mutex) return;
-
 							self.mouseState = EVENT_RELEASE;
 							var coords = self.getCoords(event);
-//document.getElementById('info2').innerHTML = JSON.stringify(coords);
+
 							for (var i = 0; i<self.delegates.length; i++) {
-								if (!self.delegates[i](self.mouseState,coords,self.previousCoords)) break;
+								if (self.delegates[i](self.mouseState,coords,self.previousCoords)==CAPTURE_EVENT) break;
 							}			
 							self.previousCoords = coords;				
 						}
@@ -274,6 +282,17 @@
 
 							ctx.font = 'bold 12px sans-serif';
 						} else {
+							/*
+							ctx.beginPath();
+							ctx.fillStyle = 'rgba(100,100,100,0.8)';
+							ctx.arc(self.centre.x, self.centre.y, self.outsideRadius, angle, angle + arc, false);
+							ctx.arc(self.centre.x, self.centre.y, self.insideRadius, angle + arc, angle, true);
+
+							//ctx.stroke();
+							ctx.fill();
+
+							ctx.font = 'bold 12px sans-serif';	
+							*/						
 							ctx.font = '12px sans-serif';
 						}
 
@@ -338,7 +357,7 @@
 
 								while (polar.angle<0) polar.angle += PI2;
 								//self.selectedSegment = Math.floor(self.segments*(polar.angle-self.offsetAngle)/Math.PI/2)%self.segments;
-								//self.renderFunction();
+								self.renderFunction();
 								return CAPTURE_EVENT;
 							} else {
 								return PASS_ON_EVENT;
@@ -403,7 +422,9 @@
 				);
 			}
 
-			function RenderAll() {
+			function RenderAll(updateMovement) {
+				if (mutex) return;
+
 				ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
 
 				var time = (new Date).getTime();
@@ -412,20 +433,25 @@
 		  		wheel2.render();
 		  		wheel3.render();
 
-		  		wheel1.updateMovement();
-		  		wheel2.updateMovement();
-		  		wheel3.updateMovement();
+		  		if (updateMovement) {
+			  		wheel1.updateMovement();
+			  		wheel2.updateMovement();
+			  		wheel3.updateMovement();
+			  	}
 
 		  		mutex = false;
 				var total = (new Date).getTime() - time;
 				document.getElementById('info1').innerHTML = total;
+
+				//window.requestAnimFrame(RenderAll);
 			}
+
 
 		  	function initialise() {
 		  		document.ontouchmove = function(event){
-				    event.preventDefault();
+				    //event.preventDefault();
 				}
-
+alert(window.innerWidth);
 				image = document.getElementById("disc");
 		  		canvas = document.getElementById("wheelcanvas");
 		  		prerender = document.getElementById("prerender");
@@ -522,28 +548,33 @@
 					// rendererer.registerDelegate(wheel2.render);
 					// rendererer.registerDelegate(wheel3.render);
 
-			  		userEventController = new eventConroller();
+			  		userEventController = new eventController();
 			  		userEventController.registerDelegate(wheel3.userEvent);			  		
 			  		userEventController.registerDelegate(wheel2.userEvent);
 			  		userEventController.registerDelegate(wheel1.userEvent);
 			  		userEventController.createEventListeners(canvas);
 
+			  		RenderAll();
+
 			  		//renderer.render();
-			  		setInterval(RenderAll,30);
+			  		setInterval(function(){RenderAll(true);},30);
+			  		//window.requestAnimFrame(RenderAll);
 			  	}
 		  	}
 		</script>		
 		<style>
 			body {
-				background: url('BT-Sport-Mobile-InSitu.png') no-repeat; 
+				/*background: url('BT-Sport-Mobile-InSitu.png') no-repeat; 
 				background-size:100%; 
-				background-position: 0px -80px
+				background-position: 0px -80px*/
 			}
 
 			#wheelcanvas {
 				position: absolute;
 				bottom: 0px;
 				left: 0px;
+				z-index: 99;
+
 			}
 			#prerender {
 				border:2px solid red;
@@ -553,14 +584,108 @@
 				color:white;
 				display:none;
 			}
+			#disc {
+				display:none;
+			}
 		</style>
     </head>
 	<body onload='initialise()' onresize='initialise()'>
 		<div id='info1'>xyz</div>
 		<div id='info2'>abc</div>
-		<img id="disc" style="display:none" src="Disc-1080x1080.png">
+		<img id="disc" src="Disc-540x540.png">
 		<canvas id="wheelcanvas"></canvas>
 		<canvas id="prerender"></canvas>
+
 		<div id="frame"></div>
+			<div class="logo"><img src="images/UEFA_Champions_League_logo.png" alt="UEFA Champions League"/></div>
+
+			<div class="fixtureBox">
+
+			<div class="gradientOverlay"></div>
+
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+			<div class="fixture">
+			  <div class="details">
+			    <div class="middle">
+			      <p class="date">17 December 2014</p>
+			      <p class="teams">Chelsea Vs Liverpool</p>
+			      <p class="time">Kick-off: 19:45pm</p>
+			    </div>
+			  </div>
+			  <div class="left"><img src="images/chelsea.png" alt=""/></div>
+			  <div class="right"><img src="images/liverpool.png" alt=""/></div>
+			</div>
+
+			</div><!--fixtureBox-->
+
+			<div class="options"><img src="images/switch.png" width="143" height="34" alt=""/></div>
+
+			</div><!--frame-->
+
 	</body>
 </html>
