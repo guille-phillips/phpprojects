@@ -16,6 +16,7 @@
 			var EVENT_DRAG = 1;
 			var EVENT_MOVE = 2;
 			var EVENT_RELEASE = 3;
+			var EVENT_STOPPED = 4;
 			var CAPTURE_EVENT = false;
 			var PASS_ON_EVENT = true;
 			
@@ -89,7 +90,7 @@
 				this.createEventListeners = function(canvas) {
 					canvas.addEventListener('mousedown',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'mousedown';
+							//document.getElementById('info2').innerHTML = 'mousedown';
 
 							if (mutex) return;
 
@@ -105,7 +106,7 @@
 
 					canvas.addEventListener('mousemove',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'mousemove';
+							//document.getElementById('info2').innerHTML = 'mousemove';
 							if (mutex) return; // throw away event whilst drawing
 
 							switch (self.mouseState) {
@@ -130,7 +131,7 @@
 					
 					canvas.addEventListener('mouseup',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'mouseup';
+							//document.getElementById('info2').innerHTML = 'mouseup';
 							
 							self.mouseState = EVENT_RELEASE;
 							var coords = self.getCoords(event);
@@ -144,7 +145,7 @@
 
 					canvas.addEventListener('mouseout',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'mouseout';
+							//document.getElementById('info2').innerHTML = 'mouseout';
 							
 							self.mouseState = EVENT_RELEASE;
 							var coords = self.getCoords(event);
@@ -158,7 +159,7 @@
 
 					canvas.addEventListener('touchstart',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'touchstart';
+							//document.getElementById('info2').innerHTML = 'touchstart';
 
 							if (event.changedTouches.length!=1) return; // ignore multi touch
 
@@ -174,7 +175,7 @@
 
 					canvas.addEventListener('touchmove',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'touchmove';
+							//document.getElementById('info2').innerHTML = 'touchmove';
 							if (event.changedTouches.length!=1) return;
 
 							if (mutex) return; // throw away event whilst drawing
@@ -196,7 +197,7 @@
 
 					canvas.addEventListener('touchend',
 						function (event) {
-							document.getElementById('info2').innerHTML = 'touchend';
+							//document.getElementById('info2').innerHTML = 'touchend';
 							if (event.changedTouches.length!=1) return;
 
 							self.mouseState = EVENT_RELEASE;
@@ -221,12 +222,13 @@
 				this.textRadius = 140;
 				this.insideRadius = 100;
 				this.centre = centre;
-				this.selectedSegment = 3;
+				this.selectedSegment = 0;
+				this.selectedListItem = 0;
 				this.selected = false;
 				this.id = id;
 				this.renderFunction = renderFunction;
 				this.list = list;
-				
+
 				this.velocity = 0.1;
 				this.acceleration = 0.02;
 
@@ -239,9 +241,11 @@
 						if (self.velocity>0 && self.velocity<=self.acceleration) {
 							self.velocity = 0;
 							self.acceleration = 0;
+							self.userEvent(EVENT_STOPPED);
 						} else if (self.velocity<0 && self.velocity>=self.acceleration) {
 							self.velocity = 0;
 							self.acceleration = 0;
+							self.userEvent(EVENT_STOPPED);
 						}
 
 						self.velocity -= self.acceleration;
@@ -321,12 +325,12 @@
 						ctx.translate(self.centre.x + Math.cos(angle + arc / 2) * self.outsideRadius, self.centre.y + Math.sin(angle + arc / 2) * self.outsideRadius);
 						ctx.rotate(angle + arc / 2 + Math.PI / 1);
 						
-						var text = self.list[i];
+						var text = self.list[(i+(self.selectedSegment-self.selectedListItem)+self.list.length)%self.list.length];
 						if (text) {
 							ctx.fillText(text, 10, 0); // ctx.measureText(text).width
 						}
 						ctx.restore();
-						
+
 					}
 					
 				};
@@ -344,7 +348,29 @@
 					return {angle:Math.atan2(coords.y, coords.x),distance:self.distance(coords)};
 				};
 				
+				this.stopMotion = function () {
+					self.velocity = 0;
+					self.acceleration = 0;
+				}
+
+				this.wrapAround = function(radians,segmentCount,listCount) {
+					var segmentIndexFloat = segmentCount*radians/Math.PI/2;
+				
+					if (radians>=0) {
+						return {segment: segmentIndexFloat%segmentCount, list: segmentIndexFloat%listCount};
+					} else {
+						return {segment: segmentCount+segmentIndexFloat%segmentCount, list: listCount+segmentIndexFloat%listCount};
+					}
+				}
+
 				this.userEvent = function (eventType,coords,previousCoords) {
+					var velocity_drag = 0.7; // fraction of movement
+					var spin_acceleration = 0.016; // change in radians per frame
+					var max_velocity = 0.1; // radians per frame
+					var snapto_gap = 0.1; // segment fraction
+					var snapto_velocity = 0.04; // radians per frame
+					var snapto_acceleration = 0.016; // change in radians per frame
+
 					switch (eventType) {
 						case EVENT_GRAB:
 							coords = self.remapCoords(coords);
@@ -356,7 +382,7 @@
 								self.acceleration = 0;
 
 								while (polar.angle<0) polar.angle += PI2;
-								//self.selectedSegment = Math.floor(self.segments*(polar.angle-self.offsetAngle)/Math.PI/2)%self.segments;
+								
 								self.renderFunction();
 								return CAPTURE_EVENT;
 							} else {
@@ -369,13 +395,24 @@
 							if (self.selected) {
 								var angle = Math.atan2(coords.y, coords.x);
 								var previousAngle = Math.atan2(previousCoords.y, previousCoords.x);
-								self.velocity = 0.7*(angle-previousAngle);
-								if (self.velocity>0) {
-									self.acceleration = 0.016;
-								} else {
-									self.acceleration = -0.016;
+
+								// motion
+								self.velocity = velocity_drag * (angle-previousAngle);
+
+								if (self.velocity > max_velocity) {
+									self.velocity = max_velocity;
+								} else if (self.velocity < -max_velocity) {
+									self.velocity = -max_velocity;
 								}
+								if (self.velocity>0) {
+									self.acceleration = spin_acceleration;
+								} else {
+									self.acceleration = -spin_acceleration;
+								}
+
 								self.offsetAngle += angle-previousAngle;
+								//
+
 								self.renderFunction();
 
 								return CAPTURE_EVENT; 
@@ -391,6 +428,28 @@
 						case EVENT_RELEASE: 
 							self.selected = false;
 							return PASS_ON_EVENT; 
+							break;
+						case EVENT_STOPPED:
+							var wrap = self.wrapAround(-Math.PI/2-self.offsetAngle, self.segments, self.list.length);
+
+							self.selectedSegment = Math.floor(wrap.segment);
+							self.selectedListItem = Math.floor(wrap.list);
+
+							document.getElementById('info').innerHTML = self.selectedSegment + ' ' + self.selectedListItem;
+
+							var segmentFraction = wrap.segment%1;
+
+							if (segmentFraction < (0.5-snapto_gap) && segmentFraction >= 0) {
+								self.velocity = -snapto_velocity;
+								self.acceleration = -snapto_acceleration;
+							} else if (segmentFraction >= (0.5+snapto_gap)) {
+								self.velocity = snapto_velocity;
+								self.acceleration = snapto_acceleration;
+							} else {
+
+							}
+
+							return CAPTURE_EVENT;
 							break;
 					}
 				};
@@ -441,7 +500,7 @@
 
 		  		mutex = false;
 				var total = (new Date).getTime() - time;
-				document.getElementById('info1').innerHTML = total;
+				//document.getElementById('info1').innerHTML = total;
 
 				//window.requestAnimFrame(RenderAll);
 			}
@@ -451,7 +510,7 @@
 		  		document.ontouchmove = function(event){
 				    //event.preventDefault();
 				}
-alert(window.innerWidth);
+//alert(window.innerWidth);
 				image = document.getElementById("disc");
 		  		canvas = document.getElementById("wheelcanvas");
 		  		prerender = document.getElementById("prerender");
@@ -472,20 +531,6 @@ alert(window.innerWidth);
 					var bottom = ctx.canvas.height;
 
 					Prerender(radius*2+60,radius+30,radius);
-
-					var groups = 
-					['Final',
-					'Semi Finals',
-					'Quarter Finals',
-					'Last 16',
-					'Group H',
-					'Group G',
-					'Group F',
-					'Group E',
-					'Group D',
-					'Group C',
-					'Group B',
-					'Group A'];
 
 					var teams = 
 					['Ajax',
@@ -509,6 +554,23 @@ alert(window.innerWidth);
 					'Malmo FF',
 					'Man City',
 					'Maribor'];
+
+
+					var groups = 
+					['Final',
+					'Semi Finals',
+					'Quarter Finals',
+					'Last 16',
+					'Group H',
+					'Group G',
+					'Group F',
+					'Group E',
+					'Group D',
+					'Group C',
+					'Group B',
+					'Group A'];
+
+
 
 					var dates = 
 					['6 Jun',
@@ -539,9 +601,9 @@ alert(window.innerWidth);
 					'1 Oct'];
 
 
-					wheel1 = new wheel(1, teams.length, ctx, {x:middle,y:bottom+radius-3*spacing}, radius, RenderAll, teams);
-					wheel2 = new wheel(2, dates.length, ctx, {x:middle,y:bottom+radius-2*spacing}, radius, RenderAll, dates);
-					wheel3 = new wheel(3, groups.length, ctx, {x:middle,y:bottom+radius-1*spacing}, radius, RenderAll, groups);
+					wheel1 = new wheel(1, 30, ctx, {x:middle,y:bottom+radius-3*spacing}, radius, RenderAll, teams);
+					wheel2 = new wheel(2, 30, ctx, {x:middle,y:bottom+radius-2*spacing}, radius, RenderAll, dates);
+					wheel3 = new wheel(3, 30, ctx, {x:middle,y:bottom+radius-1*spacing}, radius, RenderAll, groups);
 
 					// rendererer = new renderController();
 					// rendererer.registerDelegate(wheel1.render);
@@ -580,9 +642,13 @@ alert(window.innerWidth);
 				border:2px solid red;
 				display: none;
 			}
-			#info1, #info2 {
+			#info {
 				color:white;
-				display:none;
+				/*display:none;*/
+				position: absolute;
+				left:0px;
+				top:0px;
+				z-index: 98;
 			}
 			#disc {
 				display:none;
@@ -590,8 +656,7 @@ alert(window.innerWidth);
 		</style>
     </head>
 	<body onload='initialise()' onresize='initialise()'>
-		<div id='info1'>xyz</div>
-		<div id='info2'>abc</div>
+		<div id='info'>xyz</div>
 		<img id="disc" src="Disc-540x540.png">
 		<canvas id="wheelcanvas"></canvas>
 		<canvas id="prerender"></canvas>
