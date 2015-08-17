@@ -18,9 +18,9 @@
                     font-size:70px;
                     font-weight:bold;
                     background-color:<?=$colour[4]?>;
-					color:<?=$colour[4]?>;
+		                color:<?=$colour[4]?>;
                 }
-				
+
                 .item {
                     position:relative;
                     width:calc:100%;
@@ -68,7 +68,7 @@
                     background-color:<?=$colour[3];?>;
 					color:<?=$colour[1];?>
                 }
-			
+
 				#container {
 					overflow-y:scroll;
 				}
@@ -89,7 +89,7 @@
                     display:inline-block;
 					vertical-align:top;
 					background: <?=$colour[1];?> url("list.png") no-repeat center center;
-                    border-right:4px solid <?=$colour[0];?>;					
+                    border-right:4px solid <?=$colour[0];?>;
                 }
                 .create_new {
                     position:relative;
@@ -100,7 +100,7 @@
                     background-color:<?=$colour[1]?>;
 					display:inline-block;
 					vertical-align:top;
-                }		
+                }
 				input {
                     font-family:arial;
                     font-size:70px;
@@ -114,7 +114,7 @@
 					background-color:<?=$colour[1];?>;
 					padding-left:14px;
 					border:1px dotted <?=$colour[4];?>;
-				}				
+				}
 				.adder {
                     position:absolute;
                     right:0px;
@@ -127,13 +127,13 @@
 					background-color:<?=$colour[1]?>;
                     padding-top:2px;
 					font-size:110px;
-				}				
+				}
             </style>
             <?php
                 date_default_timezone_set('Europe/London');
-          
+
                 $today = date('Y-m-d');
-                //$today = '2015-07-01';
+                //$today = '2015-08-17';
             ?>
             <script>
                 timer=0;
@@ -143,18 +143,18 @@
                 } else {
                     xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
                 }
-             
+
                 function ajax(id,method,value) {
                     xmlhttp.open("GET","update-list.php?method="+method+"&id="+id+"&value="+value+"&date=<?php echo $today;?>",false);
                     xmlhttp.send();
 					return xmlhttp.responseText;
                 }
-				
+
 				function change_quantity(id,direction) {
 					var item = document.getElementById('item_'+id);
 					if (item.dataset.purchased==1) return;
 					var quantity = item.dataset.quantity===''?0:parseInt(item.dataset.quantity,10);
-					
+
 					if (quantity==0) {
 						set_item_state(item, 2);
 						set_quantity(item,1);
@@ -169,14 +169,14 @@
 							ajax(id,'quantity',0)
 						} else {
 							set_quantity(item,2);
-							ajax(id,'quantity',2);							
+							ajax(id,'quantity',2);
 						}
 					} else {
 						set_quantity(item,quantity+direction);
 						ajax(id,'quantity',quantity+direction);
 					}
 				}
-				
+
 				function set_item_state(item,state) {
 					switch (state) {
 						case 1: // in stock
@@ -190,14 +190,14 @@
 							break;
 					}
 				}
-				
+
 				function set_quantity(item,value) {
 					document.getElementById('quantity_'+item.dataset.id).innerHTML = value;
 					item.dataset.quantity = value;
 				}
 				function set_purchased(item,value) {
 					document.getElementById('purchased_'+item.dataset.id).innerHTML = value;
-				}				
+				}
 				function toggle_purchased(id) {
 					var item = document.getElementById('item_'+id);
 					if (item.dataset.quantity==='') {
@@ -213,7 +213,7 @@
 						ajax(id,'purchased',item.dataset.purchased);
 					}
 				}
-				
+
 				function add_new_stock() {
 					input_box = document.getElementById('new_item');
 					var response=ajax(0,'new_item',input_box.value).split('|');
@@ -228,7 +228,7 @@
 						div.dataset.quantity = 1;
 						div.dataset.purchased = 0;
 						div.innerHTML = "<div id='quantity_"+id+"' class='quantity' onclick='change_quantity("+id+",-1);'>1</div><div id='name_"+id+"' class='name' onclick='change_quantity("+id+",1);'>"+name+"</div><div id='purchased_"+id+"' class='purchase' onclick='toggle_purchased("+id+");'></div></div>";
-						
+
 						var container = document.getElementById('container');
 						var added = false;
 						for (node_index in container.childNodes) {
@@ -243,7 +243,7 @@
 						if (!added) {
 							container.appendChild(div);
 						}
-						
+
 						input_box.value = '';
 						location.href = "#item_"+id;
 					} else {
@@ -268,7 +268,7 @@
 					document.getElementById('switcher').style.backgroundImage = show_stock?"url('list.png')":"url('stock.png')";
                     list.dataset.switch = show_stock?'shopping':'stock';
                 }
-				
+
 				function set_list_height() {
 					var height=window.innerHeight;
 					document.getElementById('container').style.height=height-180+'px';
@@ -277,8 +277,8 @@
         </head>
         <body onload="set_list_height();" onresize="set_list_height();">
 <?php
-        //$db = new mysqli('localhost', 'root', 'almeria72', 'shopping_list');
-        $db = new mysqli('localhost', 'root', '', 'shopping_list');
+        $db = new mysqli('localhost', 'root', 'almeria72', 'shopping_list');
+        //$db = new mysqli('localhost', 'root', '', 'shopping_list');
 
         if($db->connect_errno > 0){
             die('Unable to connect to database [' . $db->connect_error . ']');
@@ -287,20 +287,19 @@
         // Recommendations
         //// Remove unpurchased > 2 weeks
         //// Work out average usage per day for each item
-     
+
 		$sql = <<<SQL
 			DELETE
 			FROM
 				shopping_list
 			WHERE
-				(purchased = 0
-				OR quantity = 0)
-				AND item_date < '$today'				
+				quantity = 0
+				AND item_date < '$today'
 SQL;
 		if (!$db->query($sql)) {
 			die('There was an error running the query [' . $db->error . ']');
 		}
-		
+
         $sql = <<<SQL
             SELECT
                 s.stock_id,
@@ -312,7 +311,7 @@ SQL;
             GROUP BY
                 s.stock_id
 SQL;
-     
+
         if(!$list = $db->query($sql)){
             die('There was an error running the query [' . $db->error . ']');
         }
@@ -336,13 +335,13 @@ SQL;
                 s.stock_id,
                 s.item_date DESC
 SQL;
-     
+
         if(!$list = $db->query($sql)){
             die('There was an error running the query [' . $db->error . ']');
         }
 
         $recommendations = array();
-      
+
         $previous_stock_id = -1;
         $previous_item_date = '2000-01-01';
         $quantity_sum = 0;
@@ -356,12 +355,12 @@ SQL;
         }
 
         $rows[] = array('stock_id'=>-1,'quantity'=>0,'item_date'=>'');
-     
+
         foreach ($rows as $row) {
             foreach ($row as $field=>$value) {
                 $$field = $value;
             }
-         
+
             if ($stock_id==$previous_stock_id) {
                 $start = new DateTime($item_date);
                 $end  = new DateTime($previous_item_date);
@@ -404,7 +403,7 @@ SQL;
         while ($row = $list->fetch_assoc()) {
             $rows[] = $row;
         }
-		
+
         // Get list
         $sql = <<<SQL
             SELECT
@@ -447,7 +446,7 @@ SQL;
             }
         }
         unset($row);
-      
+
         foreach ($rows as &$row) {
             foreach ($row as $field=>$value) {
                 $$field = $value;
@@ -458,7 +457,7 @@ SQL;
                     $sql = "INSERT into shopping_list (stock_id,quantity,item_date) VALUES ($stock_id,{$recommendations[$stock_id]},'$today')";
                     if (!$db->query($sql)) {
                         die('There was an error running the query [' . $db->error . ']');
-                    }              
+                    }
                     $row['quantity']=$recommendations[$stock_id];
                 }
             }
@@ -482,7 +481,7 @@ SQL;
             $quantity = $data_quantity_null_or_zero?'':$data_quantity;
             $purchased = $data_purchased==1?'&#x2714;':($data_quantity_null_or_zero?'X':'');
 			$data_purchased = $data_purchased==NULL?0:$data_purchased;
-			
+
             echo <<<HTML
                 <div id='item_$id' class='item$class' data-id='$id' data-quantity='$quantity' data-purchased='$data_purchased'>
                     <div id='quantity_$id' class='quantity' onclick='change_quantity($id,-1);'>
@@ -495,7 +494,7 @@ SQL;
 HTML;
         }
         echo "</div>";
-       
+
 
 
 ?>
