@@ -1,13 +1,15 @@
 <?php
 
-        //$db = new mysqli('localhost', 'root', 'almeria72', 'shopping_list');
-        $db = new mysqli('localhost', 'root', '', 'shopping_list');
+        $db = new mysqli('localhost', 'root', 'almeria72', 'shopping_list');
+        //$db = new mysqli('localhost', 'root', '', 'shopping_list');
 
         if($db->connect_errno > 0){
             die('Unable to connect to database [' . $db->connect_error . ']');
         }
 
         $today = $_GET['date'];
+        //$today = '2015-08-17';
+        
         switch ($_GET['method']) {
 			case 'new_item':
 				$name = $_GET['value'];
@@ -19,11 +21,11 @@
 					}
 				}
 				$sanitised = ucwords(trim($sanitised));
-				
+
 				if ($sanitised == '' || $sanitised == 'Create New') die ('0|Item not added');
-				
+
 				$sql = <<<SQL
-					SELECT 
+					SELECT
 						stock_id
 					FROM
 						stock
@@ -33,13 +35,13 @@ SQL;
 				if (!$stock=$db->query($sql)) {
                     die('0|There was an error running the query [' . $db->error . ']');
                 }
-				
+
 				if ($stock->num_rows > 0) {
 					die('0|Item already added');
-				} 
-				
+				}
+
 				$sql = <<<SQL
-					INSERT INTO 
+					INSERT INTO
 						stock
 						(`name`)
 						VALUES
@@ -133,9 +135,9 @@ SQL;
 SQL;
                 if (!$db->query($sql)) {
                     die('There was an error running the query [' . $db->error . ']');
-                };				
-				
-                break;			
+                };
+
+                break;
         }
 
 ?>
