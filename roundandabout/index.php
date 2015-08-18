@@ -130,15 +130,16 @@
 			google.maps.event.addDomListener(window, 'load', Initialize);
 
 
-			function AddMarker(lat,lon,name,callback) {
+			function AddMarker(id,name,lat,lon,callback) {
 				var mapCanvas = document.getElementById('google_map');
 				
 				var marker = new google.maps.Marker({
 					position: {lat:lat, lng:lon},
 					map: map,
 					title: name
-				});	
-				marker.addListener('click', function() {callback(name)});				
+				});
+				marker.id = id;
+				marker.addListener('click', function() {callback(this)});				
 			}
 			
 			function List() {
@@ -147,14 +148,24 @@
 
 			
 			function Render() {
-				AddMarker(51,0,'test1',MarkerClicked);
-				AddMarker(51,0.1,'test2',MarkerClicked);
+				//AddMarker(51,0,'test1',MarkerClicked);
+				//AddMarker(51,0.1,'test2',MarkerClicked);
+				
+				var places = ajax('GetPlaces');
+				if (places.error) {
+					alert(places.error);
+					return;
+				}
+				for (var index in places) {
+					AddMarker(places[index].id,places[index].name,places[index].latitude, places[index].longitude,MarkerClicked);
+				}
 			}
 			
-			function MarkerClicked(param) {
-				alert('marker clicked:'+param);
+			function MarkerClicked(marker) {
+				alert('marker clicked:'+marker.id);
 			}
 
+			/*
 			function ConvertLatLonToXY(key) {
 				var lat = flights[key][LAT];
 				var lon = flights[key][LON];
@@ -162,6 +173,7 @@
 				flights[key][GRAPH_X] = pos[0];
 				flights[key][GRAPH_Y] = pos[1];			
 			}
+			*/
 			
             function Whole(number) {
             	return Math.floor(number+0.5);
@@ -177,6 +189,24 @@
 				Render();
 			}
 
+			var xmlhttp;
+			if (window.XMLHttpRequest) {
+				xmlhttp=new XMLHttpRequest();
+			} else {
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+			function ajax(method,value,id) {
+				xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date=<?php echo date("Y-m-d H:i:s");?>",false);
+				xmlhttp.send();
+				try {
+					var response = JSON.parse(xmlhttp.responseText);
+				} catch (err) {
+					alert(xmlhttp.responseText);
+					return;
+				}
+				return response;
+			}
 		</script>
 		<style>
 			#google_map {
