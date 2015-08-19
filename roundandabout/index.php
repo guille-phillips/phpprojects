@@ -69,23 +69,23 @@
 				navigator.geolocation.getCurrentPosition(location_success, location_error, options)
 
 
-				var mapCanvas = document.getElementById('google_map');
-				var info_panel = document.getElementById('info');
+				//var map_box = document.getElementById('map_box');
+				var place_list = document.getElementById('place_list');
 
-				screen_width = window.innerWidth-200;
-				screen_height = window.innerHeight;
+				screen_width = window.clientWidth-200;
+				screen_height = window.clientHeight;
 					
-				mapCanvas.style.width = window.innerWidth-200+'px';
-				mapCanvas.style.height = window.innerHeight+'px';
+				//map_box.style.width = window.clientWidth-200+'px';
+				//map_box.style.height = window.clientHeight+'px';
 
-				info_panel.style.height = window.innerHeight-2;
+				//place_list.style.height = (window.clientHeight-2)+'px';
 
 				window.onresize = function(event) {
-					screen_width = window.innerWidth-200;
-					screen_height = window.innerHeight;
-					mapCanvas.style.width = window.innerWidth-200+'px';
-					mapCanvas.style.height = window.innerHeight+'px';
-					info_panel.style.height = window.innerHeight-2;								
+					screen_width = window.clientWidth-200;
+					screen_height = window.clientHeight;
+					//map_box.style.width = window.clientWidth-200+'px';
+					//map_box.style.height = window.clientHeight+'px';
+					//place_list.style.height = (window.clientHeight-2)+'px';								
 				};
 
 				var mapOptions = {
@@ -95,7 +95,7 @@
 					streetViewControl: false,
 					navigationControl: false
 				}
-				map = new google.maps.Map(mapCanvas, mapOptions);
+				map = new google.maps.Map(map_box, mapOptions);
 
 				google.maps.event.addListener(map, 'zoom_changed', ZoomChanged);
 				//google.maps.event.addListener(map, 'click', function(event){document.getElementById("info").innerHTML = event.latLng;});
@@ -130,8 +130,35 @@
 			google.maps.event.addDomListener(window, 'load', Initialize);
 
 
+			function Render() {
+				//AddMarker(51,0,'test1',MarkerClicked);
+				//AddMarker(51,0.1,'test2',MarkerClicked);
+				
+				var places = ajax('GetPlaces');
+				if (places.error) {
+					alert(places.error);
+					return;
+				}
+				
+				var place_list = document.getElementById('place_list');
+				
+				for (var index in places) {
+					var place = places[index];
+					AddMarker(place.id,place.name,place.latitude,place.longitude,MarkerClicked);
+					var div = document.createElement('div');
+					div.id = 'place_' + place.id;
+					div.className = 'place_list_item';
+					div.innerHTML = [place.name,place.email,place.telephone,place.address,place.postcode].join('<br>');
+					place_list.appendChild(div);
+				}
+			}
+			
+			function MarkerClicked(marker) {
+				alert('marker clicked:'+marker.id);
+			}
+			
 			function AddMarker(id,name,lat,lon,callback) {
-				var mapCanvas = document.getElementById('google_map');
+				var map_box = document.getElementById('google_map');
 				
 				var marker = new google.maps.Marker({
 					position: {lat:lat, lng:lon},
@@ -147,23 +174,6 @@
 			}
 
 			
-			function Render() {
-				//AddMarker(51,0,'test1',MarkerClicked);
-				//AddMarker(51,0.1,'test2',MarkerClicked);
-				
-				var places = ajax('GetPlaces');
-				if (places.error) {
-					alert(places.error);
-					return;
-				}
-				for (var index in places) {
-					AddMarker(places[index].id,places[index].name,places[index].latitude, places[index].longitude,MarkerClicked);
-				}
-			}
-			
-			function MarkerClicked(marker) {
-				alert('marker clicked:'+marker.id);
-			}
 
 			/*
 			function ConvertLatLonToXY(key) {
@@ -200,6 +210,7 @@
 				xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date=<?php echo date("Y-m-d H:i:s");?>",false);
 				xmlhttp.send();
 				try {
+					//alert(xmlhttp.responseText);
 					var response = JSON.parse(xmlhttp.responseText);
 				} catch (err) {
 					alert(xmlhttp.responseText);
@@ -209,57 +220,45 @@
 			}
 		</script>
 		<style>
-			#google_map {
-				width: 1024px;
-				height: 768px;
-				background-color: #CCC;
-
+			html {
+				height:100%;
+			}
+			body {
+				height:100%;
+			}
+			
+			#map_box {
 				position:absolute;
 				left:0px;
 				top:0px;				
+				width: calc(100% - 170px);
+				height: 100%;
+				background-color: #CCC;
 			}
 
-			#info {
+			#place_list {
 				position:absolute;
-				right:11px;
-				top:250px;
-				/*width:200px;*/
+				top:0px;
+				right:0px;
+				width:170px;
+				height:100%;
+				background-color:cyan;
 			}
-
-			.strip {
-				background-color: #0000FF;
-				color:white;
-				width:160px;
-				height:20px;
+			
+			.place_list_item {
+				width:100%;
+				height:100px;
+				background-color: white;
+				border:1px solid black;
 				margin-bottom: 4px;
 				padding:3px;
 				cursor:pointer;
 			}
-			
-			.strip:hover {
-				background-color: #0080FF;
-			}
-
-			#search_div {
-				width:170px;
-				height:25px;
-				position:absolute;
-				top:0px;
-				right:5px;
-			}
-
-			label {
-				display:block;
-				position:absolute;
-			}
 		</style>		
 	</head>
 	<body>
-		<div id="google_map"></div>
-		<div id="search_div">
-			<input id="search" onchange="ListFlights();" value="">
-		</div>
-		<div id="info"><div>
+		<div id="map_box"></div>
+		<div id="place_list"><div>
 	</body>
 
 </html>

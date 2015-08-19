@@ -23,13 +23,30 @@ SQL;
 
 			$rows = array();
 			while($row = $list->fetch_assoc()){
-				$rows[]=array('id'=>(int) $row['id'],'name'=>$row['name'],'latitude'=>(float) $row['latitude'],'longitude'=>(float) $row['longitude']);
+				$rows[]=array(
+					'id'=>(int) $row['id'],
+					'name'=>$row['name'],
+					'latitude'=>(float) $row['latitude'],
+					'longitude'=>(float) $row['longitude'],
+					'category'=>$row['category'],
+					'email'=>$row['email'],
+					'telephone'=>$row['telephone'],
+					'address'=>$row['address'],
+					'postcode'=>$row['postcode'],
+					'entry_rates'=>$row['entry_rates'],
+					'opening_times'=>$row['opening_times'],
+					'rating'=>(int) $row['rating'],
+					'more_info'=>$row['more_info'],
+					'facilities'=>$row['facilities'],
+					'good_stuff'=>$row['good_stuff'],
+					'bad_stuff'=>$row['bad_stuff']
+				);
 			}
 			
 			echo json_encode($rows);
 			break;
 	}
-	
+
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
 	}	
