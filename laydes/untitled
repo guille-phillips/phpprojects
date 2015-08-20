@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Fixtures Wheel</title>
+		<meta name="description" content="Fixture Wheel">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<script>
+			var canvas;
+			var userEventController;
+
+			var EVENT_GRAB = 0;
+			var EVENT_DRAG = 1;
+			var EVENT_MOVE = 2;
+			var EVENT_RELEASE = 3;
+			var EVENT_HOVER = 4;
+			var CAPTURE_EVENT = false;
+			var PASS_ON_EVENT = true;
+			
+			var PI2 = 2*Math.PI;
+
+			window.requestAnimFrame = (function(callback) {
+			  return (
+			    window.requestAnimationFrame || 
+			    window.webkitRequestAnimationFrame || 
+			    window.mozRequestAnimationFrame || 
+			    window.oRequestAnimationFrame || 
+			    window.msRequestAnimationFrame ||
+			    function(callback) {
+			      window.setTimeout(callback, 30);
+			    }
+			  );
+			})();
+
+			function Initialise() {
+
+			}
+		</script>
+	</head>
+	<body onload='Initialise()' onresize='Initialise()'>
+		
+	</body>
+</html>
