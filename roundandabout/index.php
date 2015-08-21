@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script>
 			var unixoffset = <?php echo time();?>;
@@ -24,6 +25,7 @@
 			
 			var initial_latlong;
 
+			var places = [];
 			
 			Number.prototype.toRad = function() {
 			   return this * Math.PI / 180;
@@ -134,7 +136,7 @@
 				//AddMarker(51,0,'test1',MarkerClicked);
 				//AddMarker(51,0.1,'test2',MarkerClicked);
 				
-				var places = ajax('GetPlaces');
+				places = ajax('GetPlaces');
 				if (places.error) {
 					alert(places.error);
 					return;
@@ -147,14 +149,20 @@
 					AddMarker(place.id,place.name,place.latitude,place.longitude,MarkerClicked);
 					var div = document.createElement('div');
 					div.id = 'place_' + place.id;
+					div.dataset.id = place.id;
 					div.className = 'place_list_item';
 					div.innerHTML = [place.name,place.email,place.telephone,place.address,place.postcode].join('<br>');
+					div.addEventListener("click", function(){
+						alert(this.dataset.id);
+						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
+					});
 					place_list.appendChild(div);
 				}
 			}
 			
 			function MarkerClicked(marker) {
-				alert('marker clicked:'+marker.id);
+				//alert('marker clicked:'+marker.id);
+				OverlayOn();
 			}
 			
 			function AddMarker(id,name,lat,lon,callback) {
@@ -174,7 +182,17 @@
 			}
 
 			
-
+			function OverlayOn() {
+				document.getElementById('map_box').className='blur';
+				document.getElementById('overlay').className='overlay-on';
+			}
+			
+			function OverlayOff() {
+				//alert('overlayoff');
+				document.getElementById('map_box').className='';
+				document.getElementById('overlay').className='overlay-off';
+			}
+			
 			/*
 			function ConvertLatLonToXY(key) {
 				var lat = flights[key][LAT];
@@ -221,7 +239,7 @@
 		</script>
 		<style>
 			html {
-				height:100%;
+				height:96%;
 			}
 			body {
 				height:100%;
@@ -231,34 +249,58 @@
 				position:absolute;
 				left:0px;
 				top:0px;				
-				width: calc(100% - 170px);
+				width: 100%;
 				height: 100%;
 				background-color: #CCC;
 			}
-
-			#place_list {
-				position:absolute;
+			
+			#overlay {
+				position:fixed;
+				left:0px;
 				top:0px;
-				right:0px;
-				width:170px;
 				height:100%;
-				background-color:cyan;
+				width:100%;
+				background-color:rgba(0, 0, 0, 0.7);
+			}
+			
+			#place_list {
+				width:80%;
+				height:100%;
+				margin:auto;
+				overflow-y:scroll;
+				overflow-x:hidden;
 			}
 			
 			.place_list_item {
-				width:100%;
+				width:90%;
 				height:100px;
 				background-color: white;
 				border:1px solid black;
-				margin-bottom: 4px;
+				margin-bottom: 15px;
 				padding:3px;
 				cursor:pointer;
+			}
+			
+			.blur {
+				-webkit-filter: blur(2px);
+				-moz-filter: blur(2px);
+				-o-filter: blur(2px);
+				-ms-filter: blur(2px);			
+			}
+			
+			.overlay-off {
+				display:none;
+			}
+			.overlay-on {
+				display:default;
 			}
 		</style>		
 	</head>
 	<body>
 		<div id="map_box"></div>
-		<div id="place_list"><div>
+		<div id="overlay" onclick="OverlayOff();" class="overlay-off">
+			<div id="place_list"><div>
+		</div>
 	</body>
 
 </html>
