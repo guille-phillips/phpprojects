@@ -110,11 +110,12 @@
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
-				$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
+				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
 				//$db = new mysqli('localhost', 'root', '', 'roundandabout');
 
 				if($db->connect_errno > 0){
-					Error('Unable to connect to database [' . $db->connect_error . ']');
+					die('Unable to connect to database [' . $db->connect_error . ']');
 				}
 
                 $sql = <<<SQL
@@ -161,7 +162,7 @@ SQL;
                 }
                 echo 'New record inserted<br><br>';
 			} elseif (isset($_POST['search'])) {
-				
+
 			}
 		?>
 		<form method="post" action="entry.php" onsubmit="return Validate();"> 
