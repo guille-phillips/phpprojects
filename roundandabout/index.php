@@ -10,7 +10,7 @@
 			var centre_long = -0.17337799072265625; //-0.1866;
 			var zoom_flights_x;
 			var zoom_flights_y;
-			var zoom_google = 12;
+			var zoom_google = 14;
 
 			var zooms_x = [1,   1,   2.75, 5.5, 11,   22.734375, 45.46875, 90.9375, 181.875, 363.75, 727.5, 1455, 2910,  5820, 11650, 23300,  46560, 93120,  186240, 372480, 744960];
 			var zooms_y = [1.6, 1.6, 4.4,  8.8, 17.6, 36.375,    72.75,    145.5,   291,     582,    1164,  2328, 4656,  9300, 18600, 37200,  74400, 148800, 297600, 595200, 1190400];
@@ -93,9 +93,12 @@
 				var mapOptions = {
 					center: new google.maps.LatLng(centre_lat, centre_long),
 					zoom: zoom_google,
+					minZoom: 11, 
+					maxZoom: 18, 
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					streetViewControl: false,
-					navigationControl: false
+					navigationControl: false,
+					
 				}
 				map = new google.maps.Map(map_box, mapOptions);
 
@@ -136,7 +139,7 @@
 				//AddMarker(51,0,'test1',MarkerClicked);
 				//AddMarker(51,0.1,'test2',MarkerClicked);
 				
-				places = ajax('GetPlaces');
+				places = Ajax('GetPlaces');
 				if (places.error) {
 					alert(places.error);
 					return;
@@ -147,22 +150,51 @@
 				for (var index in places) {
 					var place = places[index];
 					AddMarker(place.id,place.name,place.latitude,place.longitude,MarkerClicked);
+					
+					// Place List Item
 					var div = document.createElement('div');
 					div.id = 'place_' + place.id;
 					div.dataset.id = place.id;
 					div.className = 'place_list_item';
-					div.innerHTML = [place.name,place.email,place.telephone,place.address,place.postcode].join('<br>');
+					div.innerHTML = CreateInfoBox(place);
 					div.addEventListener("click", function(){
-						alert(this.dataset.id);
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
 					});
 					place_list.appendChild(div);
 				}
 			}
 			
+			function CreateInfoBox(place) {
+				var html_array = [];
+				html_array.push(Tag('h1',place.name));
+				if (place.category.join) {
+					html_array.push( place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
+				}
+				
+				if (place.address.join) {
+					html_array.push( Tag('div',place.address.join(', '),{class:'address'}) );
+				}
+				
+				if (place.telephone.join) {
+					html_array.push( Tag('div',place.telephone.join(', '),{class:'address'}) );
+				}
+				html_array.push('Opening Times:');
+				if (place.opening_times.join) {
+					html_array.push( Tag('div',place.opening_times.join(', '),{class:'address'}) );
+				}
+				html_array.push('Entry Rates:');
+				if (place.entry_rates.join) {
+					html_array.push( Tag('div',place.entry_rates.join(', '),{class:'address'}) );
+				}				
+				
+				return html_array.join('');
+			}
+
 			function MarkerClicked(marker) {
 				//alert('marker clicked:'+marker.id);
 				OverlayOn();
+				document.getElementById('place_'+marker.id).scrollIntoView();
+				SetCentre(places[marker.id].latitude,places[marker.id].longitude);
 			}
 			
 			function AddMarker(id,name,lat,lon,callback) {
@@ -213,6 +245,14 @@
 			  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 			}
 			
+			function Tag(tag_name,content,attributes) {
+				var html_attributes = [''];
+				for (attribute in attributes) {
+					html_attributes.push(attribute+'="'+attributes[attribute]+'"');
+				}
+				return '<'+tag_name+html_attributes.join(' ')+'>'+content+'</'+tag_name+'>';
+			}
+			
 			function RenderAll() {
 				Render();
 			}
@@ -224,7 +264,7 @@
 				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-			function ajax(method,value,id) {
+			function Ajax(method,value,id) {
 				xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date=<?php echo date("Y-m-d H:i:s");?>",false);
 				xmlhttp.send();
 				try {
@@ -273,7 +313,7 @@
 			
 			.place_list_item {
 				width:90%;
-				height:100px;
+				height:200px;
 				background-color: white;
 				border:1px solid black;
 				margin-bottom: 15px;
@@ -294,7 +334,26 @@
 			.overlay-on {
 				display:default;
 			}
-		</style>		
+			
+			.h1 {
+			}
+			
+			.category_item {
+				display:inline-block;
+				background-color:blue;
+				color:white;
+				padding:0px 3px 0px 3px;
+				margin:3px;
+			}
+			
+			.address {
+				border:1px solid black;
+			}
+			
+			.description {
+				border:1px solid black;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="map_box"></div>

@@ -96,7 +96,7 @@
 				$name = StripSpace($_POST['name']);
 				$latitude = StripSpace($_POST['latitude']);
 				$longitude = StripSpace($_POST['longitude']);
-				$category = StripSpace($_POST['category']);
+				$category = CleanUp($_POST['category']);
 				$email = Nullable(StripSpace($_POST['email']),true);
 				$postcode = StripSpace($_POST['postcode']);
 				$rating = Nullable(StripSpace($_POST['rating']));
@@ -107,9 +107,9 @@
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 				
 				
-				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
 				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
-				$db = new mysqli('localhost', 'root', '', 'roundnabout');
+				//$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');

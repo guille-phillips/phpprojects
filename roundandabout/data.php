@@ -2,9 +2,9 @@
 	header('Content-Type: text/plain');
 	ini_set('html_errors', false);
 	
-	//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+	$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
 	//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
-	$db = new mysqli('localhost', 'root', '', 'roundnabout');
+	//$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');
@@ -24,18 +24,18 @@ SQL;
 
 			$rows = array();
 			while($row = $list->fetch_assoc()){
-				$rows[]=array(
+				$rows[(int) $row['id']]=array(
 					'id'=>(int) $row['id'],
 					'name'=>$row['name'],
 					'latitude'=>(float) $row['latitude'],
 					'longitude'=>(float) $row['longitude'],
-					'category'=>$row['category'],
+					'category'=>DecodeJSONField($row['category']),
 					'email'=>$row['email'],
-					'telephone'=>$row['telephone'],
-					'address'=>$row['address'],
+					'telephone'=>DecodeJSONField($row['telephone']),
+					'address'=>DecodeJSONField($row['address']),
 					'postcode'=>$row['postcode'],
-					'entry_rates'=>$row['entry_rates'],
-					'opening_times'=>$row['opening_times'],
+					'entry_rates'=>DecodeJSONField($row['entry_rates']),
+					'opening_times'=>DecodeJSONField($row['opening_times']),
 					'rating'=>(int) $row['rating'],
 					'more_info'=>$row['more_info'],
 					'facilities'=>$row['facilities'],
@@ -48,6 +48,14 @@ SQL;
 			break;
 	}
 
+	function DecodeJSONField($field) {
+		if ($json = json_decode($field)) {
+			return $json;
+		} else {
+			return $field;
+		}
+	}
+	
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
 	}	
