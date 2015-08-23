@@ -98,7 +98,7 @@
 					mapTypeId: google.maps.MapTypeId.ROADMAP,
 					streetViewControl: false,
 					navigationControl: false,
-					
+					scaleControl: true
 				}
 				map = new google.maps.Map(map_box, mapOptions);
 
@@ -203,7 +203,8 @@
 				var marker = new google.maps.Marker({
 					position: {lat:lat, lng:lon},
 					map: map,
-					title: name
+					title: name,
+					icon: 'resources/Green-Pin.png'
 				});
 				marker.id = id;
 				marker.addListener('click', function() {callback(this)});				
@@ -313,7 +314,7 @@
 			
 			.place_list_item {
 				width:90%;
-				height:200px;
+				/*height:400px;*/
 				background-color: white;
 				border:1px solid black;
 				margin-bottom: 15px;

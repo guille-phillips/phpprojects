@@ -1,0 +1,35 @@
+Map
+	Home Location Pin
+	Update Location
+		Homing Icon
+	Directions
+		https://developers.google.com/maps/documentation/javascript/directions
+	Numbered Pins
+	Map Scale
+	Pin Cluster
+	
+List
+	Basic Layout
+		Expand Information
+		Design
+	Images
+		Design
+	Order By Distance
+	Transition Effect From/To Map
+	Highlight Chosen Place
+	
+Menu
+	Category Filter
+	Fixed position
+		Design
+	
+Data Entry
+	Image Upload
+		Resize Image
+	Category Boxes
+		Store Lower Case
+		Don't Store Blank
+	Opening Times Expression
+		Jan-Mar:Weekday:0930-1700;Winter:Weekend:0900-1700,Sunday:1000-1600
+	Entry Rates Expression
+		OAP:16;Concessions:15;Children Under 5:free;
