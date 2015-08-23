@@ -68,15 +68,11 @@
 	<body>
 		<?php
 
-			function Nullable($field,$is_text=false) {
+			function Nullable($field) {
 				if ($field=='') {
-					return 'NULL';
+					return NULL;
 				} else {
-					if ($is_text) {
-						return "'$field'";
-					} else {
-						return $field;
-					}
+					return $field;
 				}
 			}
 
@@ -104,20 +100,22 @@
 				$email = Nullable(StripSpace($_POST['email']),true);
 				$postcode = StripSpace($_POST['postcode']);
 				$rating = Nullable(StripSpace($_POST['rating']));
-
 				$more_info = StripSpace($_POST['more_info']);
 				$facilities = StripSpace($_POST['facilities']);
+				$disabled_facilities = StripSpace($_POST['disabled_facilities']);
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
-
-				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+				
+				
+				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
 				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
-				//$db = new mysqli('localhost', 'root', '', 'roundandabout');
+				$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');
 				}
 
+				// prepare and bind
                 $sql = <<<SQL
                     INSERT INTO
                         places
@@ -125,9 +123,9 @@
                         	name,
                         	latitude,
                         	longitude,
-                        	category,
-                        	email,
-                        	telephone,
+							category,
+							email,
+							telephone,
                         	address,
                         	postcode,
                         	entry_rates,
@@ -135,35 +133,55 @@
                         	rating,
                         	more_info,
                         	facilities,
+							disabled_facilities,
                         	good_stuff,
-                        	bad_stuff)
-                    VALUES
-                        (
-							'$name',
-							$latitude,
-							$longitude,
-							'$category',
-							$email,
-							'$telephone',
-							'$address',
-							'$postcode',
-							'$entry_rates',
-							$opening_times,
-							$rating,
-							'$more_info',
-							'$facilities',
-							'$good_stuff',
-							'$bad_stuff'
-                        )
+                        	bad_stuff
+						)
+					VALUES
+						(
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?
+						)
 SQL;
 
-                if (!$db->query($sql)) {
-                    die('There was an error running the query [' . $db->error . ']');
-                }
+				$stmt = $db->prepare($sql);
+				$stmt->bind_param("sddsssssssdsssss", 
+					$name,
+					$latitude,
+					$longitude,
+					$category,
+					$email,
+					$telephone,
+					$address,
+					$postcode,
+					$entry_rates,
+					$opening_times,
+					$rating,
+					$more_info,
+					$facilities,
+					$disabled_facilities,
+					$good_stuff,
+					$bad_stuff);
+				$stmt->execute();
+
                 echo 'New record inserted<br><br>';
 			} elseif (isset($_POST['search'])) {
 
-			}
+			}			
 		?>
 		<form method="post" action="entry.php" onsubmit="return Validate();"> 
 			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name"></div><br><br>
@@ -179,6 +197,7 @@ SQL;
 			<div class="field_name">Rating</div><div class="field_value"><input id="rating" type="text" name="rating"></div><br><br>
 			<div class="field_name">More Info</div><div class="field_value"><textarea id="more_info" name="more_info" rows="6"></textarea></div><br><br>
 			<div class="field_name">Facilities</div><div class="field_value"><textarea id="facilities" name="facilities" rows="6"></textarea></div><br><br>
+			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"></textarea></div><br><br>
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"></textarea></div><br><br>
 
