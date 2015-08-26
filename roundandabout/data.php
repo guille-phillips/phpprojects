@@ -2,9 +2,9 @@
 	header('Content-Type: text/plain');
 	ini_set('html_errors', false);
 	
-	$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+	//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
 	//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
-	//$db = new mysqli('localhost', 'root', '', 'roundnabout');
+	$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');

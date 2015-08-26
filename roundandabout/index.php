@@ -2,7 +2,9 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
+		<script src="javascript/custom-google-map-marker.js"></script>
 		<script>
 			var unixoffset = <?php echo time();?>;
 			var map;
@@ -27,48 +29,31 @@
 
 			var places = [];
 			
-			Number.prototype.toRad = function() {
-			   return this * Math.PI / 180;
-			}
-
-			function DistanceBetween(latlong1,latlong2) {
-				var lat2 = latlong2[0];
-				var lon2 = latlong2[1];
-				var lat1 = latlong1[0];
-				var lon1 = latlong1[1];
-
-				var R = 3959; // miles 
-				//has a problem with the .toRad() method below.
-				var x1 = lat2-lat1;
-				var dLat = x1.toRad();  
-				var x2 = lon2-lon1;
-				var dLon = x2.toRad();  
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-								Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
-								Math.sin(dLon/2) * Math.sin(dLon/2);  
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-				var d = R * c; 
-				
-				return d;
-			}
+			var marker_resource = 'resources/pin-144ppi.png';
+			var home_marker_resource = 'resources/home-marker.png';
 			
-			
-			function location_success(pos) {
+			function LocationSuccess(pos) {
 				var crd = pos.coords;
 				initial_latlong = [crd.latitude, crd.longitude];
 				SetCentre(crd.latitude,crd.longitude);
+				//AddMarker('home','You are here',crd.latitude,crd.longitude,home_marker_resource,HomeMarkerClicked)
 			};
 
-			function location_error(err) {		  
+			function LocationError(err) {
+				alert("location error");
 			};
-
+			
+			function HomeMarkerClicked() {
+				alert('HomeMarkerClicked');
+			}
+			
 			function Initialize() {
 				var options = {
 				  enableHighAccuracy: true,
 				  timeout: 5000,
 				  maximumAge: 0
 				};
-				navigator.geolocation.getCurrentPosition(location_success, location_error, options)
+				navigator.geolocation.getCurrentPosition(LocationSuccess, LocationError, options)
 
 
 				//var map_box = document.getElementById('map_box');
@@ -136,9 +121,16 @@
 
 
 			function Render() {
-				//AddMarker(51,0,'test1',MarkerClicked);
-				//AddMarker(51,0.1,'test2',MarkerClicked);
-				
+				var overlay_html = "This is some text";
+				var overlay = new CustomMarker(
+					new google.maps.LatLng(50, 0.5), 
+					map,
+					{marker_id: '123',
+					className: 'bubble-left',
+					html: overlay_html
+					}
+				);
+	
 				places = Ajax('GetPlaces');
 				if (places.error) {
 					alert(places.error);
@@ -149,7 +141,7 @@
 				
 				for (var index in places) {
 					var place = places[index];
-					AddMarker(place.id,place.name,place.latitude,place.longitude,MarkerClicked);
+					AddMarker(place.id,place.name,place.latitude,place.longitude,marker_resource,MarkerClicked);
 					
 					// Place List Item
 					var div = document.createElement('div');
@@ -161,6 +153,7 @@
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
 					});
 					place_list.appendChild(div);
+					break;
 				}
 			}
 			
@@ -197,17 +190,31 @@
 				SetCentre(places[marker.id].latitude,places[marker.id].longitude);
 			}
 			
-			function AddMarker(id,name,lat,lon,callback) {
+			function AddMarker(id,name,lat,lon,resource,callback) {
+				console.log('AddMarker:'+id);
+				
 				var map_box = document.getElementById('google_map');
 				
+				var overlay_html = "88";
+				var overlay = new CustomMarker(
+					new google.maps.LatLng(lat, lon), 
+					map,
+					{marker_id: '123',
+					className: 'marker-with-number',
+					html: overlay_html
+					}
+				);
+				
+				/*
 				var marker = new google.maps.Marker({
 					position: {lat:lat, lng:lon},
 					map: map,
 					title: name,
-					icon: 'resources/Green-Pin.png'
+					icon: resource
 				});
 				marker.id = id;
-				marker.addListener('click', function() {callback(this)});				
+				marker.addListener('click', function() {callback(this)});
+				*/
 			}
 			
 			function List() {
@@ -226,24 +233,15 @@
 				document.getElementById('overlay').className='overlay-off';
 			}
 			
-			/*
-			function ConvertLatLonToXY(key) {
-				var lat = flights[key][LAT];
-				var lon = flights[key][LON];
-				var pos = GetCanvasPosition(lat,lon);
-				flights[key][GRAPH_X] = pos[0];
-				flights[key][GRAPH_Y] = pos[1];			
-			}
-			*/
-			
+
             function Whole(number) {
             	return Math.floor(number+0.5);
             }
 
 			function Pad(n, width, z) {
-			  z = z || '0';
-			  n = n + '';
-			  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+				z = z || '0';
+				n = n + '';
+				return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 			}
 			
 			function Tag(tag_name,content,attributes) {
@@ -277,83 +275,45 @@
 				}
 				return response;
 			}
+			
+			Number.prototype.toRad = function() {
+			   return this * Math.PI / 180;
+			}
+
+			function DistanceBetween(latlong1,latlong2) {
+				var lat2 = latlong2[0];
+				var lon2 = latlong2[1];
+				var lat1 = latlong1[0];
+				var lon1 = latlong1[1];
+
+				var R = 3959; // miles 
+				//has a problem with the .toRad() method below.
+				var x1 = lat2-lat1;
+				var dLat = x1.toRad();  
+				var x2 = lon2-lon1;
+				var dLon = x2.toRad();  
+				var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+								Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+								Math.sin(dLon/2) * Math.sin(dLon/2);  
+				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+				var d = R * c; 
+				
+				return d;
+			}
+			
+			/*
+			function ConvertLatLonToXY(key) {
+				var lat = flights[key][LAT];
+				var lon = flights[key][LON];
+				var pos = GetCanvasPosition(lat,lon);
+				flights[key][GRAPH_X] = pos[0];
+				flights[key][GRAPH_Y] = pos[1];			
+			}
+			*/
+									
 		</script>
 		<style>
-			html {
-				height:96%;
-			}
-			body {
-				height:100%;
-			}
 			
-			#map_box {
-				position:absolute;
-				left:0px;
-				top:0px;				
-				width: 100%;
-				height: 100%;
-				background-color: #CCC;
-			}
-			
-			#overlay {
-				position:fixed;
-				left:0px;
-				top:0px;
-				height:100%;
-				width:100%;
-				background-color:rgba(0, 0, 0, 0.7);
-			}
-			
-			#place_list {
-				width:80%;
-				height:100%;
-				margin:auto;
-				overflow-y:scroll;
-				overflow-x:hidden;
-			}
-			
-			.place_list_item {
-				width:90%;
-				/*height:400px;*/
-				background-color: white;
-				border:1px solid black;
-				margin-bottom: 15px;
-				padding:3px;
-				cursor:pointer;
-			}
-			
-			.blur {
-				-webkit-filter: blur(2px);
-				-moz-filter: blur(2px);
-				-o-filter: blur(2px);
-				-ms-filter: blur(2px);			
-			}
-			
-			.overlay-off {
-				display:none;
-			}
-			.overlay-on {
-				display:default;
-			}
-			
-			.h1 {
-			}
-			
-			.category_item {
-				display:inline-block;
-				background-color:blue;
-				color:white;
-				padding:0px 3px 0px 3px;
-				margin:3px;
-			}
-			
-			.address {
-				border:1px solid black;
-			}
-			
-			.description {
-				border:1px solid black;
-			}
 		</style>
 	</head>
 	<body>
