@@ -1,0 +1,107 @@
+body {
+	/*color: white;*/
+}
+
+canvas#canvas {
+	border:1px solid black;
+}
+
+div {
+	border:1px solid black;
+}
+
+div#chroma_betometer {
+	background-color: green;
+}
+
+/* container */
+div#chroma_betometer {
+	width:700px;
+	background-color: #f5f5f5;
+}
+
+/* headline */
+div#chroma_betometer > div > div:nth-child(1) {
+	background-color: #b0b0b0;
+	color: white;
+	height:54px;
+	text-align: center;
+}
+
+/* advert */
+div#chroma_betometer > div > div:nth-child(2) {
+	background-color: #989898;
+	color: white;
+	height: 65px;
+	text-align: center;
+}
+
+/* left panel */
+div#chroma_betometer > div > div:nth-child(3) {
+	width: 300px;
+	display:inline-block;
+	vertical-align: top;
+}
+
+/* betometer dial */
+div#chroma_betometer > div > div:nth-child(3) > div > canvas#canvas {
+	width: 280px;
+	height: 200px;
+}
+
+/* frame counter */
+div#chroma_betometer > div > div:nth-child(3) > div > div:nth-child(2) {
+	width: 280px;
+	background-color: #5f5f5f;
+	color:white;
+	height:20px;
+}
+
+/* description */
+div#chroma_betometer > div > div:nth-child(3) > div > div:nth-child(3) {
+	width: 280px;
+	background-color: #989898;
+	color:white;
+	height:150px;
+	text-align: center;
+}
+
+/* right panel */
+div#chroma_betometer > div > div:nth-child(4) {
+	width: 290px;
+	display:inline-block;
+	vertical-align: top;
+}
+
+/* single bet */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(1) {
+	background-color: white;
+	height:150px;
+	margin: 15px 25px 15px 25px;
+}
+/* single bet description */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(1) {
+	height:75px;
+	text-align: center;
+}
+/* single bet button strip */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(1) > div:nth-child(2) {
+	height:50px;
+}
+
+
+/* multi-bet */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(2) {
+	background-color: white;
+	height:150px;
+	margin: 15px 20px 15px 20px;
+}
+/* multi-bet description */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) {
+	height:75px;
+	text-align: center;
+}
+/* multi-bet button strip */
+div#chroma_betometer > div > div:nth-child(4) > div:nth-child(2) > div:nth-child(2) {
+	height:50px;
+}

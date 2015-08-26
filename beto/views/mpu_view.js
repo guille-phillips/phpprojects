@@ -1,0 +1,1 @@
+<?php require_once 'animated_dial.js'; ?>

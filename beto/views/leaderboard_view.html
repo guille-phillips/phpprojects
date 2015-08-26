@@ -1,0 +1,19 @@
+<?php 
+	//require_once 'algorithm.php';
+	require_once 'cms.php';
+
+	$templates = LoadCompanyTemplates($view_data['company_id']);
+	$template = $templates[0];
+
+	$company_theme = LoadCompanyTheme($view_data['company_id']);
+?>
+<div>
+	<div>
+		<canvas id="canvas" width="400" height="120">
+			Image not available
+		</canvas>
+	</div><div>
+		<div><?=$template['copy'];?></div>
+		<div>Button strip</div>
+	</div>
+</div>

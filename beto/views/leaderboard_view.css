@@ -1,0 +1,52 @@
+<?php
+	require_once 'cms.php';
+	$user_theme = LoadCompanyTheme($view_data['user_id']);
+	$background_colour = $user_theme['background_colour'];
+?>
+body {
+	color: red;
+}
+
+canvas#canvas {
+	border:1px solid black;
+}
+
+div {
+	border:1px solid black;
+}
+
+div#chroma_betometer > div > div:nth-child(1) {
+	background-color: #<?=$background_colour?>;
+	text-align: center;
+	width:400px;
+	display:inline-block;
+	vertical-align: top;
+}
+
+/* hot tip text */
+div#chroma_betometer > div > div:nth-child(2) {
+	background-color: #<?=$background_colour?>;
+	color: black;
+	height:54px;
+	text-align: center;
+	width:400px;
+	display:inline-block;
+}
+
+div#chroma_betometer > div > div:nth-child(2) > div:nth-child(1) {
+	background-color: #<?=$background_colour?>;
+	color: black;
+	height:50px;
+	text-align: center;
+	width:400px;
+	display:inline-block;
+}
+
+div#chroma_betometer > div > div:nth-child(2) > div:nth-child(2) {
+	background-color: #<?=$background_colour?>;
+	color: black;
+	height:50px;
+	text-align: center;
+	width:400px;
+	display:inline-block;
+}

@@ -1,0 +1,68 @@
+<?php
+	//header('content-type:text/plain');
+
+	require_once 'cms.php';
+	require_once 'html_helper.php';
+
+	if ($view_data['is_logged_in']) {
+		$companies = LoadCompanies();
+	}
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="<?=VIEW_BASE_PATH?>admin_view.css">
+		<script src="<?=VIEW_BASE_PATH?>../session.js"></script>
+		<script src="<?=VIEW_BASE_PATH?>admin_view.js"></script> 
+	</head>
+	<body>
+		<h1>Log In</h1>
+		<?php if (isset($view_data['message'])) :?>
+			<div><?=$view_data['message']?></div>
+		<?php endif;?>
+		<?php if (!$view_data['is_logged_in']) :?>
+		<form method='post' action='view.php?name=admin' onsubmit="return ValidateLogin()">
+			Username
+			<input id='username' type="text" name="username" autocomplete="off">
+			<br>
+			Password
+			<input id='password' type="password" name="password">
+			<br>
+			<input type="submit" value="Log In" name="login">
+		</form>
+		<?php endif; ?>
+
+		<?php if ($view_data['is_logged_in']) :?>
+		<form method='post' action='view.php?name=admin'>
+			<input type="submit" value="Log Out" name="logout">
+		</form>		
+		
+		<hr>
+
+		<h1>Companies</h1>
+		<form method='post' action='view.php?name=admin' onsubmit="return Validate();">
+			<table>
+			<?php
+//echo CreateTable($companies);
+				foreach ($companies as $company) {
+			?>
+			<tr>
+				<input name='companyname[<?=$company['company_id']?>]' value="<?=$company['name']?>">
+				<input name='license_key[<?=$company['company_id']?>]' value="<?=$company['license_key']?>">
+			</tr>
+			<?php
+				}
+			?>
+			</table>
+			<input type="submit" value="Update" name="user_preferences">
+		</form>
+		<?php endif;?>
+
+		<?php if ($view_data['is_logged_in']) :?>
+		<form id='session_timeout' method='post' action='view.php?name=admin'>
+			<input type='hidden' name='timeout'>
+		</form>
+		<?php endif;?>
+	</body>
+</html>

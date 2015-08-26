@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel='stylesheet' type='text/css' href='large_view.css'>
+		<script src='leaderboard_view.js'></script>
+	</head>
+	<body>
+		<div id='chroma_betometer'>
+			<!--#include file="large_view.html"-->
+		</div>
+	</body>
+</html>

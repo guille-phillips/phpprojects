@@ -1,0 +1,32 @@
+<?php 
+	//require_once 'algorithm.php';
+	require_once 'cms.php';
+
+	$templates = LoadCompanyTemplates($view_data['company_id']);
+	$template = $templates[0];
+
+	$company_theme = LoadCompanyTheme($view_data['company_id']);
+?>
+<div>container
+	<div><?=$data['hot_tip'];?></div>
+	<div>Advert</div>
+	<div>Left panel
+		<div>
+			<canvas id="canvas">
+				Image not available
+			</canvas>
+			<div id='frame_counter'>&nbsp;</div>
+			<div>Description</div>
+		</div>
+	</div>
+	<div>Right panel
+		<div>Single Bet
+			<div>Bet description</div>
+			<div>Button Strip</div>
+		</div>
+		<div>Multi Bet
+			<div>Bet description</div>
+			<div>Button Strip</div>
+		</div>
+	</div>
+</div>

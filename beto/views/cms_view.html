@@ -1,0 +1,73 @@
+<?php
+	//header('content-type:text/plain');
+
+	require_once 'cms.php';
+
+	if ($view_data['is_logged_in']) {
+		$company_templates = LoadCompanyTemplates($view_data['user_id']);
+		$user_theme = LoadCompanyTheme($view_data['user_id']);
+		$company_feeds = LoadCompanyFeeds($view_data['user_id']);
+	}
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" type="text/css" href="cms_view.css">
+		<script src="../session.js"></script>
+		<script src="cms_view.js"></script> 
+	</head>
+	<body>
+		<h1>Log In</h1>
+		<?php if (isset($view_data['message'])) :?>
+			<div><?=$view_data['message']?></div>
+		<?php endif;?>
+		<?php if (!$view_data['is_logged_in']) :?>
+		<form method='post' action='view.php?name=cms' onsubmit="return ValidateLogin()">
+			Username
+			<input id='username' type="text" name="username" autocomplete="off">
+			<br>
+			Password
+			<input id='password' type="password" name="password">
+			<br>
+			<input type="submit" value="Log In" name="login">
+		</form>
+		<?php endif; ?>
+
+		<?php if ($view_data['is_logged_in']) :?>
+		<form method='post' action='view.php?name=cms'>
+			<input type="submit" value="Log Out" name="logout">
+		</form>		
+
+		<h1>Styling</h1>
+		<form method='post' action='view.php?name=cms' onsubmit="return Validate();">
+			Background Colour
+			<input type="text" value="<?=$user_theme['background_colour']?>" name="background_colour">
+			<hr>
+			
+			<h1>Markets</h1>
+			<?php
+				foreach ($company_templates as $template) {
+					$template_id = $template['id'];
+					$template_copy = htmlentities($template['copy'],ENT_HTML401,'UTF-8')
+			?>
+			<textarea name='templates[<?=$template_id?>]'><?=$template_copy;?></textarea>
+			<?php
+				}
+			?>
+			<input type="hidden" value="<?=$view_data['user_id']?>" name="user_id">
+			<input type="submit" value="Update" name="settings">
+			<hr>
+
+			<h1>Feeds</h1>
+
+		</form>
+		<?php endif;?>
+
+		<?php if ($view_data['is_logged_in']) :?>
+		<form id='session_timeout' method='post' action='view.php?name=cms'>
+			<input type='hidden' name='timeout'>
+		</form>
+		<?php endif;?>
+	</body>
+</html>
