@@ -1,0 +1,200 @@
+@page {
+	margin-bottom: 0;
+	margin-top: 0
+}
+
+@font-face {
+	src: url(fonts/FreeSerif.ttf);
+	panose-1: 2 2 6 3 5 4 5 2 3 4;
+	font-family: "FreeSerif"
+}
+
+@font-face {
+	src: url(fonts/FreeSerif-Bold.ttf);
+	panose-1: 2 2 8 3 7 5 5 2 3 4;
+	font-family: "FreeSerif";
+	font-weight: bold
+}
+
+@font-face {
+	src: url(fonts/FreeSerif-Italic.ttf);
+	panose-1: 2 2 6 3 5 4 5 9 3 4;
+	font-family: "FreeSerif";
+	font-style: italic
+}
+
+
+body {
+	display: block;
+	font-family: "FreeSerif", serif;
+	font-size: 1em;
+	padding: 0;
+	margin: 0 20px 0 20px;
+}
+
+p {
+	text-indent: 1.1em;
+	margin: 0;
+}
+
+.flush {
+	text-indent: 0;
+}
+
+.indent {
+	text-indent: 1.1em;
+}
+
+div {
+	margin: 2ex 0 2ex 3.3em;
+}
+
+div > p {
+	text-indent: 0;
+}
+
+h2 {
+	font-size: 1.66667em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 1em 0;
+	text-align: center;
+}
+
+sup {
+  vertical-align: 33%;
+  font-size: 75%;
+}
+
+
+.calibre {
+	display: block;
+	font-family: "FreeSerif", serif;
+	font-size: 1em;
+	padding-left: 0;
+	padding-right: 0;
+	margin: 0;
+}
+
+.calibre1 {
+	display: block;
+	font-size: 1.66667em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 0.83em 0;
+}
+
+.calibre2 {
+	display: block;
+	font-size: 1.29167em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 1em 0;
+}
+
+.calibre3 {
+	display: block;
+	margin: 0 0;
+	text-indent: 1.1em;
+}
+
+.calibre3N {
+	display: block;
+	margin: 0 0;
+}
+
+.calibre4 {
+	display: block;
+	font-size: 1.66667em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 1em 0 0.83em;
+}
+
+.calibre5 {
+	display: block;
+}
+
+.calibre6 {
+	display: block;
+	font-size: 1.66667em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 1em 0;
+}
+
+.calibre7 {
+	display: block;
+	text-indent: 1.5em;
+	margin: 1ex 0;
+}
+
+.calibre8 {
+	display: block;
+	font-size: 1.66667em;
+	font-weight: bold;
+	line-height: 1.2;
+	margin: 0.83em 0 1em;
+}
+
+.calibre9 {
+	font-style: italic;
+}
+
+.calibre10 {
+	display: block;
+	font-size: 75%;
+	margin: 0.83em 0 1em;
+}
+
+.footnote {
+	font-size: 75%;
+	margin: 0.83em 0 1em;
+}
+
+.softbreak {
+	display: block;
+	page-break-before: avoid;
+	text-align: center;
+	margin: 0.5em 0 1em;
+}
+
+.whitespace {
+	display: block;
+	text-align: center;
+	margin: 0
+}
+
+.centre {
+	text-indent: 0;
+	text-align: center;
+}
+
+
+.indent0 {
+	margin: 2ex 0 2ex 0;
+}
+
+.indent1 {
+	margin: 2ex 0 2ex 1.1em;
+}
+
+.indent2 {
+	margin: 2ex 0 2ex 2.2em;
+}
+
+.indent3 {
+	margin: 2ex 0 2ex 3.3em;
+}
+
+.indent4 {
+	margin: 2ex 0 2ex 4.4em;
+}
+
+.indent5 {
+	margin: 2ex 0 2ex 5.5em;
+}
+
+.indent6 {
+	margin: 2ex 0 2ex 6.6em;
+}

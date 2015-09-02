@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en-US">
+	<head>
+		<meta content="1c977b60-3951-43fa-b806-e54a14be1c09" name="dtb:uid"/>
+		<meta content="2" name="dtb:depth"/>
+		<meta content="calibre (1.20.0)" name="dtb:generator"/>
+		<meta content="0" name="dtb:totalPageCount"/>
+		<meta content="0" name="dtb:maxPageNumber"/>
+	</head>
+	<docTitle>
+		<text>The Way Of Zen</text>
+	</docTitle>
+	<navMap>
+			<navPoint id="ufa23ce35-52f9-4096-9c77-74c525e8d6d4" playOrder="1">
+				<navLabel>
+					<text>Preface</text>
+				</navLabel>
+				<content src="content001.html"/>
+			</navPoint>
+	</navMap>
+	<spine toc="ncx">
+<itemref idref="content001"/>
+	</spine>
+</ncx>
