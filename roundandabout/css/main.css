@@ -115,5 +115,13 @@ body {
 	padding:9px 0px 0px 0px;
 	text-align:center;
 	color:white;
-	
+}
+
+.shift {
+	position:relative;
+	left:-100px;
+	top:0px;
+	border:1px solid black;
+	width:100px;
+	height:100px;
 }

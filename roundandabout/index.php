@@ -153,7 +153,7 @@
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
 					});
 					place_list.appendChild(div);
-					break;
+					//break;
 				}
 			}
 			
@@ -195,7 +195,7 @@
 				
 				var map_box = document.getElementById('google_map');
 				
-				var overlay_html = "88";
+				var overlay_html = "<div class='shift'>123</div>";
 				var overlay = new CustomMarker(
 					new google.maps.LatLng(lat, lon), 
 					map,
