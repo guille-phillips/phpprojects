@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script src="vector2d.js"></script>
 		<script src="fixes.js"></script>
@@ -60,7 +61,7 @@
 			
 			var highlighted_flight;
 
-			var show_labels=false;
+			var show_labels=true;
 			var show_history=false;
 			var show_fixes=true;
 			var show_alt100=true;
@@ -124,21 +125,22 @@
 				var flights_map = document.getElementById('flights_map');
 				var info_panel = document.getElementById('info');
 
-				screen_width = window.innerWidth-200;
+				canvas = flights_map;
+				context = flights_map.getContext("2d");
+				context.font="10px Arial";
+				
+				screen_width = window.innerWidth;
 				screen_height = window.innerHeight;
-					
-				mapCanvas.style.width = window.innerWidth-200+'px';
-				mapCanvas.style.height = window.innerHeight+'px';
-				flights_map.width = window.innerWidth-200;
+
+				flights_map.width = window.innerWidth;
 				flights_map.height = window.innerHeight;
+
 				info_panel.style.height = window.innerHeight-2;
 
 				window.onresize = function(event) {
-					screen_width = window.innerWidth-200;
+					screen_width = window.innerWidth;
 					screen_height = window.innerHeight;
-					mapCanvas.style.width = window.innerWidth-200+'px';
-					mapCanvas.style.height = window.innerHeight+'px';
-					flights_map.width = window.innerWidth-200;
+					flights_map.width = window.innerWidth;
 					flights_map.height = window.innerHeight;
 					info_panel.style.height = window.innerHeight-2;								
 				};
@@ -158,9 +160,15 @@
 
 				ZoomChanged();
 
-				canvas = document.getElementById("flights_map");
-				context = canvas.getContext("2d");
-				context.font="10px Arial";
+				document.getElementById("option1").className = show_labels?'option_selected':'';
+				document.getElementById("option2").className = show_alt100?'option_selected':'';
+				document.getElementById("option3").className = show_alt1000?'option_selected':'';
+				document.getElementById("option4").className = show_alt5000?'option_selected':'';
+				document.getElementById("option5").className = show_alt10000?'option_selected':'';
+				document.getElementById("option6").className = show_alt20000?'option_selected':'';
+				document.getElementById("option7").className = show_alt40000?'option_selected':'';
+				document.getElementById("option8").className = show_history?'option_selected':'';
+				document.getElementById("option9").className = show_fixes?'option_selected':'';
 
 				//DrawPlane(200,200,135);
 
@@ -782,29 +790,128 @@
 				}
 
 			}
+
+			function Options(element) {
+				var option = document.getElementById("option"+element.dataset.id)
+				option.selected = (option.className!='');
+				option.className = option.selected?'':'option_selected';
+				option.selected = !option.selected;
+				
+				if (element.dataset.id==0) {
+					if (option.selected) {
+						for (var index = 1; index <= 9; index++) {
+							document.getElementById("option"+index).style.display="block";
+						}
+					} else {
+						for (var index = 1; index <= 9; index++) {
+							document.getElementById("option"+index).style.display="none";
+						}						
+					}
+				} else {
+					switch (element.dataset.id) {
+						case "1": // labels
+							show_labels = option.selected;
+							break;
+						case "2": // 99 ft
+							show_alt100 = option.selected;
+							break;
+						case "3": // 999 ft
+							show_alt1000 = option.selected;
+							break;
+						case "4": // 4999 ft
+							show_alt5000 = option.selected;
+							break;
+						case "5": // 9999 ft
+							show_alt10000 = option.selected;
+							break;
+						case "6": // 19999 ft
+							show_alt20000 = option.selected;
+							break;
+						case "7": // 39999 ft
+							show_alt40000 = option.selected;
+							break;
+						case "8": // history
+							show_history = option.selected;
+							break;
+						case "9": // fixes
+							show_fixes = option.selected
+							break;							
+					}
+				}
+				
+				//alert(element.dataset.id);
+			}
 		</script>
 		<style>
-			#google_map {
-				width: 1024px;
-				height: 768px;
-				background-color: #CCC;
-
-				position:absolute;
-				left:0px;
-				top:0px;				
+			html {
+				width:100%;
+				height:100%;
+				overflow:hidden;
 			}
-			#flights_map {
+			
+			body {
+				width:100%;
+				height:100%;
+				margin:0;
+				font-family:Arial,sans-serif;
+				font-weight:bold;
+				font-size:12px;
+			}
+			
+			#google_map {
+				width: 100%;
+				height: 100%;
 				position:absolute;
 				left:0px;
 				top:0px;
-				/*border:1px solid black;*/
-				pointer-events:none;		
+				margin:0;				
+				background-color: #CCC;
 			}
+			
+			#flights_map {
+				width:100%;
+				height:100%;
+				position:absolute;
+				left:0px;
+				top:0px;
+				display:block;
+				pointer-events:none;
+			}
+			
+			#hover_menu {
+				position:absolute;
+				top:50px;
+				right:5px;
+				width:87px;
+			}
+			
+			#hover_menu > div {
+				background-color:white;
+				border:1px solid #888888;
+				padding:3px 7px 2px 7px;
+				cursor:default;
+			}
+
+			#hover_menu > div:not(:first-child) {
+				display:none;
+			}
+			
+			#hover_menu > div:hover {
+				color:white;
+				background-color:black;
+			}
+			
+			.option_selected {
+				color:white;
+				background-color:blue !important;
+			}
+			
 			#info {
 				position:absolute;
 				right:11px;
 				top:250px;
 				/*width:200px;*/
+				display:none;
 			}
 
 			.strip {
@@ -827,82 +934,30 @@
 				position:absolute;
 				top:0px;
 				right:5px;
+				display:none;
 			}
 			input {
 				/*position:absolute;*/
-			}
-			
-			#labels {
-				top:25px;
-				right:117px;
-			}
-			
-			#history {
-				top:50px;
-				right:113px;
-			}
-
-			#fixes {
-				top:75px;
-				right:126px;
-			}
-
-			#alt100 {
-				top:100px;
-				right:132px;
-			}
-			
-			#alt1000 {
-				top:125px;
-				right:108px;
-			}
-			
-			#alt5000 {
-				top:150px;
-				right:92px;
-			}
-			
-			#alt10000 {
-				top:175px;
-				right:92px;
-			}
-			
-			#alt20000 {
-				top:200px;
-				right:76px;
-			}
-			
-			#alt40000 {
-				top:225px;
-				right:76px;
-			}
-
-			label {
-				display:block;
-				position:absolute;
 			}
 		</style>		
 	</head>
 	<body>
 		<div id="google_map"></div>
-		<canvas id="flights_map" width="1024" height="768"></canvas> 
+		<canvas id="flights_map"></canvas> 
 		<div id="search_div">
 			<input id="search" onchange="ListFlights();" value="">
 		</div>
-		<div>
-			<label id="labels"><input type="checkbox" onclick="show_labels=this.checked;">Labels</label>
-			
-			<label id="history"><input type="checkbox" onclick="show_history=this.checked;">History</label>
-
-			<label id="fixes"><input type="checkbox" onclick="show_fixes=this.checked;" checked="checked">Fixes</label>
-
-			<label id="alt100"><input type="checkbox" onclick="show_alt100=this.checked;" checked="checked">0-99</label>
-			<label id="alt1000"><input type="checkbox" onclick="show_alt1000=this.checked;" checked="checked">100-999</label>
-			<label id="alt5000"><input type="checkbox" onclick="show_alt5000=this.checked;" checked="checked">1000-4999</label>
-			
-			<label id="alt10000"><input type="checkbox" onclick="show_alt10000=this.checked;" checked="checked">5000-9999</label>
-			<label id="alt20000"><input type="checkbox" onclick="show_alt20000=this.checked;" checked="checked">10000-19999</label>
-			<label id="alt40000"><input type="checkbox" onclick="show_alt40000=this.checked;" checked="checked">20000-40000</label>
+		<div id="hover_menu">
+			<div id="option0" onclick="Options(this);" data-id="0">Options</div>
+			<div id="option1" onclick="Options(this);" data-id="1">Labels</div>
+			<div id="option2" onclick="Options(this);" data-id="2">99</div>
+			<div id="option3" onclick="Options(this);" data-id="3">999</div>
+			<div id="option4" onclick="Options(this);" data-id="4">4999</div>
+			<div id="option5" onclick="Options(this);" data-id="5">9999</div>
+			<div id="option6" onclick="Options(this);" data-id="6">19999</div>
+			<div id="option7" onclick="Options(this);" data-id="7">39999</div>
+			<div id="option8" onclick="Options(this);" data-id="8">History</div>
+			<div id="option9" onclick="Options(this);" data-id="9">Fixes</div>
 		</div>
 		<div id="info"><div>
 	</body>
