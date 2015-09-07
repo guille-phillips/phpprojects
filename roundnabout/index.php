@@ -121,16 +121,6 @@
 
 
 			function Render() {
-				var overlay_html = "This is some text";
-				var overlay = new CustomMarker(
-					new google.maps.LatLng(50, 0.5), 
-					map,
-					{marker_id: '123',
-					className: 'bubble-left',
-					html: overlay_html
-					}
-				);
-	
 				places = Ajax('GetPlaces');
 				if (places.error) {
 					alert(places.error);
@@ -139,9 +129,10 @@
 				
 				var place_list = document.getElementById('place_list');
 				
+				var marker_index = 1;
 				for (var index in places) {
 					var place = places[index];
-					AddMarker(place.id,place.name,place.latitude,place.longitude,marker_resource,MarkerClicked);
+					AddMarker(place.id,marker_index,place.latitude,place.longitude,marker_resource,MarkerClicked);
 					
 					// Place List Item
 					var div = document.createElement('div');
@@ -153,7 +144,8 @@
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
 					});
 					place_list.appendChild(div);
-					//break;
+
+					marker_index++;
 				}
 			}
 			
@@ -184,10 +176,12 @@
 			}
 
 			function MarkerClicked(marker) {
-				//alert('marker clicked:'+marker.id);
-				OverlayOn();
-				document.getElementById('place_'+marker.id).scrollIntoView();
-				SetCentre(places[marker.id].latitude,places[marker.id].longitude);
+				//alert('marker clicked:'+marker.dataset.marker_id);
+				document.getElementById("bubble"+marker.dataset.marker_id).style.display="inherit";
+
+				//OverlayOn();
+				//document.getElementById('place_'+marker.id).scrollIntoView();
+				//SetCentre(places[marker.id].latitude,places[marker.id].longitude);
 			}
 			
 			function AddMarker(id,name,lat,lon,resource,callback) {
@@ -195,26 +189,29 @@
 				
 				var map_box = document.getElementById('google_map');
 				
-				var overlay_html = "<div class='shift'>123</div>";
+				var pin_html = "<div class='marker-pin'>"+name+"</div>";
 				var overlay = new CustomMarker(
 					new google.maps.LatLng(lat, lon), 
 					map,
-					{marker_id: '123',
-					className: 'marker-with-number',
-					html: overlay_html
+					{marker_id: id,
+					className: 'marker',
+					html: pin_html,
+					click_event: callback
 					}
 				);
-				
-				/*
-				var marker = new google.maps.Marker({
-					position: {lat:lat, lng:lon},
-					map: map,
-					title: name,
-					icon: resource
-				});
-				marker.id = id;
-				marker.addListener('click', function() {callback(this)});
-				*/
+
+
+				var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-left'>"+'xyz'+"</div>";
+				var overlay = new CustomMarker(
+					new google.maps.LatLng(lat, lon), 
+					map,
+					{marker_id: id,
+					className: 'marker',
+					html: bubble_html,
+					click_event: callback
+					}
+				);
+
 			}
 			
 			function List() {

@@ -18,9 +18,12 @@
 
 html {
 	height:96%;
+	width:100%;
 }
+
 body {
 	height:100%;
+	width:100%;
 	font-family: "Rooney Sans";
 }
 
@@ -93,20 +96,18 @@ body {
 	border:1px solid black;
 }
 
-.bubble-left {
-	border:1px solid red;
-	width:calc(443px - 30px);
-	height:calc(193px - 30px);
-	background-image:url('../resources/bubble-left.png');
-	background-repeat:no-repeat;
-	padding:15px;
-	
+
+.marker {
+	position:absolute;
 }
 
-.marker-with-number {
-	border:1px solid red;
+.marker-pin {
+	position:relative;
+	left:-21px;
+	top:-52px;
 	width:42px;
 	height:60px;
+	/*border:1px solid red;*/
 	background-image:url('../resources/pin-144ppi.png');
 	background-repeat:no-repeat;
 	font-family:'Rooney Sans';
@@ -117,11 +118,15 @@ body {
 	color:white;
 }
 
-.shift {
+.marker-bubble-left {
 	position:relative;
-	left:-100px;
-	top:0px;
-	border:1px solid black;
-	width:100px;
-	height:100px;
+	left:-51px;
+	top:-240px;
+	width:calc(443px - 30px);
+	height:calc(193px - 30px);
+	/*border:1px solid red;*/
+	padding:15px;
+	background-image:url('../resources/bubble-left.png');
+	background-repeat:no-repeat;
+	display:none;
 }
