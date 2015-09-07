@@ -178,10 +178,6 @@
 			function MarkerClicked(marker) {
 				//alert('marker clicked:'+marker.dataset.marker_id);
 				document.getElementById("bubble"+marker.dataset.marker_id).style.display="inherit";
-
-				//OverlayOn();
-				//document.getElementById('place_'+marker.id).scrollIntoView();
-				//SetCentre(places[marker.id].latitude,places[marker.id].longitude);
 			}
 			
 			function AddMarker(id,name,lat,lon,resource,callback) {
@@ -214,6 +210,7 @@
 
 			}
 			
+			/*
 			function List() {
 				//document.getElementById('info').innerHTML = '';
 			}
@@ -229,7 +226,7 @@
 				document.getElementById('map_box').className='';
 				document.getElementById('overlay').className='overlay-off';
 			}
-			
+			*/
 
             function Whole(number) {
             	return Math.floor(number+0.5);
