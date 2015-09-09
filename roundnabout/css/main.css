@@ -77,7 +77,13 @@ body {
 	display:default;
 }
 
-.h1 {
+.square {
+	width:150px;
+	height:150px;
+}
+
+h1 {
+	color:#001fb7;
 }
 
 .category_item {
@@ -89,7 +95,7 @@ body {
 }
 
 .address {
-	border:1px solid black;
+	border:1px solid red;
 }
 
 .description {
