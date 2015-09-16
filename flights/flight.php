@@ -329,8 +329,8 @@
 					flights[key][SPEED_EST] = speed_est;
 					flights[key][HEADING_EST] = heading_est;
 					
-					var speed_x = Math.cos((90-heading_est)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
-					var speed_y = Math.sin((90-heading_est)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
+					var speed_x = Math.cos((90-heading)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
+					var speed_y = Math.sin((90-heading)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
 
 					flights[key][LON] = flights[key][LON_ORIG]+interval_new*360*speed_x/(40000000*Math.cos(2*Math.PI*flights[key][LAT_ORIG]/360));
 					flights[key][LAT] = flights[key][LAT_ORIG]+interval_new*360*speed_y/40000000;
@@ -358,11 +358,11 @@
 				}
 			}
 
-			function DrawPlane(x,y,dir) {
+			function DrawPlane(x,y,dir,alt) {
 				dir = dir-90;
 				var size = 5;
 				var points = [];
-				points[0] = new Vector2d(x,y);
+				points[0] = new Vector2d(x,y).Add(new Vector2d(0,-alt/100));
 				points[1] = VectorPolar(size,dir).Add(points[0]);
 				points[2] = VectorPolar(size,dir+120).Add(points[0]);
 				points[3] = VectorPolar(size,dir-120).Add(points[0]);
@@ -375,6 +375,14 @@
 				context.lineTo(points[3].x,points[3].y);
 				context.closePath();
 				context.fill();
+				
+				context.strokeStyle = '#808080';
+				context.beginPath();
+				context.moveTo(x,y);
+				context.lineTo(points[0].x,points[0].y);
+				context.line
+				context.closePath();
+				context.stroke();
 			}
 
 			function DrawFix(x,y,name) {
@@ -453,7 +461,7 @@
 					var unixtime = flights[key][UNIXTIME];
 					var speed_est = flights[key][SPEED_EST];
 					
-                    DrawPlane(graph_x,graph_y,heading);
+                    DrawPlane(graph_x,graph_y,heading,altitude);
 	
                     if (show_history) {
 						context.strokeStyle = '#d0a0a0';
@@ -474,8 +482,8 @@
 					if (show_labels) {
 						context.strokeStyle = '#808080';
 						context.beginPath();
-						context.moveTo(boxes[key][0], boxes[key][1]);
-						context.lineTo(graph_x,graph_y);
+						context.moveTo(boxes[key][0], boxes[key][1]-altitude/100);
+						context.lineTo(graph_x,graph_y-altitude/100);
 						context.stroke();
 	
 						var box_left = boxes[key][0]-boxes[key][2]/2;
