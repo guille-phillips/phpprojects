@@ -1,14 +1,16 @@
 <?php
-	header('Content-Type: text/plain');
+	header('Content-Type: text/plain; charset=utf-8');
 	ini_set('html_errors', false);
 	
-	//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
-	$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
+	$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+	//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
 	//$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');
 	}
+
+	$db->set_charset('utf8');
 
 	switch ($_GET['method']) {
 		case 'GetPlaces':
@@ -43,7 +45,8 @@ SQL;
 					'bad_stuff'=>$row['bad_stuff']
 				);
 			}
-			
+
+			// print_r($rows);
 			echo json_encode($rows);
 			break;
 	}

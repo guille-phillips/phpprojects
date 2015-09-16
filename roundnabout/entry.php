@@ -111,8 +111,8 @@
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
 				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
-				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundandabout');
-				//$db = new mysqli('localhost', 'root', '', 'roundandabout');
+				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
+				//$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');

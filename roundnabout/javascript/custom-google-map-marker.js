@@ -15,22 +15,18 @@ CustomMarker.prototype.draw = function() {
 	if (!div) {
 	
 		div = this.div = document.createElement('div');
-		
-		div.style.position = 'absolute';
 
 		if (self.args.className) {div.className = self.args.className};
-		
 		if (self.args.html) {div.innerHTML = self.args.html};
 		
 		if (typeof(self.args.marker_id) !== 'undefined') {
 			div.dataset.marker_id = self.args.marker_id;
 		}
 		
-		google.maps.event.addDomListener(div, "click", function(event) {
-			alert('You clicked on a custom marker!');			
-			google.maps.event.trigger(self, "click");
-		});
-		
+		if (self.args.click_event) {
+			google.maps.event.addDomListener(div, "click", function() {self.args.click_event(this);});
+		}
+
 		var panes = this.getPanes();
 		panes.overlayImage.appendChild(div);
 	}

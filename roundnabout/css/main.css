@@ -18,17 +18,20 @@
 
 html {
 	height:96%;
+	width:100%;
 }
+
 body {
 	height:100%;
+	width:100%;
 	font-family: "Rooney Sans";
 }
 
 #map_box {
 	position:absolute;
-	left:0px;
+	left:400px;
 	top:0px;				
-	width: 100%;
+	width: calc(100% - 400px);
 	height: 100%;
 	background-color: #CCC;
 }
@@ -43,9 +46,11 @@ body {
 }
 
 #place_list {
-	width:80%;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:400px;
 	height:100%;
-	margin:auto;
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
@@ -74,7 +79,17 @@ body {
 	display:default;
 }
 
-.h1 {
+.square {
+	width:120px;
+	height:120px;
+	float:left;
+	border:1px solid #ccc;
+	margin-right:10px;
+}
+
+h1 {
+	color:#001fb7;
+	margin-top:0;
 }
 
 .category_item {
@@ -86,27 +101,25 @@ body {
 }
 
 .address {
-	border:1px solid black;
+	/*border:1px solid red;*/
 }
 
 .description {
 	border:1px solid black;
 }
 
-.bubble-left {
-	border:1px solid red;
-	width:calc(443px - 30px);
-	height:calc(193px - 30px);
-	background-image:url('../resources/bubble-left.png');
-	background-repeat:no-repeat;
-	padding:15px;
-	
+
+.marker {
+	position:absolute;
 }
 
-.marker-with-number {
-	border:1px solid red;
+.marker-pin {
+	position:relative;
+	left:-21px;
+	top:-52px;
 	width:42px;
 	height:60px;
+	/*border:1px solid red;*/
 	background-image:url('../resources/pin-144ppi.png');
 	background-repeat:no-repeat;
 	font-family:'Rooney Sans';
@@ -117,11 +130,15 @@ body {
 	color:white;
 }
 
-.shift {
+.marker-bubble-left {
 	position:relative;
-	left:-100px;
-	top:0px;
-	border:1px solid black;
-	width:100px;
-	height:100px;
+	left:-51px;
+	top:-240px;
+	width:calc(443px - 30px);
+	height:calc(193px - 30px);
+	/*border:1px solid red;*/
+	padding:15px;
+	background-image:url('../resources/bubble-left.png');
+	background-repeat:no-repeat;
+	display:none;
 }
