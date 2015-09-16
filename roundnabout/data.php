@@ -2,9 +2,9 @@
 	header('Content-Type: text/plain; charset=utf-8');
 	ini_set('html_errors', false);
 	
-	$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
-	//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
-	//$db = new mysqli('localhost', 'root', '', 'roundnabout');
+	$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+	//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+	//$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');

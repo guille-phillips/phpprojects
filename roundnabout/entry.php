@@ -108,9 +108,9 @@
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
-				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
-				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
-				$db = new mysqli('localhost', 'root', '', 'roundnabout');
+				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+				//$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');
@@ -158,9 +158,8 @@
 							?
                         )
 SQL;
-echo 'hi';
+
 				if ($stmt = $db->prepare($sql)) {
-					echo 'ho';
 					/* bind parameters for markers */
 					$stmt->bind_param("sddssssssssdsssss",
 							$name,

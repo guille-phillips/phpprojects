@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css.php">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script src="javascript/custom-google-map-marker.js"></script>
 		<script>
@@ -348,8 +348,34 @@
 		</style>
 	</head>
 	<body>
+		<div id="menu">
+			<ul>
+				<li>Home</li>
+				<li>About Us</li>
+				<li>Upload a Place</li>
+			</ul>
+		</div>
+		<div id="filter">
+			<ul>
+				<li>All</li>
+				<li>Free</li>
+				<li>Paid</li>
+				<li>Indoor</li>
+				<li>Outdoor</li>
+				<li>Animals &amp; Nature</li>
+				<li>Water Fun</li>
+				<li>Rides</li>
+				<li>Transport</li>
+				<li>More
+					<ul>
+						<li>Play Centre</li>
+						<li>History</li>
+						<li>Beaches</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
 		<div id="map_box"></div>
 		<div id="place_list"><div>
 	</body>
-
 </html>

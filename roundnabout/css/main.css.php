@@ -1,3 +1,16 @@
+<?php
+	header('Content-Type: text/css');
+	
+	define('MENU_HEIGHT',40);
+	define('FILTER_HEIGHT',40);
+	define('LIST_WIDTH',400);
+	
+	$filter_top = (MENU_HEIGHT).'px';
+	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
+	$menu_height = (MENU_HEIGHT).'px';
+	$filter_height = (FILTER_HEIGHT).'px';
+	$list_width = (LIST_WIDTH).'px';
+?>
 @font-face {
 	font-family: "Rooney Sans";
 	src: url("../resources/fonts/Rooney Sans.woff") format('woff');
@@ -17,11 +30,13 @@
 }
 
 html {
+	margin:0;
 	height:96%;
 	width:100%;
 }
 
 body {
+	margin:0;
 	height:100%;
 	width:100%;
 	font-family: "Rooney Sans";
@@ -29,28 +44,19 @@ body {
 
 #map_box {
 	position:absolute;
-	left:400px;
-	top:0px;				
-	width: calc(100% - 400px);
-	height: 100%;
+	left:<?=$list_width?>;
+	top:<?=$body_top?>;				
+	width: calc(100% - <?=$list_width?>);
+	height: calc(100% - <?=$body_top?>);
 	background-color: #CCC;
-}
-
-#overlay {
-	position:fixed;
-	left:0px;
-	top:0px;
-	height:100%;
-	width:100%;
-	background-color:rgba(0, 0, 0, 0.7);
 }
 
 #place_list {
 	position:absolute;
-	top:0px;
+	top:<?=$body_top?>;
 	left:0px;
-	width:400px;
-	height:100%;
+	width:<?=$list_width?>;
+	height:calc(100% - <?=$body_top?>);
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
@@ -65,6 +71,60 @@ body {
 	cursor:pointer;
 }
 
+#menu {
+	width:100%;
+	height:<?=$menu_height?>;
+	margin:0;
+	font-size:25px;
+}
+
+#menu > ul {
+	background-color: blue;
+	color: white;
+	margin:0;
+}
+#menu > ul > li {
+	display:inline-block;
+	border-right:1px solid #888;
+	padding:0px 5px 0px 5px;
+	vertical-align:top;
+	cursor:default;
+	height:<?=$menu_height?>;
+}
+
+#filter {
+	width:100%;
+	height:<?=$filter_top?>;
+	margin:0;
+	font-size:25px;
+}
+
+#filter > ul {
+	background-color: black;
+	color: white;
+	margin:0;
+}
+#filter > ul > li {
+	display:inline-block;
+	border-right:1px solid #888;
+	padding:0px 5px 0px 5px;
+	vertical-align:top;
+	cursor:default;
+	height:<?=$filter_height?>;
+}
+#filter > ul > li:after {
+	content:'*';
+}
+#filter > ul > li > ul {
+	position:absolute;
+	top:<?=$body_height?>;
+	left:0px;
+	width:200px;
+	height:200px;
+	display:block;
+}
+
+
 .blur {
 	-webkit-filter: blur(2px);
 	-moz-filter: blur(2px);
@@ -72,12 +132,7 @@ body {
 	-ms-filter: blur(2px);			
 }
 
-.overlay-off {
-	display:none;
-}
-.overlay-on {
-	display:default;
-}
+
 
 .square {
 	width:120px;
