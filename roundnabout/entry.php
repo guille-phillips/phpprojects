@@ -70,13 +70,9 @@
 
 			function Nullable($field,$is_text=false) {
 				if ($field=='') {
-					return 'NULL';
+					return null;
 				} else {
-					if ($is_text) {
-						return "'$field'";
-					} else {
-						return $field;
-					}
+					return $field;
 				}
 			}
 
@@ -103,16 +99,18 @@
 				$category = StripSpace($_POST['category']);
 				$email = Nullable(StripSpace($_POST['email']),true);
 				$postcode = StripSpace($_POST['postcode']);
+				$website = StripSpace($_POST['website']);
 				$rating = Nullable(StripSpace($_POST['rating']));
 
 				$more_info = StripSpace($_POST['more_info']);
 				$facilities = StripSpace($_POST['facilities']);
+				$disabled_facilities = StripSpace($_POST['disabled_facilities']);
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
-				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
 				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
-				//$db = new mysqli('localhost', 'root', '', 'roundnabout');
+				$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');
@@ -130,37 +128,66 @@
                         	telephone,
                         	address,
                         	postcode,
+							website,
                         	entry_rates,
                         	opening_times,
                         	rating,
                         	more_info,
                         	facilities,
+							disabled_facilities,
                         	good_stuff,
                         	bad_stuff)
                     VALUES
                         (
-							'$name',
-							$latitude,
-							$longitude,
-							'$category',
-							$email,
-							'$telephone',
-							'$address',
-							'$postcode',
-							'$entry_rates',
-							$opening_times,
-							$rating,
-							'$more_info',
-							'$facilities',
-							'$good_stuff',
-							'$bad_stuff'
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?,
+							?
                         )
 SQL;
+echo 'hi';
+				if ($stmt = $db->prepare($sql)) {
+					echo 'ho';
+					/* bind parameters for markers */
+					$stmt->bind_param("sddssssssssdsssss",
+							$name,
+							$latitude,
+							$longitude,
+							$category,
+							$email,
+							$telephone,
+							$address,
+							$postcode,
+							$website,
+							$entry_rates,
+							$opening_times,
+							$rating,
+							$more_info,
+							$facilities,
+							$disabled_facilities,
+							$good_stuff,
+							$bad_stuff);	
+							
+					$stmt->execute();
+					$stmt->close();
 
-                if (!$db->query($sql)) {
-                    die('There was an error running the query [' . $db->error . ']');
-                }
-                echo 'New record inserted<br><br>';
+					echo 'New record inserted<br><br>';
+				} else {
+					echo htmlspecialchars($db->error);
+				}
 			} elseif (isset($_POST['search'])) {
 
 			}
@@ -174,11 +201,13 @@ SQL;
 			<div class="field_name">Telephone</div><div class="field_value"><input id="telephone" type="text" name="telephone"></div><br><br>
 			<div class="field_name">Address</div><div class="field_value"><textarea id="address" name="address" rows="6"></textarea></div><br><br>
 			<div class="field_name">Postcode</div><div class="field_value"><input id="postcode" type="text" name="postcode"></div><br><br>
+			<div class="field_name">Website</div><div class="field_value"><input id="website" type="text" name="website"></div><br><br>
 			<div class="field_name">Entry Rates</div><div class="field_value"><textarea id="entry_rates" name="entry_rates" rows="6"></textarea></div><br><br>
 			<div class="field_name">Opening Times</div><div class="field_value"><input id="opening_times" type="text" name="opening_times"></div><br><br>
 			<div class="field_name">Rating</div><div class="field_value"><input id="rating" type="text" name="rating"></div><br><br>
 			<div class="field_name">More Info</div><div class="field_value"><textarea id="more_info" name="more_info" rows="6"></textarea></div><br><br>
 			<div class="field_name">Facilities</div><div class="field_value"><textarea id="facilities" name="facilities" rows="6"></textarea></div><br><br>
+			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"></textarea></div><br><br>
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"></textarea></div><br><br>
 
@@ -186,6 +215,6 @@ SQL;
 
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
-		</form<>
+		</form>
 	</body>
 </html>
