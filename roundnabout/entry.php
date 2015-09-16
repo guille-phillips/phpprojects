@@ -110,8 +110,8 @@
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
-				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
-				$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
+				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout');
+				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout');
 				//$db = new mysqli('localhost', 'root', '', 'roundnabout');
 
 				if($db->connect_errno > 0){

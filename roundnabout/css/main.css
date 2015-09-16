@@ -29,9 +29,9 @@ body {
 
 #map_box {
 	position:absolute;
-	left:0px;
+	left:400px;
 	top:0px;				
-	width: 100%;
+	width: calc(100% - 400px);
 	height: 100%;
 	background-color: #CCC;
 }
@@ -46,9 +46,11 @@ body {
 }
 
 #place_list {
-	width:80%;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:400px;
 	height:100%;
-	margin:auto;
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
@@ -78,12 +80,16 @@ body {
 }
 
 .square {
-	width:150px;
-	height:150px;
+	width:120px;
+	height:120px;
+	float:left;
+	border:1px solid #ccc;
+	margin-right:10px;
 }
 
 h1 {
 	color:#001fb7;
+	margin-top:0;
 }
 
 .category_item {
@@ -95,7 +101,7 @@ h1 {
 }
 
 .address {
-	border:1px solid red;
+	/*border:1px solid red;*/
 }
 
 .description {

@@ -142,7 +142,7 @@
 					div.id = 'place_' + place.id;
 					div.dataset.id = place.id;
 					div.className = 'place_list_item';
-					div.innerHTML = CreateInfoBox(place);
+					div.innerHTML = CreatePlaceListItem(place);
 					div.addEventListener("click", function(){
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
 					});
@@ -158,7 +158,25 @@
 				html_array.push(Tag('img','',{class:'square'}));
 
 				html_array.push(Tag('h1',place.name));
+
+				if (place.category.join) {
+					html_array.push( place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
+				}
 				
+				if (place.address.join) {
+					html_array.push( Tag('div',place.address.join(', '),{class:'address'}) );
+				}
+				
+				return html_array.join('');
+			}
+
+			function CreatePlaceListItem(place) {
+				var html_array = [];
+
+				html_array.push(Tag('img','',{class:'square'}));
+
+				html_array.push(Tag('h1',place.name));
+
 				if (place.category.join) {
 					html_array.push( place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
 				}
@@ -331,9 +349,7 @@
 	</head>
 	<body>
 		<div id="map_box"></div>
-		<div id="overlay" onclick="OverlayOff();" class="overlay-off">
-			<div id="place_list"><div>
-		</div>
+		<div id="place_list"><div>
 	</body>
 
 </html>
