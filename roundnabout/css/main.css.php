@@ -112,9 +112,7 @@ body {
 	cursor:default;
 	height:<?=$filter_height?>;
 }
-#filter > ul > li:after {
-	content:'*';
-}
+
 #filter > ul > li > ul {
 	position:absolute;
 	top:<?=$body_height?>;
@@ -122,6 +120,7 @@ body {
 	width:200px;
 	height:200px;
 	display:block;
+	z-index:99;
 }
 
 
@@ -196,4 +195,13 @@ h1 {
 	background-image:url('../resources/bubble-left.png');
 	background-repeat:no-repeat;
 	display:none;
+}
+
+.switch-on {
+	background-color: white;
+	color: black;
+}
+
+.switch-off {
+	background-color: black;
 }

@@ -23,14 +23,42 @@
 				display:inline-block;
 				vertical-align: top;
 			}
+
+			.category {
+				border:1px solid black;
+				cursor:default;
+			}
+
+			.category-selected {
+				background-color: black;
+				color: white;
+			}
 		</style>
-		<script src="jquery-2.1.4.min.js"></script>
+		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
+			var categories={};
+
 			$(document).ready(
 				function () {
 					$('input,textarea').focus(function(){$('#focus').val(this.name);} );
+					$('.category').click(ToggleCategory);
 				}
 			);
+
+			function ToggleCategory() {
+				$(this).toggleClass('category-selected');
+				if ($(this).hasClass('category-selected')) {
+					categories[$(this).html()] = true;
+				} else {
+					delete categories[$(this).html()];
+				}
+				var category_list = [];
+				for (category in categories) {
+					category_list.push(category);
+				}
+
+				$('#category_list').val(JSON.stringify(category_list));
+			}
 
 			function isNumeric(n) {
 			  return !isNaN(parseFloat(n)) && isFinite(n);
@@ -96,7 +124,7 @@
 				$name = StripSpace($_POST['name']);
 				$latitude = StripSpace($_POST['latitude']);
 				$longitude = StripSpace($_POST['longitude']);
-				$category = StripSpace($_POST['category']);
+				$category = CleanUp($_POST['category']);
 				$email = Nullable(StripSpace($_POST['email']),true);
 				$postcode = StripSpace($_POST['postcode']);
 				$website = StripSpace($_POST['website']);
@@ -189,13 +217,41 @@ SQL;
 				}
 			} elseif (isset($_POST['search'])) {
 
+			} else {
+				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+				$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+				//$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+
+				if($db->connect_errno > 0){
+					die('Unable to connect to database [' . $db->connect_error . ']');
+				}
+
+				$sql = "SELECT category FROM places";
+				if (!$list = $db->query($sql)) {
+					Error('There was an error running the query [' . $db->error . ']');
+				};
+
+				$categories = array();
+				$rows = array();
+				while ($row = $list->fetch_assoc()){
+					$category_list = json_decode($row['category']);
+					foreach ($category_list as $category) {
+						$categories[$category] = $category;
+					}
+				}
+				ksort($categories);
+				$categories_html = '';
+				foreach ($categories as $category) {
+					$categories_html .= '<div class="category">'.$category.'</div>';
+				}
 			}
 		?>
 		<form method="post" action="entry.php" onsubmit="return Validate();"> 
 			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name"></div><br><br>
 			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude"></div><br><br>
 			<div class="field_name">Longitude</div><div class="field_value"><input id="longitude" type="text" name="longitude"></div><br><br>
-			<div class="field_name">Category</div><div class="field_value"><input id="category" type="text" name="category"></div><br><br>
+			<div class="field_name">Category</div><div class="field_value"><?=$categories_html;?><input id="category" type="text" name="category" placeholder='Add New Category'><input id="category_list" type="hidden" name="category_list"></div><br><br>
+
 			<div class="field_name">Email</div><div class="field_value"><input id="email" type="text" name="email"></div><br><br>
 			<div class="field_name">Telephone</div><div class="field_value"><input id="telephone" type="text" name="telephone"></div><br><br>
 			<div class="field_name">Address</div><div class="field_value"><textarea id="address" name="address" rows="6"></textarea></div><br><br>

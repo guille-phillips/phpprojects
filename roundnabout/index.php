@@ -5,6 +5,7 @@
 		<link rel="stylesheet" type="text/css" href="css/main.css.php">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script src="javascript/custom-google-map-marker.js"></script>
+		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
 			var unixoffset = <?php echo time();?>;
 			var map;
@@ -95,8 +96,68 @@
 
 				ZoomChanged();
 
+				$('li').click(MenuClick);
+
 				Render();
-				//setInterval(function(){UpdateFlights();RenderAll();}, 500);
+			}
+
+			function MenuClick() {
+				switch (this.id) {
+					case 'menu-home':
+						break;
+					case 'menu-about-us':
+						break;
+					case 'menu-upload-a-place':
+						break;
+					case 'filter-all':
+						$(this).toggleClass('switch-on');
+						if ($(this).hasClass('switch-on')) {
+							$('#').removeClass();
+
+						} else {
+
+						}
+						
+						break;		
+					case 'filter-free':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-paid':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-indoor':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-outdoor':
+						$(this).toggleClass('switch-on');
+						break;	
+					case 'filter-animals-and-nature':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-water-fun':
+						$(this).toggleClass('switch-on');
+						$('#').removeClass();
+						break;
+					case 'filter-rides':
+						$(this).toggleClass('switch-on');
+						$('#').removeClass();
+						break;
+					case 'filter-transport':
+						$(this).toggleClass('switch-on');
+						break;	
+					case 'filter-more':
+						break;
+					case 'filter-play-centre':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-history':
+						$(this).toggleClass('switch-on');
+						break;
+					case 'filter-beaches':
+						$(this).toggleClass('switch-on');
+						break;																											
+				}
+			
 			}
 
 			function CentreChanged() {
@@ -122,8 +183,8 @@
 			google.maps.event.addDomListener(window, 'load', Initialize);
 
 
-			function Render() {
-				places = Ajax('GetPlaces');
+			function Render(categories) {
+				places = Ajax('GetPlaces',JSON.stringify(categories));
 				if (places.error) {
 					alert(places.error);
 					return;
@@ -152,6 +213,8 @@
 				}
 			}
 			
+
+
 			function CreateInfoBox(place) {
 				var html_array = [];
 
@@ -284,7 +347,7 @@
 			}
 			
 			function RenderAll() {
-				Render();
+				Render([]);
 			}
 
 			var xmlhttp;
@@ -350,27 +413,27 @@
 	<body>
 		<div id="menu">
 			<ul>
-				<li>Home</li>
-				<li>About Us</li>
-				<li>Upload a Place</li>
+				<li id="menu-home">Home</li>
+				<li id="menu-about-us">About Us</li>
+				<li id="menu-upload-a-place">Upload a Place</li>
 			</ul>
 		</div>
 		<div id="filter">
 			<ul>
-				<li>All</li>
-				<li>Free</li>
-				<li>Paid</li>
-				<li>Indoor</li>
-				<li>Outdoor</li>
-				<li>Animals &amp; Nature</li>
-				<li>Water Fun</li>
-				<li>Rides</li>
-				<li>Transport</li>
-				<li>More
+				<li id="filter-all">All</li>
+				<li id="filter-free">Free</li>
+				<li id="filter-paid">Paid</li>
+				<li id="filter-indoor">Indoor</li>
+				<li id="filter-outdoor">Outdoor</li>
+				<li id="filter-animals-and-nature">Animals &amp; Nature</li>
+				<li id="filter-water-fun">Water Fun</li>
+				<li id="filter-rides">Rides</li>
+				<li id="filter-transport">Transport</li>
+				<li id="filter-more">More
 					<ul>
-						<li>Play Centre</li>
-						<li>History</li>
-						<li>Beaches</li>
+						<li id="filter-play-centre">Play Centre</li>
+						<li id="filter-history">History</li>
+						<li id="filter-beaches">Beaches</li>
 					</ul>
 				</li>
 			</ul>
