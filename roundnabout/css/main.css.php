@@ -72,7 +72,7 @@ body {
 }
 
 #menu {
-	width:100%;
+	width:calc(100% - <?=$list_width?>);
 	height:<?=$menu_height?>;
 	margin:0;
 	font-size:20px;
@@ -105,7 +105,7 @@ body {
 }
 
 #filter {
-	width:100%;
+	width:calc(100% - <?=$list_width?>);
 	height:<?=$filter_height?>;
 	margin:0;
 	font-size:18px;
