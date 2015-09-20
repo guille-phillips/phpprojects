@@ -25,8 +25,12 @@
 			}
 
 			.category {
-				border:1px solid black;
+				border:1px solid #888;
 				cursor:default;
+				/* width:150px; */
+				padding:2px;
+				display:inline-block;
+				margin:1px;
 			}
 
 			.category-selected {
@@ -91,6 +95,46 @@
 					return true;
 				}
 			}
+			
+			function AddNewCategory() {
+				var category = Capitalise($('#category').val().trim());
+				if (category=='') return;
+				
+				var div = document.createElement('div');
+				div.onclick = ToggleCategory;
+				div.className = 'category category-selected';
+				div.innerHTML = category;
+				
+				var db_categories = document.getElementById('db_categories');
+				var added = false;
+				for (node_index in db_categories.childNodes) {
+					if (category < db_categories.childNodes[node_index].innerHTML) {
+						console.log(db_categories.childNodes[node_index].innerHTML);
+						db_categories.insertBefore(div, db_categories.childNodes[node_index]);
+						added = true;
+						break;
+					}
+				}
+				if (!added) {
+					db_categories.appendChild(div);
+				}
+
+				categories[category] = true;
+				var category_list = [];
+				for (category_name in categories) {
+					category_list.push(category_name);
+				}
+
+				$('#category_list').val(JSON.stringify(category_list));
+				
+				$('#category').val('');
+				
+				return false;
+			}
+			
+			function Capitalise(str) {
+				return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+			}
 		</script>
 	</head>
 	<body>
@@ -124,7 +168,7 @@
 				$name = StripSpace($_POST['name']);
 				$latitude = StripSpace($_POST['latitude']);
 				$longitude = StripSpace($_POST['longitude']);
-				$category = CleanUp($_POST['category']);
+				$category = $_POST['category_list'];
 				$email = Nullable(StripSpace($_POST['email']),true);
 				$postcode = StripSpace($_POST['postcode']);
 				$website = StripSpace($_POST['website']);
@@ -138,7 +182,7 @@
 
 				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
 				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-				//$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+				// $db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
 				if($db->connect_errno > 0){
 					die('Unable to connect to database [' . $db->connect_error . ']');
@@ -216,42 +260,49 @@ SQL;
 					echo htmlspecialchars($db->error);
 				}
 			} elseif (isset($_POST['search'])) {
+			}
+			
 
-			} else {
-				//$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-				$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-				//$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+			// $db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+			// $db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+			$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
-				if($db->connect_errno > 0){
-					die('Unable to connect to database [' . $db->connect_error . ']');
-				}
+			if($db->connect_errno > 0){
+				die('Unable to connect to database [' . $db->connect_error . ']');
+			}
 
-				$sql = "SELECT category FROM places";
-				if (!$list = $db->query($sql)) {
-					Error('There was an error running the query [' . $db->error . ']');
-				};
+			$sql = "SELECT category FROM places";
+			if (!$list = $db->query($sql)) {
+				Error('There was an error running the query [' . $db->error . ']');
+			};
 
-				$categories = array();
-				$rows = array();
-				while ($row = $list->fetch_assoc()){
-					$category_list = json_decode($row['category']);
-					foreach ($category_list as $category) {
-						$categories[$category] = $category;
-					}
-				}
-				ksort($categories);
-				$categories_html = '';
-				foreach ($categories as $category) {
-					$categories_html .= '<div class="category">'.$category.'</div>';
+			$categories = array();
+			$rows = array();
+			while ($row = $list->fetch_assoc()){
+				$category_list = json_decode($row['category']);
+				foreach ($category_list as $category) {
+					$categories[$category] = $category;
 				}
 			}
+			ksort($categories);
+			$categories_html = '';
+			foreach ($categories as $category) {
+				$categories_html .= '<div class="category">'.$category.'</div>';
+			}
+
 		?>
 		<form method="post" action="entry.php" onsubmit="return Validate();"> 
 			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name"></div><br><br>
 			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude"></div><br><br>
 			<div class="field_name">Longitude</div><div class="field_value"><input id="longitude" type="text" name="longitude"></div><br><br>
-			<div class="field_name">Category</div><div class="field_value"><?=$categories_html;?><input id="category" type="text" name="category" placeholder='Add New Category'><input id="category_list" type="hidden" name="category_list"></div><br><br>
-
+			<div class="field_name">Category</div>
+			<div class="field_value">
+				<div id="db_categories">
+					<?=$categories_html;?>
+				</div>
+				<input id="category" type="text" name="category" placeholder='Add New Category (Tab to add)' onkeydown='e = event || window.event;if (e.keyCode==9) return AddNewCategory();'>
+				<input id="category_list" type="hidden" name="category_list" value="[]">
+			</div><br><br>
 			<div class="field_name">Email</div><div class="field_value"><input id="email" type="text" name="email"></div><br><br>
 			<div class="field_name">Telephone</div><div class="field_value"><input id="telephone" type="text" name="telephone"></div><br><br>
 			<div class="field_name">Address</div><div class="field_value"><textarea id="address" name="address" rows="6"></textarea></div><br><br>

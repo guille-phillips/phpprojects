@@ -14,11 +14,7 @@
 			var zoom_flights_x;
 			var zoom_flights_y;
 			var zoom_google = 14;
-
-			var zooms_x = [1,   1,   2.75, 5.5, 11,   22.734375, 45.46875, 90.9375, 181.875, 363.75, 727.5, 1455, 2910,  5820, 11650, 23300,  46560, 93120,  186240, 372480, 744960];
-			var zooms_y = [1.6, 1.6, 4.4,  8.8, 17.6, 36.375,    72.75,    145.5,   291,     582,    1164,  2328, 4656,  9300, 18600, 37200,  74400, 148800, 297600, 595200, 1190400];
-
-
+			
 			var canvas;
 			var context;
 
@@ -97,6 +93,7 @@
 				ZoomChanged();
 
 				$('li').click(MenuClick);
+				$('#filter li').addClass('switch-off');
 
 				Render();
 			}
@@ -111,6 +108,7 @@
 						break;
 					case 'filter-all':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						if ($(this).hasClass('switch-on')) {
 							$('#').removeClass();
 
@@ -121,40 +119,52 @@
 						break;		
 					case 'filter-free':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-paid':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-indoor':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-outdoor':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;	
 					case 'filter-animals-and-nature':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-water-fun':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						$('#').removeClass();
 						break;
 					case 'filter-rides':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						$('#').removeClass();
 						break;
 					case 'filter-transport':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;	
 					case 'filter-more':
+						$('#filter > ul > li > ul').toggle();
 						break;
 					case 'filter-play-centre':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-history':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;
 					case 'filter-beaches':
 						$(this).toggleClass('switch-on');
+						$(this).toggleClass('switch-off');
 						break;																											
 				}
 			
@@ -438,6 +448,7 @@
 				</li>
 			</ul>
 		</div>
+		<div id="logo">&nbsp;</div>
 		<div id="map_box"></div>
 		<div id="place_list"><div>
 	</body>

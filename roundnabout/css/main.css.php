@@ -1,9 +1,9 @@
 <?php
 	header('Content-Type: text/css');
 	
-	define('MENU_HEIGHT',40);
-	define('FILTER_HEIGHT',40);
-	define('LIST_WIDTH',400);
+	define('MENU_HEIGHT',56);
+	define('FILTER_HEIGHT',34);
+	define('LIST_WIDTH',380);
 	
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
@@ -75,17 +75,29 @@ body {
 	width:100%;
 	height:<?=$menu_height?>;
 	margin:0;
-	font-size:25px;
+	font-size:20px;
+	font-weight:600;
+	background-color: blue;
+	padding-left:<?=$list_width?>;
+	
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,007eff+50,2989d8+100,7db9e8+100 */
+	background: #1e5799; /* Old browsers */
+	background: -moz-linear-gradient(left,  #1e5799 0%, #007eff 50%, #2989d8 100%, #7db9e8 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(50%,#007eff), color-stop(100%,#2989d8), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* IE10+ */
+	background: linear-gradient(to right,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 */	
 }
 
 #menu > ul {
-	background-color: blue;
 	color: white;
 	margin:0;
 }
 #menu > ul > li {
 	display:inline-block;
-	border-right:1px solid #888;
+	/* border-right:1px solid #888; */
 	padding:0px 5px 0px 5px;
 	vertical-align:top;
 	cursor:default;
@@ -94,9 +106,12 @@ body {
 
 #filter {
 	width:100%;
-	height:<?=$filter_top?>;
+	height:<?=$filter_height?>;
 	margin:0;
-	font-size:25px;
+	font-size:18px;
+	font-weight:600;
+	padding-left:<?=$list_width?>;
+	background-color:black;
 }
 
 #filter > ul {
@@ -106,8 +121,8 @@ body {
 }
 #filter > ul > li {
 	display:inline-block;
-	border-right:1px solid #888;
-	padding:0px 5px 0px 5px;
+	/* border-right:1px solid #888; */
+	padding:5px 23px 1px 3px;
 	vertical-align:top;
 	cursor:default;
 	height:<?=$filter_height?>;
@@ -116,11 +131,13 @@ body {
 #filter > ul > li > ul {
 	position:absolute;
 	top:<?=$body_height?>;
-	left:0px;
-	width:200px;
-	height:200px;
+	left:800px;
+	width:150px;
+	height:100px;
 	display:block;
 	z-index:99;
+	background-color:black;
+	display:none;
 }
 
 
@@ -198,10 +215,27 @@ h1 {
 }
 
 .switch-on {
-	background-color: white;
-	color: black;
+	background-image:url('../resources/check-on.png');
+	background-repeat:no-repeat;
+	background-position: right center;
+	background-size: 20px;
 }
 
 .switch-off {
-	background-color: black;
+	background-image:url('../resources/check-off.png');
+	background-repeat:no-repeat;
+	background-position: right center;
+	background-size: 20px;
+}
+
+#logo {
+	background-image:url('../resources/logo.png');
+	background-repeat:no-repeat;
+	background-size: 130px;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:<?=$list_width?>;
+	height:<?=$body_top?>;
+	background-position: right top;
 }
