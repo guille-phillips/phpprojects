@@ -332,7 +332,7 @@ SQL;
 			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"></textarea></div><br><br>
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"></textarea></div><br><br>
-			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);"></div>
+			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);" accept="image/*"></div>
 			<img id="image_preview" src="#">
 			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>			
 			<br><br>
