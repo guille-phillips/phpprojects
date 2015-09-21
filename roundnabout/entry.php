@@ -37,6 +37,12 @@
 				background-color: black;
 				color: white;
 			}
+
+			.crop_image {
+				width:200px;
+				height:200px;
+				border:1px solid black;
+			}
 		</style>
 		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
@@ -135,6 +141,16 @@
 			function Capitalise(str) {
 				return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 			}
+
+			function DisplayImage(inputbox) {
+				if (inputbox.files && inputbox.files[0]) {
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						$('#image_preview').attr('src',e.target.result);
+					}
+					reader.readAsDataURL(inputbox.files[0]);
+				}
+			}
 		</script>
 	</head>
 	<body>
@@ -180,8 +196,8 @@
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
 
-				$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-				//$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+				// $db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+				$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
 				// $db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
 				if($db->connect_errno > 0){
@@ -264,8 +280,8 @@ SQL;
 			
 
 			// $db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-			// $db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-			$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+			$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+			// $db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
 
 			if($db->connect_errno > 0){
 				die('Unable to connect to database [' . $db->connect_error . ']');
@@ -316,11 +332,17 @@ SQL;
 			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"></textarea></div><br><br>
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"></textarea></div><br><br>
+			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);"></div>
+			<img id="image_preview" src="#">
+			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>			
+			<br><br>
+
 
 			<input id='focus' type='hidden' name='focus' value=''>
 
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
+
 		</form>
 	</body>
 </html>

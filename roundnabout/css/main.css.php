@@ -201,6 +201,16 @@ h1 {
 	color:white;
 }
 
+.marker-home {
+	position:relative;
+	left:-64px;
+	top:-64px;
+	width:127px;
+	height:127px;
+	background-image:url('../resources/home-marker.png');
+	background-repeat:no-repeat;
+}
+
 .marker-bubble-left {
 	position:relative;
 	left:-51px;

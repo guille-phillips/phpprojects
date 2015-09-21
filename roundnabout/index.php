@@ -35,7 +35,7 @@
 				var crd = pos.coords;
 				initial_latlong = [crd.latitude, crd.longitude];
 				SetCentre(crd.latitude,crd.longitude);
-				//AddMarker('home','You are here',crd.latitude,crd.longitude,home_marker_resource,HomeMarkerClicked)
+				AddHomeMarker(crd.latitude,crd.longitude,HomeMarkerClicked);
 			};
 
 			function LocationError(err) {
@@ -289,8 +289,21 @@
 				previous_marker_id = marker.dataset.marker_id;
 			}
 			
+			function AddHomeMarker(lat,lon,callback) {
+				var marker_html = "<div class='marker-home'>"+name+"</div>";
+				var overlay = new CustomMarker(
+					new google.maps.LatLng(lat, lon), 
+					map,
+					{marker_id: 'home',
+					className: 'marker',
+					html: marker_html,
+					click_event: callback
+					}
+				);				
+			}
+
 			function AddMarker(place, id,name,lat,lon,resource,callback) {
-				console.log('AddMarker:'+id);
+				// console.log('AddMarker:'+id);
 				
 				var map_box = document.getElementById('google_map');
 				
