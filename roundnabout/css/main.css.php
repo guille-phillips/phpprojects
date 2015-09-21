@@ -51,25 +51,6 @@ body {
 	background-color: #CCC;
 }
 
-#place_list {
-	position:absolute;
-	top:<?=$body_top?>;
-	left:0px;
-	width:<?=$list_width?>;
-	height:calc(100% - <?=$body_top?>);
-	overflow-y:scroll;
-	overflow-x:hidden;
-}
-
-.place_list_item {
-	width:90%;
-	/*height:400px;*/
-	background-color: white;
-	border:1px solid black;
-	margin-bottom: 15px;
-	padding:3px;
-	cursor:pointer;
-}
 
 #menu {
 	width:calc(100% - <?=$list_width?>);
@@ -149,6 +130,29 @@ body {
 }
 
 
+/* Listing */
+#place_list {
+	position:absolute;
+	top:<?=$body_top?>;
+	left:0px;
+	width:<?=$list_width?>;
+	height:calc(100% - <?=$body_top?>);
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+
+.place_list_item {
+	width:90%;
+	/*height:400px;*/
+	background-color: white;
+	margin-bottom: 10px;
+	padding:3px 3px 3px 15px;
+	cursor:pointer;
+}
+
+.place_list_item:hover {
+	background-color: 007eff;
+}
 
 .square {
 	width:120px;
@@ -161,14 +165,31 @@ body {
 h1 {
 	color:#001fb7;
 	margin-top:0;
+	margin-bottom:4px;
+	font-size:22px;
 }
 
 .category_item {
 	display:inline-block;
-	background-color:blue;
+	background-color:#001fb7;
 	color:white;
-	padding:0px 3px 0px 3px;
-	margin:3px;
+	padding:0px 7px 0px 5px;
+	margin-right:2px;
+	margin-bottom:2px;
+	border-radius: 5px;
+	font-size:13px;
+}
+
+.place_list_marker_index {
+	background-color:#001fb7;
+	color:white;
+	font-size:20px;
+	border-radius: 8px;
+	text-align:center;
+	padding-bottom:5px;
+	width:30px;
+	font-weight:600;
+	float:right;
 }
 
 .address {
@@ -179,6 +200,8 @@ h1 {
 	border:1px solid black;
 }
 
+
+/* Map Markers */
 
 .marker {
 	position:absolute;
@@ -224,6 +247,7 @@ h1 {
 	display:none;
 }
 
+/* Filter Menu */
 .switch-on {
 	background-image:url('../resources/check-on.png');
 	background-repeat:no-repeat;
@@ -237,6 +261,9 @@ h1 {
 	background-position: right center;
 	background-size: 20px;
 }
+
+
+/* Other */
 
 #logo {
 	background-image:url('../resources/logo.png');

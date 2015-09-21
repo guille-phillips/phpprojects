@@ -175,6 +175,17 @@
 				return json_encode($split_array);
 			}
 
+			switch ($_SERVER['HTTP_HOST']) {
+				case 'localhost:8080':
+					$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+					break;
+				case 'localhost':
+					$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+					break;
+				default:
+					$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+			}
+			
 			//print_r($_POST);
 			if (isset($_POST['entry'])) {
 				$telephone = CleanUp($_POST['telephone']);
@@ -195,14 +206,6 @@
 				$disabled_facilities = StripSpace($_POST['disabled_facilities']);
 				$good_stuff = StripSpace($_POST['good_stuff']);
 				$bad_stuff = StripSpace($_POST['bad_stuff']);
-
-				// $db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-				$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-				// $db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
-
-				if($db->connect_errno > 0){
-					die('Unable to connect to database [' . $db->connect_error . ']');
-				}
 
                 $sql = <<<SQL
                     INSERT INTO
@@ -278,15 +281,6 @@ SQL;
 			} elseif (isset($_POST['search'])) {
 			}
 			
-
-			// $db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-			$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-			// $db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
-
-			if($db->connect_errno > 0){
-				die('Unable to connect to database [' . $db->connect_error . ']');
-			}
-
 			$sql = "SELECT category FROM places";
 			if (!$list = $db->query($sql)) {
 				Error('There was an error running the query [' . $db->error . ']');

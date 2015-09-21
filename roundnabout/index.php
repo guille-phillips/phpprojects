@@ -213,9 +213,15 @@
 					div.id = 'place_' + place.id;
 					div.dataset.id = place.id;
 					div.className = 'place_list_item';
-					div.innerHTML = CreatePlaceListItem(place);
+					div.innerHTML = CreatePlaceListItem(place,marker_index);
 					div.addEventListener("click", function(){
 						SetCentre(places[this.dataset.id].latitude,places[this.dataset.id].longitude);
+						if (previous_marker_id!==undefined) {
+							document.getElementById("bubble"+previous_marker_id).style.display="none";
+						}
+						document.getElementById("bubble"+this.dataset.id).style.display="inherit";
+						previous_marker_id = this.dataset.id;
+						
 					});
 					place_list.appendChild(div);
 
@@ -243,12 +249,14 @@
 				return html_array.join('');
 			}
 
-			function CreatePlaceListItem(place) {
+			function CreatePlaceListItem(place,marker_index) {
 				var html_array = [];
+				html_array.push(Tag('div',marker_index,{class:'place_list_marker_index'}));	
+				
+				html_array.push(Tag('h1',place.name));				
+				
 
 				html_array.push(Tag('img','',{class:'square'}));
-
-				html_array.push(Tag('h1',place.name));
 
 				if (place.category.join) {
 					html_array.push( place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
@@ -279,6 +287,7 @@
 					document.getElementById("bubble"+previous_marker_id).style.display="none";
 					if (previous_marker_id !== marker.dataset.marker_id) {
 						document.getElementById("bubble"+marker.dataset.marker_id).style.display="inherit";
+						document.getElementById("place_"+marker.dataset.marker_id).scrollIntoView();
 					} else {
 						previous_marker_id = undefined;
 					}
