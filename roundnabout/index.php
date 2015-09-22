@@ -31,11 +31,15 @@
 			
 			var previous_marker_id = undefined;
 
+			var categories = [123,125];
+
 			function LocationSuccess(pos) {
 				var crd = pos.coords;
 				initial_latlong = [crd.latitude, crd.longitude];
 				SetCentre(crd.latitude,crd.longitude);
 				AddHomeMarker(crd.latitude,crd.longitude,HomeMarkerClicked);
+
+				Render([]);				
 			};
 
 			function LocationError(err) {
@@ -95,7 +99,6 @@
 				$('li').click(MenuClick);
 				$('#filter li').addClass('switch-off');
 
-				Render();
 			}
 
 			function MenuClick() {
@@ -194,19 +197,26 @@
 
 
 			function Render(categories) {
-				places = Ajax('GetPlaces',JSON.stringify(categories));
+				places = Ajax('GetPlaces',JSON.stringify({categories:categories,position:[centre_lat,centre_long]}) );
 				if (places.error) {
 					alert(places.error);
 					return;
 				}
-				
+				for (x in places) {
+					console.log(x);
+				}
+
+				// Sort by distance 
+				var places = Object.keys(places).map(function(k) { return places[k] });
+				places.sort(function(a,b){return a.distance-b.distance;});
+
 				var place_list = document.getElementById('place_list');
 				
 				var marker_index = 1;
 				for (var index in places) {
 					var place = places[index];
 
-					AddMarker(place, place.id,marker_index,place.latitude,place.longitude,marker_resource,MarkerClicked);
+					AddMarker(place,place.id,marker_index,place.latitude,place.longitude,marker_resource,MarkerClicked);
 					
 					// Place List Item
 					var div = document.createElement('div');
@@ -253,7 +263,7 @@
 				var html_array = [];
 				html_array.push(Tag('div',marker_index,{class:'place_list_marker_index'}));	
 				
-				html_array.push(Tag('h1',place.name));				
+				html_array.push(Tag('h1',place.name+':'+place.distance));				
 				
 
 				html_array.push(Tag('img','',{class:'square'}));
@@ -400,43 +410,7 @@
 					return;
 				}
 				return response;
-			}
-			
-			Number.prototype.toRad = function() {
-			   return this * Math.PI / 180;
-			}
-
-			function DistanceBetween(latlong1,latlong2) {
-				var lat2 = latlong2[0];
-				var lon2 = latlong2[1];
-				var lat1 = latlong1[0];
-				var lon1 = latlong1[1];
-
-				var R = 3959; // miles 
-				//has a problem with the .toRad() method below.
-				var x1 = lat2-lat1;
-				var dLat = x1.toRad();  
-				var x2 = lon2-lon1;
-				var dLon = x2.toRad();  
-				var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-								Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
-								Math.sin(dLon/2) * Math.sin(dLon/2);  
-				var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-				var d = R * c; 
-				
-				return d;
-			}
-			
-			/*
-			function ConvertLatLonToXY(key) {
-				var lat = flights[key][LAT];
-				var lon = flights[key][LON];
-				var pos = GetCanvasPosition(lat,lon);
-				flights[key][GRAPH_X] = pos[0];
-				flights[key][GRAPH_Y] = pos[1];			
-			}
-			*/
-									
+			}					
 		</script>
 		<style>
 			

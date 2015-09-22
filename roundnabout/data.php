@@ -21,7 +21,12 @@
 
 	switch ($_GET['method']) {
 		case 'GetPlaces':
-			$categories = json_decode($_GET['value']);
+		
+			$value = json_decode($_GET['value']);
+
+			$categories = $value->categories;
+			$centre_latitude = $value->position[0];
+			$centre_longitude = $value->position[1];
 
 			$sql = <<<SQL
 				SELECT
@@ -35,11 +40,15 @@ SQL;
 
 			$rows = array();
 			while($row = $list->fetch_assoc()){
+				$latitude = (float) $row['latitude'];
+				$longitude = (float) $row['longitude'];
+
 				$rows[(int) $row['id']]=array(
 					'id'=>(int) $row['id'],
 					'name'=>$row['name'],
-					'latitude'=>(float) $row['latitude'],
-					'longitude'=>(float) $row['longitude'],
+					'latitude'=>$latitude,
+					'longitude'=>$longitude,
+					'distance'=>DistanceBetween(array($latitude,$longitude),array($centre_latitude,$centre_longitude)),
 					'category'=>DecodeJSONField($row['category']),
 					'email'=>$row['email'],
 					'telephone'=>DecodeJSONField($row['telephone']),
@@ -60,6 +69,7 @@ SQL;
 			break;
 	}
 
+
 	function DecodeJSONField($field) {
 		if ($json = json_decode($field)) {
 			return $json;
@@ -70,5 +80,26 @@ SQL;
 	
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
+	}	
+
+	function DistanceBetween($latlong1,$latlong2) {
+		$lat2 = $latlong2[0];
+		$lon2 = $latlong2[1];
+		$lat1 = $latlong1[0];
+		$lon1 = $latlong1[1];
+
+		$R = 3959; // miles 
+		//has a problem with the .toRad() method below.
+		$x1 = $lat2-$lat1;
+		$dLat = 2*pi()*$x1/360;  
+		$x2 = $lon2-$lon1;
+		$dLon = 2*pi()*$x2/360;  
+		$a = sin($dLat/2) * sin($dLat/2) + 
+						cos(2*pi()*$lat1/360) * cos(2*pi()*$lat2/360) * 
+						sin($dLon/2) * sin($dLon/2);  
+		$c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
+		$d = $R * $c; 
+		
+		return $d;
 	}	
 ?>
