@@ -202,9 +202,6 @@
 					alert(places.error);
 					return;
 				}
-				for (x in places) {
-					console.log(x);
-				}
 
 				// Sort by distance 
 				var places = Object.keys(places).map(function(k) { return places[k] });
