@@ -33,6 +33,45 @@
 
 			var categories = [123,125];
 
+			function MarkerState(){
+				var previous_id = undefined;
+				this.Event = function(info) {
+					switch (info.name) {
+						case 'click_marker':
+							if (previous_id === undefined) {
+								ShowBubble(info.id);
+								previous_id = info.id;
+							} else if {info.id === previous_id) {
+								HideBubble(info.id);
+								previous_id = undefined;
+							} else {
+								ShowBubble(info.id);
+								HideBubble(previous_id);
+								previous_id = info.id;
+							}
+
+							break;
+						case 'click_map':
+							if (previous_id !== undefined) {
+								HideBubble(previous_id);
+								previous_id = undefined;
+							}
+							break;
+					}
+				}
+
+				var ShowBubble = function(id) {
+					document.getElementById("bubble"+id).style.display="none";
+				}
+
+				var HideBubble = function(id) {
+					document.getElementById("bubble"+id).style.display="none";
+
+				}
+			}
+
+			var marker_state = new MarkerState();
+
 			function LocationSuccess(pos) {
 				var crd = pos.coords;
 				initial_latlong = [crd.latitude, crd.longitude];
@@ -181,7 +220,8 @@
 			}
 
 			function SetCentre(lat,lon) {
-				map.setCenter(new google.maps.LatLng(lat, lon));		
+				map.setCenter(new google.maps.LatLng(lat, lon));
+				map.addListener('click', function(){alert('click');});
 			}
 
 			function ZoomChanged() {
@@ -213,7 +253,7 @@
 				for (var index in places) {
 					var place = places[index];
 
-					AddMarker(place,place.id,marker_index,place.latitude,place.longitude,marker_resource,MarkerClicked);
+					AddMarker(place,place.id,marker_index,place.latitude,place.longitude,marker_resource,function(){marker_state.Event({name:'click_marker',id:place.id});});
 					
 					// Place List Item
 					var div = document.createElement('div');
