@@ -54,6 +54,7 @@ SQL;
 					'telephone'=>DecodeJSONField($row['telephone']),
 					'address'=>DecodeJSONField($row['address']),
 					'postcode'=>$row['postcode'],
+					'website'=>$row['website'],
 					'entry_rates'=>DecodeJSONField($row['entry_rates']),
 					'opening_times'=>DecodeJSONField($row['opening_times']),
 					'rating'=>(int) $row['rating'],
