@@ -192,6 +192,14 @@ h1 {
 	/*border:1px solid red;*/
 }
 
+.website {
+	/*border:1px solid red;*/
+}
+
+.rating {
+	/*border:1px solid red;*/
+}
+
 .description {
 	border:1px solid black;
 }

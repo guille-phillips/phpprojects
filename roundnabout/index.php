@@ -547,10 +547,11 @@
 		<div id="place_list"><div id="place_{id}" class="place_list_item" data-id="{id}">
 				<div>
 					<h1>{index}. {name}</h1>
-					{category/}<div class="category_item">{category}</div>{/category}
 					<div class="address">{address}</div>
 					<div class="telephone">{telephone}</div>
-					<div class="telephone">{website}</div>
+					<div class="website">{website}</div>
+					<div class="rating">{rating}</div>
+					{category/}<div class="category_item">{category}</div>{/category}
 					Opening Times:<div class="opening_times">{opening_times}</div>
 					Entry Rates:<div class="entry_rates">{entry_rates}</div>
 				</div><img src="#">
