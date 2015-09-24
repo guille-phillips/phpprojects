@@ -36,12 +36,14 @@
 			function MarkerState(){
 				var previous_id = undefined;
 				this.Event = function(info) {
+alert(JSON.stringify(info));
+
 					switch (info.name) {
 						case 'click_marker':
 							if (previous_id === undefined) {
 								ShowBubble(info.id);
 								previous_id = info.id;
-							} else if {info.id === previous_id) {
+							} else if (info.id === previous_id) {
 								HideBubble(info.id);
 								previous_id = undefined;
 							} else {
