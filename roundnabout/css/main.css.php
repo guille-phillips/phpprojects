@@ -3,7 +3,7 @@
 	
 	define('MENU_HEIGHT',56);
 	define('FILTER_HEIGHT',34);
-	define('LIST_WIDTH',380);
+	define('LIST_WIDTH',650);
 	
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
@@ -135,29 +135,38 @@ body {
 	position:absolute;
 	top:<?=$body_top?>;
 	left:0px;
-	width:<?=$list_width?>;
+	width:calc(<?=$list_width?> + 17px);
 	height:calc(100% - <?=$body_top?>);
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
 
 .place_list_item {
-	width:90%;
-	/*height:400px;*/
-	background-color: white;
-	margin-bottom: 10px;
-	padding:3px 3px 3px 15px;
+	width:calc(<?=$list_width?> - 4px - 30px);
+	height:calc(237px - 30px);
+	border:2px solid white;
+	padding:15px;
 	cursor:pointer;
 }
 
 .place_list_item:hover {
-	background-color: 007eff;
+	background-color:#ecf8fe;
+	border:2px solid #001fb7;
 }
 
-.square {
-	width:120px;
-	height:120px;
-	float:left;
+.place_list_item > div {
+	display:inline-block;
+	vertical-align:top;
+	border:1px solid red;
+	width:calc(650px - 30px - 209px - 14px);
+	height:calc(207px - 2px);
+}
+
+.place_list_item > img {
+	display:inline-block;
+	vertical-align:top;
+	width:calc(207px - 2px);
+	height:calc(207px - 2px);
 	border:1px solid #ccc;
 	margin-right:10px;
 }
@@ -171,28 +180,23 @@ h1 {
 
 .category_item {
 	display:inline-block;
-	background-color:#001fb7;
+	background-color:#8f8f8f;
 	color:white;
 	padding:0px 7px 0px 5px;
-	margin-right:2px;
+	margin-right:4px;
 	margin-bottom:2px;
-	border-radius: 5px;
 	font-size:13px;
 }
 
-.place_list_marker_index {
-	background-color:#001fb7;
-	color:white;
-	font-size:20px;
-	border-radius: 8px;
-	text-align:center;
-	padding-bottom:5px;
-	width:30px;
-	font-weight:600;
-	float:right;
+.address {
+	/*border:1px solid red;*/
 }
 
-.address {
+.website {
+	/*border:1px solid red;*/
+}
+
+.rating {
 	/*border:1px solid red;*/
 }
 
