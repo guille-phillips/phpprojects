@@ -1,3 +1,307 @@
+<?php
+	header('Content-Type: text/html; charset=utf-8');
+
+	function Nullable($field,$is_text=false) {
+		if ($field=='') {
+			return null;
+		} else {
+			return $field;
+		}
+	}
+
+	function StripSpace($field) {
+		return trim(implode(' ',preg_split('/ {2,}/',$field)));
+	}
+
+	function CleanUp($field) {
+		$delimiter = '/\v|\s*[,|\/\\\.]\s*/';
+		$split_array = preg_split($delimiter, $field);
+		$split_array = array_map(function($e){return StripSpace($e);},$split_array);
+		return json_encode($split_array);
+	}
+
+	switch ($_SERVER['HTTP_HOST']) {
+		case 'localhost:8080':
+			$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
+			break;
+		case 'localhost':
+			$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
+			break;
+		default:
+			$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
+	}
+	
+	$id = 0;
+	$name = '';		
+	$latitude = '';
+	$longitude = '';
+	$category = '[]';
+	$email = '';
+	$telephone = '';
+	$address = '';
+	$postcode = '';
+	$website = '';
+	$entry_rates = '';
+	$opening_times = '';
+	$rating = '';
+	$more_info = '';
+	$facilities = '';
+	$disabled_facilities = '';
+	$good_stuff = '';
+	$bad_stuff = '';
+	$category_array = array();
+	$category_field = '[]';
+	$category_js = '';
+	
+	// print_r($_POST);
+	if (isset($_POST['entry']) && $_POST['id']=='0') {
+		$telephone = CleanUp($_POST['telephone']);
+		$address = CleanUp($_POST['address']);
+		$entry_rates = CleanUp($_POST['entry_rates']);
+		$opening_times = Nullable(CleanUp($_POST['opening_times']),true);
+		$name = StripSpace($_POST['name']);
+		$latitude = StripSpace($_POST['latitude']);
+		$longitude = StripSpace($_POST['longitude']);
+		$category = $_POST['category_list'];
+		$email = Nullable(StripSpace($_POST['email']),true);
+		$postcode = StripSpace($_POST['postcode']);
+		$website = StripSpace($_POST['website']);
+		$rating = Nullable(StripSpace($_POST['rating']));
+		$more_info = StripSpace($_POST['more_info']);
+		$facilities = StripSpace($_POST['facilities']);
+		$disabled_facilities = StripSpace($_POST['disabled_facilities']);
+		$good_stuff = StripSpace($_POST['good_stuff']);
+		$bad_stuff = StripSpace($_POST['bad_stuff']);
+
+		$sql = <<<SQL
+			INSERT INTO
+				places
+				(
+					name,
+					latitude,
+					longitude,
+					category,
+					email,
+					telephone,
+					address,
+					postcode,
+					website,
+					entry_rates,
+					opening_times,
+					rating,
+					more_info,
+					facilities,
+					disabled_facilities,
+					good_stuff,
+					bad_stuff)
+			VALUES
+				(
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?
+				)
+SQL;
+
+		if ($stmt = $db->prepare($sql)) {
+			/* bind parameters for markers */
+			$stmt->bind_param("sddssssssssdsssss",
+					$name,
+					$latitude,
+					$longitude,
+					$category,
+					$email,
+					$telephone,
+					$address,
+					$postcode,
+					$website,
+					$entry_rates,
+					$opening_times,
+					$rating,
+					$more_info,
+					$facilities,
+					$disabled_facilities,
+					$good_stuff,
+					$bad_stuff);	
+					
+			$stmt->execute();
+			$stmt->close();
+
+			echo 'New record inserted<br><br>';
+		} else {
+			echo htmlspecialchars($db->error);
+		}
+	} elseif (isset($_POST['entry']) && $_POST['id']!='0') {
+		$telephone = CleanUp($_POST['telephone']);
+		$address = CleanUp($_POST['address']);
+		$entry_rates = CleanUp($_POST['entry_rates']);
+		$opening_times = Nullable(CleanUp($_POST['opening_times']),true);
+		$name = StripSpace($_POST['name']);
+		$latitude = StripSpace($_POST['latitude']);
+		$longitude = StripSpace($_POST['longitude']);
+		$category = $_POST['category_list'];
+		$email = Nullable(StripSpace($_POST['email']),true);
+		$postcode = StripSpace($_POST['postcode']);
+		$website = StripSpace($_POST['website']);
+		$rating = Nullable(StripSpace($_POST['rating']));
+		$more_info = StripSpace($_POST['more_info']);
+		$facilities = StripSpace($_POST['facilities']);
+		$disabled_facilities = StripSpace($_POST['disabled_facilities']);
+		$good_stuff = StripSpace($_POST['good_stuff']);
+		$bad_stuff = StripSpace($_POST['bad_stuff']);
+		$id = $_POST['id'];
+		
+		$sql = <<<SQL
+			UPDATE
+				places
+			SET
+				name = ?,
+				latitude = ?,
+				longitude = ?,
+				category = ?,
+				email = ?,
+				telephone = ?,
+				address = ?,
+				postcode = ?,
+				website = ?,
+				entry_rates = ?,
+				opening_times = ?,
+				rating = ?,
+				more_info = ?,
+				facilities = ?,
+				disabled_facilities = ?,
+				good_stuff = ?,
+				bad_stuff = ?
+			WHERE 
+				id = ?
+SQL;
+
+		if ($stmt = $db->prepare($sql)) {
+			/* bind parameters for markers */
+			$stmt->bind_param("sddssssssssdsssssi",
+					$name,
+					$latitude,
+					$longitude,
+					$category,
+					$email,
+					$telephone,
+					$address,
+					$postcode,
+					$website,
+					$entry_rates,
+					$opening_times,
+					$rating,
+					$more_info,
+					$disabled_facilities,
+					$facilities,
+					$good_stuff,
+					$bad_stuff,
+					$id);	
+					
+			$stmt->execute();
+			$stmt->close();
+
+			$telephone = implode(', ',json_decode($telephone));
+			$address = implode(",\n",json_decode($address));
+			$entry_rates = implode(",\n",json_decode($entry_rates));
+			$opening_times = implode(",\n",json_decode($opening_times));
+			$category_array = json_decode($category);
+			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
+			$category_field = $category;
+			
+			echo 'Record updated<br><br>';
+		} else {
+			echo htmlspecialchars($db->error);
+		}		
+	} elseif (isset($_POST['search'])) {
+		$name = '%'.StripSpace($_POST['name']).'%';
+		$id = 0;
+		
+		$sql = <<<SQL
+			SELECT
+				*
+			FROM
+				places
+			WHERE
+				name LIKE ?
+				AND id > ?
+			ORDER BY
+				id
+			LIMIT
+				1
+SQL;
+		if ($stmt = $db->prepare($sql)) {
+			$stmt->bind_param("si",$name,$id);
+			$stmt->execute();
+			$stmt->bind_result(
+				$id,
+				$name,
+				$latitude,
+				$longitude,
+				$category_field,
+				$email,
+				$telephone,
+				$address,
+				$postcode,
+				$website,
+				$entry_rates,
+				$opening_times,
+				$rating,
+				$more_info,
+				$disabled_facilities,
+				$facilities,
+				$good_stuff,
+				$bad_stuff);
+
+			$stmt->fetch();
+			$stmt->close();
+			
+			$telephone = implode(', ',json_decode($telephone));
+			$address = implode(",\n",json_decode($address));
+			$entry_rates = implode(",\n",json_decode($entry_rates));
+			$opening_times = implode(",\n",json_decode($opening_times));
+			$category_array = json_decode($category_field);
+			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
+		}
+	}
+	
+	$sql = "SELECT category FROM places";
+	if (!$list = $db->query($sql)) {
+		Error('There was an error running the query [' . $db->error . ']');
+	}
+
+	$categories = array();
+	$rows = array();
+	while ($row = $list->fetch_assoc()){
+		$category_list = json_decode($row['category']);
+		foreach ($category_list as $category) {
+			$categories[$category] = $category;
+		}
+	}
+	ksort($categories);
+	$categories_html = '';
+	foreach ($categories as $category) {
+		$selected = '';
+		if (in_array($category,$category_array)) {
+			$selected = ' category-selected';
+		}
+		$categories_html .= '<div class="category'.$selected.'">'.$category.'</div>';
+	}
+
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -46,7 +350,7 @@
 		</style>
 		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
-			var categories={};
+			var categories={<?=$category_js?>};
 
 			$(document).ready(
 				function () {
@@ -154,178 +458,32 @@
 		</script>
 	</head>
 	<body>
-		<?php
-
-			function Nullable($field,$is_text=false) {
-				if ($field=='') {
-					return null;
-				} else {
-					return $field;
-				}
-			}
-
-			function StripSpace($field) {
-				return trim(implode(' ',preg_split('/ {2,}/',$field)));
-			}
-
-			function CleanUp($field) {
-				$delimiter = '/\v|\s*[,|\/\\\.]\s*/';
-				$split_array = preg_split($delimiter, $field);
-				$split_array = array_map(function($e){return StripSpace($e);},$split_array);
-				return json_encode($split_array);
-			}
-
-			switch ($_SERVER['HTTP_HOST']) {
-				case 'localhost:8080':
-					$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
-					break;
-				case 'localhost':
-					$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-					break;
-				default:
-					$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-			}
-			
-			//print_r($_POST);
-			if (isset($_POST['entry'])) {
-				$telephone = CleanUp($_POST['telephone']);
-				$address = CleanUp($_POST['address']);
-				$entry_rates = CleanUp($_POST['entry_rates']);
-				$opening_times = Nullable(CleanUp($_POST['opening_times']),true);
-				$name = StripSpace($_POST['name']);
-				$latitude = StripSpace($_POST['latitude']);
-				$longitude = StripSpace($_POST['longitude']);
-				$category = $_POST['category_list'];
-				$email = Nullable(StripSpace($_POST['email']),true);
-				$postcode = StripSpace($_POST['postcode']);
-				$website = StripSpace($_POST['website']);
-				$rating = Nullable(StripSpace($_POST['rating']));
-
-				$more_info = StripSpace($_POST['more_info']);
-				$facilities = StripSpace($_POST['facilities']);
-				$disabled_facilities = StripSpace($_POST['disabled_facilities']);
-				$good_stuff = StripSpace($_POST['good_stuff']);
-				$bad_stuff = StripSpace($_POST['bad_stuff']);
-
-                $sql = <<<SQL
-                    INSERT INTO
-                        places
-                        (
-                        	name,
-                        	latitude,
-                        	longitude,
-                        	category,
-                        	email,
-                        	telephone,
-                        	address,
-                        	postcode,
-							website,
-                        	entry_rates,
-                        	opening_times,
-                        	rating,
-                        	more_info,
-                        	facilities,
-							disabled_facilities,
-                        	good_stuff,
-                        	bad_stuff)
-                    VALUES
-                        (
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?,
-							?
-                        )
-SQL;
-
-				if ($stmt = $db->prepare($sql)) {
-					/* bind parameters for markers */
-					$stmt->bind_param("sddssssssssdsssss",
-							$name,
-							$latitude,
-							$longitude,
-							$category,
-							$email,
-							$telephone,
-							$address,
-							$postcode,
-							$website,
-							$entry_rates,
-							$opening_times,
-							$rating,
-							$more_info,
-							$facilities,
-							$disabled_facilities,
-							$good_stuff,
-							$bad_stuff);	
-							
-					$stmt->execute();
-					$stmt->close();
-
-					echo 'New record inserted<br><br>';
-				} else {
-					echo htmlspecialchars($db->error);
-				}
-			} elseif (isset($_POST['search'])) {
-			}
-			
-			$sql = "SELECT category FROM places";
-			if (!$list = $db->query($sql)) {
-				Error('There was an error running the query [' . $db->error . ']');
-			};
-
-			$categories = array();
-			$rows = array();
-			while ($row = $list->fetch_assoc()){
-				$category_list = json_decode($row['category']);
-				foreach ($category_list as $category) {
-					$categories[$category] = $category;
-				}
-			}
-			ksort($categories);
-			$categories_html = '';
-			foreach ($categories as $category) {
-				$categories_html .= '<div class="category">'.$category.'</div>';
-			}
-
-		?>
-		<form method="post" action="entry.php" onsubmit="return Validate();"> 
-			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name"></div><br><br>
-			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude"></div><br><br>
-			<div class="field_name">Longitude</div><div class="field_value"><input id="longitude" type="text" name="longitude"></div><br><br>
+		<form method="post" action="entry.php" onsubmit="return Validate();">
+			<input type="hidden" name="id" value="<?=$id?>">
+			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name" value="<?=$name?>"></div><br><br>
+			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude" value="<?=$latitude?>"></div><br><br>
+			<div class="field_name">Longitude</div><div class="field_value"><input id="longitude" type="text" name="longitude" value="<?=$longitude?>"></div><br><br>
 			<div class="field_name">Category</div>
 			<div class="field_value">
 				<div id="db_categories">
 					<?=$categories_html;?>
 				</div>
 				<input id="category" type="text" name="category" placeholder='Add New Category (Tab to add)' onkeydown='e = event || window.event;if (e.keyCode==9) return AddNewCategory();'>
-				<input id="category_list" type="hidden" name="category_list" value="[]">
+				<input id="category_list" type="hidden" name="category_list" value='<?=$category_field?>'>
 			</div><br><br>
-			<div class="field_name">Email</div><div class="field_value"><input id="email" type="text" name="email"></div><br><br>
-			<div class="field_name">Telephone</div><div class="field_value"><input id="telephone" type="text" name="telephone"></div><br><br>
-			<div class="field_name">Address</div><div class="field_value"><textarea id="address" name="address" rows="6"></textarea></div><br><br>
-			<div class="field_name">Postcode</div><div class="field_value"><input id="postcode" type="text" name="postcode"></div><br><br>
-			<div class="field_name">Website</div><div class="field_value"><input id="website" type="text" name="website"></div><br><br>
-			<div class="field_name">Entry Rates</div><div class="field_value"><textarea id="entry_rates" name="entry_rates" rows="6"></textarea></div><br><br>
-			<div class="field_name">Opening Times</div><div class="field_value"><input id="opening_times" type="text" name="opening_times"></div><br><br>
-			<div class="field_name">Rating</div><div class="field_value"><input id="rating" type="text" name="rating"></div><br><br>
-			<div class="field_name">More Info</div><div class="field_value"><textarea id="more_info" name="more_info" rows="6"></textarea></div><br><br>
-			<div class="field_name">Facilities</div><div class="field_value"><textarea id="facilities" name="facilities" rows="6"></textarea></div><br><br>
-			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"></textarea></div><br><br>
-			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"></textarea></div><br><br>
-			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"></textarea></div><br><br>
+			<div class="field_name">Email</div><div class="field_value"><input id="email" type="text" name="email" value="<?=$email?>"></div><br><br>
+			<div class="field_name">Telephone</div><div class="field_value"><input id="telephone" type="text" name="telephone" value="<?=$telephone?>"></div><br><br>
+			<div class="field_name">Address</div><div class="field_value"><textarea id="address" name="address" rows="6"><?=$address?></textarea></div><br><br>
+			<div class="field_name">Postcode</div><div class="field_value"><input id="postcode" type="text" name="postcode" value="<?=$postcode?>"></div><br><br>
+			<div class="field_name">Website</div><div class="field_value"><input id="website" type="text" name="website" value="<?=$website?>"></div><br><br>
+			<div class="field_name">Entry Rates</div><div class="field_value"><textarea id="entry_rates" name="entry_rates" rows="6"><?=htmlspecialchars($entry_rates, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
+			<div class="field_name">Opening Times</div><div class="field_value"><input id="opening_times" type="text" name="opening_times" value="<?=$opening_times?>"></div><br><br>
+			<div class="field_name">Rating</div><div class="field_value"><input id="rating" type="text" name="rating" value="<?=$rating?>"></div><br><br>
+			<div class="field_name">More Info</div><div class="field_value"><textarea id="more_info" name="more_info" rows="6"><?=htmlspecialchars($more_info, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
+			<div class="field_name">Facilities</div><div class="field_value"><textarea id="facilities" name="facilities" rows="6"><?=htmlspecialchars($facilities, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
+			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"><?=htmlspecialchars($disabled_facilities, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
+			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"><?=htmlspecialchars($good_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
+			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);" accept="image/*"></div>
 			<img id="image_preview" src="#">
 			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>			
@@ -336,7 +494,7 @@ SQL;
 
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
-
+			<input type="submit" value="New" name="new" onclick="submit_button='new';">
 		</form>
 	</body>
 </html>
