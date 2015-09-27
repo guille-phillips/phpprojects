@@ -38,11 +38,23 @@ SQL;
 				Error('There was an error running the query [' . $db->error . ']');
 			};
 
+			$image_extensions = array('jpg','png','gif');
+			
 			$rows = array();
 			while($row = $list->fetch_assoc()){
 				$latitude = (float) $row['latitude'];
 				$longitude = (float) $row['longitude'];
 
+				$slug = strtolower(str_replace(' ','-',$row['name']));
+				
+				$image_extension = 'jpg';
+				// $image_url='#';
+				// foreach ($image_extensions as $image_extension) {
+					// if (file_exists('images/'.$slug.'.'.$image_extension)) {
+						$image_url = 'images/'.$slug.'.'.$image_extension;
+					// }
+				// }
+				
 				$rows[(int) $row['id']]=array(
 					'id'=>(int) $row['id'],
 					'name'=>$row['name'],
@@ -61,7 +73,8 @@ SQL;
 					'more_info'=>$row['more_info'],
 					'facilities'=>$row['facilities'],
 					'good_stuff'=>$row['good_stuff'],
-					'bad_stuff'=>$row['bad_stuff']
+					'bad_stuff'=>$row['bad_stuff'],
+					'image_url'=>$image_url
 				);
 			}
 

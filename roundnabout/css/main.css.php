@@ -5,6 +5,9 @@
 	define('FILTER_HEIGHT',34);
 	define('LIST_WIDTH',650);
 	
+	$colours[0] = '#001fb7';
+	$colours[1] = '#8f8f8f';
+	
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
 	$menu_height = (MENU_HEIGHT).'px';
@@ -141,6 +144,10 @@ body {
 	overflow-x:hidden;
 }
 
+#place_list > div:first-child {
+	display:none;
+}
+
 .place_list_item {
 	width:calc(<?=$list_width?> - 4px - 30px);
 	height:calc(237px - 30px);
@@ -151,13 +158,13 @@ body {
 
 .place_list_item:hover {
 	background-color:#ecf8fe;
-	border:2px solid #001fb7;
+	border:2px solid <?=$colours[0]?>;
 }
 
 .place_list_item > div {
 	display:inline-block;
 	vertical-align:top;
-	border:1px solid red;
+	/* border:1px solid red; */
 	width:calc(650px - 30px - 209px - 14px);
 	height:calc(207px - 2px);
 }
@@ -172,7 +179,7 @@ body {
 }
 
 h1 {
-	color:#001fb7;
+	color:<?=$colours[0]?>;
 	margin-top:0;
 	margin-bottom:4px;
 	font-size:22px;
@@ -180,7 +187,7 @@ h1 {
 
 .category_item {
 	display:inline-block;
-	background-color:#8f8f8f;
+	background-color:<?=$colours[1]?>;
 	color:white;
 	padding:0px 7px 0px 5px;
 	margin-right:4px;
@@ -190,14 +197,64 @@ h1 {
 
 .address {
 	/*border:1px solid red;*/
+	color:<?=$colours[1]?>;
+}
+
+.telephone {
+	color:<?=$colours[0]?>;
 }
 
 .website {
 	/*border:1px solid red;*/
+	color:<?=$colours[0]?>;
+	text-decoration:none;
+}
+
+.website:hover {
+	text-decoration:underline;
+}
+.website:visited {
+	color:<?=$colours[0]?>;
+	text-decoration:underline;
+}
+
+.icon {
+	display:inline-block;
+	vertical-align:top;
+	width:45px;
+	height:45px;
+	border:1px solid black;
+	margin-right:20px;
+}
+
+.opening_times {
+	background-image:url('');
+}
+
+.prices {
+	background-image:url('');
+}
+
+.comments {
+	background-image:url('');
+}
+
+.email {
+	background-image:url('');
 }
 
 .rating {
-	/*border:1px solid red;*/
+	display:inline-block;
+	vertical-align:top;	
+	width:45px;
+	height:45px;
+	
+	border-radius:10px;
+	background-color:<?=$colours[0]?>;
+	color:white;
+	
+	text-align:center;
+	font-size:30px;
 }
 
 .description {
