@@ -103,7 +103,7 @@ SQL;
 		$lon1 = $latlong1[1];
 
 		$R = 3959; // miles 
-		//has a problem with the .toRad() method below.
+
 		$x1 = $lat2-$lat1;
 		$dLat = 2*pi()*$x1/360;  
 		$x2 = $lon2-$lon1;
