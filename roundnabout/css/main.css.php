@@ -223,24 +223,27 @@ h1 {
 	vertical-align:top;
 	width:45px;
 	height:45px;
-	border:1px solid black;
+	*border:1px solid black;
 	margin-right:20px;
+	background-size:45px;
+	background-repeat:no-repeat;
+	background-position:center bottom;
 }
 
 .opening_times {
-	background-image:url('');
+	background-image:url('../resources/clock-icon.png');
 }
 
 .prices {
-	background-image:url('');
+	background-image:url('../resources/pound-icon.png');
 }
 
 .comments {
-	background-image:url('');
+	background-image:url('../resources/speech-icon.png');
 }
 
 .email {
-	background-image:url('');
+	background-image:url('../resources/envelope-icon.png');
 }
 
 .rating {
