@@ -313,6 +313,7 @@ h1 {
 	background-image:url('../resources/bubble-left.png');
 	background-repeat:no-repeat;
 	display:none;
+	z-index:999;
 }
 
 /* Filter Menu */
