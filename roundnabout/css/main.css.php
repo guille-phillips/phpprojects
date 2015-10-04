@@ -13,6 +13,7 @@
 	$menu_height = (MENU_HEIGHT).'px';
 	$filter_height = (FILTER_HEIGHT).'px';
 	$list_width = (LIST_WIDTH).'px';
+	$menu_horiz_offset = '300px';
 ?>
 @font-face {
 	font-family: "Rooney Sans";
@@ -56,13 +57,13 @@ body {
 
 
 #menu {
-	width:calc(100% - <?=$list_width?>);
+	width:calc(100% - <?=$menu_horiz_offset?>);
 	height:<?=$menu_height?>;
 	margin:0;
 	font-size:20px;
 	font-weight:600;
 	background-color: blue;
-	padding-left:<?=$list_width?>;
+	padding-left:<?=$menu_horiz_offset?>;
 	
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,007eff+50,2989d8+100,7db9e8+100 */
 	background: #1e5799; /* Old browsers */
@@ -89,12 +90,12 @@ body {
 }
 
 #filter {
-	width:calc(100% - <?=$list_width?>);
+	width:calc(100% - <?=$menu_horiz_offset?>);
 	height:<?=$filter_height?>;
 	margin:0;
 	font-size:18px;
 	font-weight:600;
-	padding-left:<?=$list_width?>;
+	padding-left:<?=$menu_horiz_offset?>;
 	background-color:black;
 }
 
@@ -115,13 +116,16 @@ body {
 #filter > ul > li > ul {
 	position:absolute;
 	top:<?=$body_height?>;
-	left:800px;
+	left:1100px;
 	width:150px;
-	height:100px;
+	height:calc(40ex + 10px);
 	display:block;
 	z-index:99;
 	background-color:black;
 	display:none;
+	margin:0;
+	padding:5px;
+	list-style-type: none;
 }
 
 
@@ -336,7 +340,7 @@ h1 {
 	position:absolute;
 	top:0px;
 	left:0px;
-	width:<?=$list_width?>;
+	width:<?=$menu_horiz_offset?>;
 	height:<?=$body_top?>;
 	background-position: right top;
 }

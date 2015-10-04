@@ -24,7 +24,7 @@
 		
 			$value = json_decode($_GET['value']);
 
-			$categories = $value->categories;
+			$search_categories = $value->categories;
 			$centre_latitude = $value->position[0];
 			$centre_longitude = $value->position[1];
 
@@ -48,34 +48,46 @@ SQL;
 				$slug = strtolower(str_replace(' ','-',$row['name']));
 				
 				$image_extension = 'jpg';
-				// $image_url='#';
-				// foreach ($image_extensions as $image_extension) {
-					// if (file_exists('images/'.$slug.'.'.$image_extension)) {
+				$image_url='#';
+				foreach ($image_extensions as $image_extension) {
+					if (file_exists('images/'.$slug.'.'.$image_extension)) {
 						$image_url = 'images/'.$slug.'.'.$image_extension;
-					// }
-				// }
+					}
+				}
 				
-				$rows[(int) $row['id']]=array(
-					'id'=>(int) $row['id'],
-					'name'=>$row['name'],
-					'latitude'=>$latitude,
-					'longitude'=>$longitude,
-					'distance'=>DistanceBetween(array($latitude,$longitude),array($centre_latitude,$centre_longitude)),
-					'category'=>DecodeJSONField($row['category']),
-					'email'=>$row['email'],
-					'telephone'=>DecodeJSONField($row['telephone']),
-					'address'=>DecodeJSONField($row['address']),
-					'postcode'=>$row['postcode'],
-					'website'=>$row['website'],
-					'entry_rates'=>DecodeJSONField($row['entry_rates']),
-					'opening_times'=>DecodeJSONField($row['opening_times']),
-					'rating'=>(int) $row['rating'],
-					'more_info'=>$row['more_info'],
-					'facilities'=>$row['facilities'],
-					'good_stuff'=>$row['good_stuff'],
-					'bad_stuff'=>$row['bad_stuff'],
-					'image_url'=>$image_url
-				);
+				$categories_json = DecodeJSONField($row['category']);
+
+				$ok_to_add = false;
+				foreach ($search_categories as $search_category) {
+					if (in_array($search_category,$categories_json)) {
+						$ok_to_add = true;
+						break;
+					}
+				}				
+				
+				if ($ok_to_add) {
+					$rows[(int) $row['id']]=array(
+						'id'=>(int) $row['id'],
+						'name'=>$row['name'],
+						'latitude'=>$latitude,
+						'longitude'=>$longitude,
+						'distance'=>DistanceBetween(array($latitude,$longitude),array($centre_latitude,$centre_longitude)),
+						'category'=>$categories_json,
+						'email'=>$row['email'],
+						'telephone'=>DecodeJSONField($row['telephone']),
+						'address'=>DecodeJSONField($row['address']),
+						'postcode'=>$row['postcode'],
+						'website'=>$row['website'],
+						'entry_rates'=>DecodeJSONField($row['entry_rates']),
+						'opening_times'=>DecodeJSONField($row['opening_times']),
+						'rating'=>(int) $row['rating'],
+						'more_info'=>$row['more_info'],
+						'facilities'=>$row['facilities'],
+						'good_stuff'=>$row['good_stuff'],
+						'bad_stuff'=>$row['bad_stuff'],
+						'image_url'=>$image_url
+					);
+				}
 			}
 
 			// print_r($rows);

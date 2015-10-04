@@ -30,9 +30,22 @@
 				<li id="filter-transport">Transport</li>
 				<li id="filter-more">More
 					<ul>
+						<li id="filter-activity-centre">Activity Centre</li>
+						<li id="filter-adventure">Adventure</li>
+						<li id="filter-bowling">Bowling</li>
+						<li id="filter-educational">Educational</li>
+						<li id="filter-farm">Farm</li>
+						<li id="filter-go-karting">Go Karting</li>
+						<li id="filter-historical">Historical</li>
+						<li id="filter-leisure-centre">Leisure Centre</li>
+						<li id="filter-museum">Museum</li>		
+						<li id="filter-nature">Nature</li>
+						<li id="filter-park">Park</li>
 						<li id="filter-play-centre">Play Centre</li>
-						<li id="filter-history">History</li>
-						<li id="filter-beaches">Beaches</li>
+						<li id="filter-playground">Playground</li>
+						<li id="filter-skatepark">Skatepark</li>
+						<li id="filter-softplay">Softplay</li>
+						<li id="filter-theme-park">Theme Park</li>								
 					</ul>
 				</li>
 			</ul>
