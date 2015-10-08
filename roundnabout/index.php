@@ -38,14 +38,14 @@
 						<li id="filter-go-karting">Go Karting</li>
 						<li id="filter-historical">Historical</li>
 						<li id="filter-leisure-centre">Leisure Centre</li>
-						<li id="filter-museum">Museum</li>		
+						<li id="filter-museum">Museum</li>
 						<li id="filter-nature">Nature</li>
 						<li id="filter-park">Park</li>
 						<li id="filter-play-centre">Play Centre</li>
 						<li id="filter-playground">Playground</li>
 						<li id="filter-skatepark">Skatepark</li>
 						<li id="filter-softplay">Softplay</li>
-						<li id="filter-theme-park">Theme Park</li>								
+						<li id="filter-theme-park">Theme Park</li>
 					</ul>
 				</li>
 			</ul>

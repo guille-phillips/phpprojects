@@ -30,9 +30,9 @@
 		default:
 			$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
 	}
-	
+
 	$id = 0;
-	$name = '';		
+	$name = '';
 	$latitude = '';
 	$longitude = '';
 	$category = '[]';
@@ -52,7 +52,7 @@
 	$category_array = array();
 	$category_field = '[]';
 	$category_js = '';
-	
+
 	// print_r($_POST);
 	if (isset($_POST['entry']) && $_POST['id']=='0') {
 		$telephone = CleanUp($_POST['telephone']);
@@ -135,8 +135,8 @@ SQL;
 					$facilities,
 					$disabled_facilities,
 					$good_stuff,
-					$bad_stuff);	
-					
+					$bad_stuff);
+
 			$stmt->execute();
 			$stmt->close();
 
@@ -163,7 +163,7 @@ SQL;
 		$good_stuff = StripSpace($_POST['good_stuff']);
 		$bad_stuff = StripSpace($_POST['bad_stuff']);
 		$id = $_POST['id'];
-		
+
 		$sql = <<<SQL
 			UPDATE
 				places
@@ -185,7 +185,7 @@ SQL;
 				disabled_facilities = ?,
 				good_stuff = ?,
 				bad_stuff = ?
-			WHERE 
+			WHERE
 				id = ?
 SQL;
 
@@ -209,8 +209,8 @@ SQL;
 					$facilities,
 					$good_stuff,
 					$bad_stuff,
-					$id);	
-					
+					$id);
+
 			$stmt->execute();
 			$stmt->close();
 
@@ -221,15 +221,15 @@ SQL;
 			$category_array = json_decode($category);
 			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
 			$category_field = $category;
-			
+
 			echo 'Record updated<br><br>';
 		} else {
 			echo htmlspecialchars($db->error);
-		}		
+		}
 	} elseif (isset($_POST['search'])) {
 		$name = '%'.StripSpace($_POST['name']).'%';
 		$id = 0;
-		
+
 		$sql = <<<SQL
 			SELECT
 				*
@@ -268,7 +268,7 @@ SQL;
 
 			$stmt->fetch();
 			$stmt->close();
-			
+
 			$telephone = implode(', ',json_decode($telephone));
 			$address = implode(",\n",json_decode($address));
 			$entry_rates = implode(",\n",json_decode($entry_rates));
@@ -277,7 +277,7 @@ SQL;
 			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
 		}
 	}
-	
+
 	$sql = "SELECT category FROM places";
 	if (!$list = $db->query($sql)) {
 		Error('There was an error running the query [' . $db->error . ']');
@@ -405,16 +405,16 @@ SQL;
 					return true;
 				}
 			}
-			
+
 			function AddNewCategory() {
 				var category = Capitalise($('#category').val().trim());
 				if (category=='') return;
-				
+
 				var div = document.createElement('div');
 				div.onclick = ToggleCategory;
 				div.className = 'category category-selected';
 				div.innerHTML = category;
-				
+
 				var db_categories = document.getElementById('db_categories');
 				var added = false;
 				for (node_index in db_categories.childNodes) {
@@ -436,12 +436,12 @@ SQL;
 				}
 
 				$('#category_list').val(JSON.stringify(category_list));
-				
+
 				$('#category').val('');
-				
+
 				return false;
 			}
-			
+
 			function Capitalise(str) {
 				return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 			}
@@ -486,7 +486,7 @@ SQL;
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);" accept="image/*"></div>
 			<img id="image_preview" src="#">
-			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>			
+			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>
 			<br><br>
 
 

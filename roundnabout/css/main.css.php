@@ -1,13 +1,13 @@
 <?php
 	header('Content-Type: text/css');
-	
+
 	define('MENU_HEIGHT',56);
 	define('FILTER_HEIGHT',34);
 	define('LIST_WIDTH',650);
-	
+
 	$colours[0] = '#001fb7';
 	$colours[1] = '#8f8f8f';
-	
+
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
 	$menu_height = (MENU_HEIGHT).'px';
@@ -24,7 +24,7 @@
 	font-family: "Rooney Sans";
 	src: url("../resources/fonts/Rooney Sans Bold.woff") format('woff');
 	font-weight: bold;
-	
+
 }
 
 @font-face {
@@ -49,7 +49,7 @@ body {
 #map_box {
 	position:absolute;
 	left:<?=$list_width?>;
-	top:<?=$body_top?>;				
+	top:<?=$body_top?>;
 	width: calc(100% - <?=$list_width?>);
 	height: calc(100% - <?=$body_top?>);
 	background-color: #CCC;
@@ -64,7 +64,7 @@ body {
 	font-weight:600;
 	background-color: blue;
 	padding-left:<?=$menu_horiz_offset?>;
-	
+
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,007eff+50,2989d8+100,7db9e8+100 */
 	background: #1e5799; /* Old browsers */
 	background: -moz-linear-gradient(left,  #1e5799 0%, #007eff 50%, #2989d8 100%, #7db9e8 100%); /* FF3.6+ */
@@ -73,7 +73,7 @@ body {
 	background: -o-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* Opera 11.10+ */
 	background: -ms-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* IE10+ */
 	background: linear-gradient(to right,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 */	
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 */
 }
 
 #menu > ul {
@@ -87,6 +87,21 @@ body {
 	vertical-align:top;
 	cursor:default;
 	height:<?=$menu_height?>;
+}
+
+/* Filter Menu */
+.switch-on {
+	background-image:url('../resources/check-on.png');
+	background-repeat:no-repeat;
+	background-position: right center;
+	background-size: 20px;
+}
+
+.switch-off {
+	background-image:url('../resources/check-off.png');
+	background-repeat:no-repeat;
+	background-position: right center;
+	background-size: 20px;
 }
 
 #filter {
@@ -103,6 +118,7 @@ body {
 	background-color: black;
 	color: white;
 	margin:0;
+	height:<?=$filter_height?>;
 }
 #filter > ul > li {
 	display:inline-block;
@@ -110,7 +126,7 @@ body {
 	padding:5px 23px 1px 3px;
 	vertical-align:top;
 	cursor:default;
-	height:<?=$filter_height?>;
+
 }
 
 #filter > ul > li > ul {
@@ -133,7 +149,7 @@ body {
 	-webkit-filter: blur(2px);
 	-moz-filter: blur(2px);
 	-o-filter: blur(2px);
-	-ms-filter: blur(2px);			
+	-ms-filter: blur(2px);
 }
 
 
@@ -252,14 +268,14 @@ h1 {
 
 .rating {
 	display:inline-block;
-	vertical-align:top;	
+	vertical-align:top;
 	width:45px;
 	height:45px;
-	
+
 	border-radius:10px;
 	background-color:<?=$colours[0]?>;
 	color:white;
-	
+
 	text-align:center;
 	font-size:30px;
 }
@@ -273,6 +289,7 @@ h1 {
 
 .marker {
 	position:absolute;
+/*border:1px solid red;*/
 }
 
 .marker-pin {
@@ -281,7 +298,6 @@ h1 {
 	top:-52px;
 	width:42px;
 	height:60px;
-	/*border:1px solid red;*/
 	background-image:url('../resources/pin-144ppi.png');
 	background-repeat:no-repeat;
 	font-family:'Rooney Sans';
@@ -290,6 +306,7 @@ h1 {
 	padding:7px 0px 0px 0px;
 	text-align:center;
 	color:white;
+/*border:1px solid blue;*/
 }
 
 .marker-home {
@@ -308,28 +325,14 @@ h1 {
 	top:-240px;
 	width:calc(443px - 30px);
 	height:calc(193px - 30px);
-	/*border:1px solid red;*/
 	padding:15px;
 	background-image:url('../resources/bubble-left.png');
 	background-repeat:no-repeat;
 	display:none;
 	z-index:999;
+/*border:1px solid green;*/
 }
 
-/* Filter Menu */
-.switch-on {
-	background-image:url('../resources/check-on.png');
-	background-repeat:no-repeat;
-	background-position: right center;
-	background-size: 20px;
-}
-
-.switch-off {
-	background-image:url('../resources/check-off.png');
-	background-repeat:no-repeat;
-	background-position: right center;
-	background-size: 20px;
-}
 
 
 /* Other */

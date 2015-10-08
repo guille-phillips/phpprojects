@@ -1,21 +1,7 @@
-var map;
-var centre_lat = 70; // 51.147101948513985; //51.1513;
-var centre_long = -0.17337799072265625; //-0.1866;
-var zoom_google = 14;
-
-
-// var screen_width;
-// var screen_height;
-
-var initial_latlong;
-
 var marker_resource = 'resources/pin-144ppi.png';
 var home_marker_resource = 'resources/home-marker.png';
 
 var categories = [];
-
-var marker_state = new MarkerState();
-
 
 function CategoryController() {
 	var self = this;
@@ -36,7 +22,7 @@ function CategoryController() {
 		"Go Karting": true,
 		"Historical": true,
 		"Leisure Centre": true,
-		"Museum": true,		
+		"Museum": true,
 		"Nature": true,
 		"Park": true,
 		"Play Centre": true,
@@ -45,15 +31,15 @@ function CategoryController() {
 		"Softplay": true,
 		"Theme Park": true
 	};
-	
+
 	this.Include = function (category) {
 		self.categories[category] = true;
 	}
-	
+
 	this.Exclude = function (category) {
 		delete self.categories[category];
 	}
-	
+
 	this.Categories = function() {
 		var category_array = [];
 		for (category in self.categories) {
@@ -82,14 +68,14 @@ function InteractionController() {
 		"filter-go-karting":"Go Karting",
 		"filter-historical":"Historical",
 		"filter-leisure-centre":"Leisure Centre",
-		"filter-museum":"Museum",		
+		"filter-museum":"Museum",
 		"filter-nature":"Nature",
 		"filter-park":"Park",
 		"filter-play-centre":"Play Centre",
 		"filter-playground":"Playground",
 		"filter-skatepark":"Skatepark",
 		"filter-softplay":"Softplay",
-		"filter-theme-park":"Theme Park"			
+		"filter-theme-park":"Theme Park"
 	};
 
 	function ToggleCategory(element,category) {
@@ -100,10 +86,10 @@ function InteractionController() {
 		} else {
 			category_controller.Exclude(category);
 		}
-		
+
 		place_controller.Show(category_controller.Categories());
 	}
-	
+
 	this.MenuClick = function() {
 		if (menu_mapping[this.id]) {
 			ToggleCategory(this,menu_mapping[this.id]);
@@ -121,7 +107,7 @@ function InteractionController() {
 				case 'filter-more':
 					$('#filter > ul > li > ul').toggle();
 					break;
-			}	
+			}
 		}
 	}
 }
@@ -133,14 +119,14 @@ function HomeMarkerClicked() {
 
 function MarkerController() {
 	var overlays = [];
+	
+	this.marker_state_controller = new MarkerStateController();
 
 	this.AddMarker = function(place,id,name,lat,lon,resource,callback) {
-		var map_box = document.getElementById('google_map');
-
 		var pin_html = "<div class='marker-pin'>"+name+"</div>";
 		var overlay = new CustomMarker(
-			new google.maps.LatLng(lat, lon), 
-			map,
+			new google.maps.LatLng(lat, lon),
+			map_controller.google_map,
 			{marker_id: id,
 			className: 'marker',
 			html: pin_html,
@@ -149,13 +135,13 @@ function MarkerController() {
 		);
 
 		overlays.push(overlay);
-		
+
 		var info_html = CreateInfoBox(place);
 
 		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-left'>"+info_html+"</div>";
 		var overlay = new CustomMarker(
-			new google.maps.LatLng(lat, lon), 
-			map,
+			new google.maps.LatLng(lat, lon),
+			map_controller.google_map,
 			{marker_id: id,
 			className: 'marker',
 			html: bubble_html,
@@ -169,8 +155,8 @@ function MarkerController() {
 	this.AddHomeMarker = function(lat,lon,callback) {
 		var marker_html = "<div class='marker-home'>"+name+"</div>";
 		var overlay = new CustomMarker(
-			new google.maps.LatLng(lat, lon), 
-			map,
+			new google.maps.LatLng(lat, lon),
+			map_controller.google_map,
 			{marker_id: 'home',
 			className: 'marker',
 			html: marker_html,
@@ -185,8 +171,9 @@ function MarkerController() {
 			overlays[index].remove();
 		}
 		overlays = [];
+		this.marker_state_controller.Reset();
 	}
-	
+
 	function CreateInfoBox(place) {
 		var html_array = [];
 
@@ -204,16 +191,21 @@ function MarkerController() {
 
 		return html_array.join('');
 	}
-	
-	
+
 }
 
-function MarkerState(){
+function MarkerStateController(){
 	var previous_id = undefined;
+	var ignore_next_click_map = false;
+	
+	this.Reset = function() {
+		previous_id = undefined;
+		ignore_next_click_map = false;
+	}
 	this.Event = function(info) {
-		console.log(new Date().getTime());
 		switch (info.name) {
 			case 'click_marker':
+				ignore_next_click_map = true;
 				if (previous_id === undefined) {
 					ShowBubble(info.id);
 					document.getElementById("place_"+info.id).scrollIntoView();
@@ -230,18 +222,24 @@ function MarkerState(){
 
 				break;
 			case 'click_map':
+				if (ignore_next_click_map) {
+					ignore_next_click_map = false;
+					break;
+				}
+				ignore_next_click_map = false;
 				if (previous_id !== undefined) {
 					HideBubble(previous_id);
 					previous_id = undefined;
 				}
 				break;
 			case 'click_list':
+				ignore_next_click_map = false;
 				if (previous_id !== undefined) {
 					HideBubble(previous_id);
 				}
 				ShowBubble(info.id);
 				var place = place_controller.GetPlaceById(info.id);
-				SetCentre(place.latitude,place.longitude);
+				map_controller.SetCentre(place.latitude,place.longitude);
 				previous_id = info.id;
 		}
 	}
@@ -263,7 +261,7 @@ function AjaxController() {
 	} else {
 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	}
-	
+
 	this.Message = function (method,value,id) {
 		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),false);
 		xmlhttp.send();
@@ -275,41 +273,42 @@ function AjaxController() {
 			return;
 		}
 		return response;
-	}	
+	}
 }
 
 function PlacesController() {
 	var overlays = [];
 	var ajax_controller = new AjaxController();
 	var places = [];
-	
+
 	this.Show = function (categories) {
-		places = ajax_controller.Message('GetPlaces',JSON.stringify({categories:categories,position:[centre_lat,centre_long]}) );
+		places = ajax_controller.Message('GetPlaces',JSON.stringify({categories:categories,position:[map_controller.home_lat,map_controller.home_long]}) );
 		if (places.error) {
 			alert(places.error);
 			return;
 		}
 
-		// Sort by distance 
+		// Sort by distance
 		var temp_places = Object.keys(places).map(function(k) { return places[k] });
 		temp_places.sort(function(a,b){return a.distance-b.distance;});
 		places = temp_places;
 
 		marker_controller.RemoveAll();
 		list_controller.RemoveAll();
-				
+
 		var place_list = document.getElementById('place_list');
-		
+
 		var marker_index = 1;
+		
 		for (var index in places) {
 			var place = places[index];
 
 			marker_controller.AddMarker(place,place.id,marker_index,place.latitude,place.longitude,marker_resource,
 				function(place_id){
 					return function(){
-						marker_state.Event({name:'click_marker',id:place_id}); 
+						marker_controller.marker_state_controller.Event({name:'click_marker',id:place_id});
 					};
-				}(place.id) 
+				}(place.id)
 			);
 
 			// Place List Item
@@ -319,10 +318,10 @@ function PlacesController() {
 			div.className = 'place_list_item';
 			div.innerHTML = list_controller.CreatePlaceListItem(place,marker_index);
 
-			div.addEventListener("click", 
+			div.addEventListener("click",
 				function(place_id) {
 					return function(){
-						marker_state.Event( {name:'click_list',id:place_id} );
+						marker_controller.marker_state_controller.Event( {name:'click_list',id:place_id} );
 					};
 				}(place.id)
 			);
@@ -337,33 +336,81 @@ function PlacesController() {
 		var place_id = places.map(function(e){return e.id;}).indexOf(id);
 		return places[place_id];
 	}
-		
-	// function RenderAll() {
-		// Render([]);
-	// }
-	
 }
 
 function ListController() {
 	this.CreatePlaceListItem = function(place,marker_index) {
 		var pl = document.getElementById('place_list').firstChild.innerHTML;
-		
+
 		pl = pl.replaceBlock('index',marker_index);
 		pl = pl.replaceTag('index',marker_index);
-			
+
 		for (property in place) {
 			pl = pl.replaceBlock(property,place[property]);
 			pl = pl.replaceTag(property,place[property]);
 		}
-		
+
 		return pl;
 	}
-	
+
 	this.RemoveAll = function() {
 		$('#place_list > div').not(':first').remove();
 	}
 }
 
+function MapController(centre_lat,centre_long) {
+	var self = this;
+	this.google_map = undefined;
+	
+	this.home_lat = undefined;
+	this.home_long = undefined;
+	this.centre_lat = centre_lat;
+	this.centre_long = centre_long;
+	
+	this.CentreChanged = function() {
+		var centre = self.google_map.getCenter();
+
+		this.centre_lat = centre.lat();
+		this.centre_long = centre.lng();
+	}
+
+	this.SetCentre = function(lat,lon) {
+		self.google_map.setCenter(new google.maps.LatLng(lat, lon));
+	}
+
+	this.ZoomChanged = function() {
+		// new_zoom_google = map.getZoom();
+	}
+	
+	this.Initialise = function () {
+		var mapOptions = {
+			center: new google.maps.LatLng(centre_lat, centre_long),
+			zoom: 14,
+			minZoom: 11,
+			maxZoom: 18,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			streetViewControl: false,
+			navigationControl: false,
+			scaleControl: true
+		}
+
+		self.google_map = new google.maps.Map(document.getElementById('map_box'), mapOptions);	
+		
+		google.maps.event.addListener(self.google_map, 'zoom_changed', self.ZoomChanged);
+		google.maps.event.addListener(self.google_map, 'center_changed', self.CentreChanged);
+		google.maps.event.addListener(self.google_map, 'click',
+			function() {
+				marker_controller.marker_state_controller.Event(
+					{name:'click_map'}
+				) 
+			} 
+		);
+		
+		self.ZoomChanged();
+	}
+
+
+}
 
 function ConfigurationController() {
 
@@ -371,34 +418,10 @@ function ConfigurationController() {
 
 	var attempts = 0;
 	var max_attempts = 4;
-	
+
 	this.Initialise = function () {
-		var mapOptions = {
-			center: new google.maps.LatLng(centre_lat, centre_long),
-			zoom: zoom_google,
-			minZoom: 11, 
-			maxZoom: 18, 
-			mapTypeId: google.maps.MapTypeId.ROADMAP,
-			streetViewControl: false,
-			navigationControl: false,
-			scaleControl: true
-		}
-		map = new google.maps.Map(map_box, mapOptions);
-		
-		this.CentreChanged = function() {
-			var centre = map.getCenter();
-
-			centre_lat=centre.lat();
-			centre_long=centre.lng();
-		}
-
-		this.SetCentre = function(lat,lon) {
-			map.setCenter(new google.maps.LatLng(lat, lon));
-		}
-
-		this.ZoomChanged = function() {
-			new_zoom_google = map.getZoom();
-		}		
+		map_controller.Initialise();
+			
 		var options = {
 		  enableHighAccuracy: true,
 		  timeout: 20000,
@@ -406,49 +429,22 @@ function ConfigurationController() {
 		};
 		navigator.geolocation.getCurrentPosition(LocationSuccess, LocationError, options);
 
-
-		//var map_box = document.getElementById('map_box');
-		var place_list = document.getElementById('place_list');
-
-		// screen_width = window.clientWidth-200;
-		// screen_height = window.clientHeight;
-
-		//map_box.style.width = window.clientWidth-200+'px';
-		//map_box.style.height = window.clientHeight+'px';
-
-		//place_list.style.height = (window.clientHeight-2)+'px';
-
-		// window.onresize = function(event) {
-			// screen_width = window.clientWidth-200;
-			// screen_height = window.clientHeight;
-			// //map_box.style.width = window.clientWidth-200+'px';
-			// //map_box.style.height = window.clientHeight+'px';
-			// //place_list.style.height = (window.clientHeight-2)+'px';
-		// };
-
-	
-		google.maps.event.addListener(map, 'zoom_changed', this.ZoomChanged);
-		google.maps.event.addListener(map, 'center_changed', this.CentreChanged);
-
-		this.ZoomChanged();
-		
 		$('#filter li').addClass('switch-on');
 		$('li').click(interaction_controller.MenuClick);
 	}
-	
-	
-	function LocationSuccess(pos) {
-		var crd = pos.coords;
-		initial_latlong = [crd.latitude, crd.longitude];
-		SetCentre(crd.latitude,crd.longitude);
-		
-		marker_controller.AddHomeMarker(crd.latitude,crd.longitude,HomeMarkerClicked);
+
+
+	function LocationSuccess(location_info) {
+		map_controller.home_lat = location_info.coords.latitude;
+		map_controller.home_long = location_info.coords.longitude;
+		map_controller.SetCentre(map_controller.home_lat, map_controller.home_long);
+
+		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, HomeMarkerClicked);
 
 		place_controller.Show(category_controller.Categories());
 	};
 
 	function LocationError(error) {
-		console.log(error.message);
 		if (attempts < max_attempts) {
 			self.Initialise();
 			attempts++;
@@ -456,7 +452,7 @@ function ConfigurationController() {
 			alert("Unable to get your location.\nPlease try and reload page.");
 		}
 	};
-	
+
 }
 
 var configuration_controller = new ConfigurationController();
@@ -465,5 +461,6 @@ var marker_controller = new MarkerController();
 var list_controller = new ListController();
 var interaction_controller = new InteractionController();
 var category_controller = new CategoryController();
+var map_controller = new MapController(50.0,0.0);
 
 google.maps.event.addDomListener(window, 'load', configuration_controller.Initialise);

@@ -7,7 +7,7 @@ String.prototype.replaceBlock = function(search,list) {
 	if (!isArray(list)) {
 		list = [list];
 	}
-	
+
 	while (pos!=-1) {
 		if ((pos_start = this.indexOf(search_start,pos))>-1) {
 			replaced += this.substr(pos,pos_start-pos);
@@ -33,11 +33,11 @@ String.prototype.replaceTag = function(search,list) {
 	var pos = 0;
 	var replaced = '';
 	var search_tag = '{'+search+'}';
-	
+
 	if (!isArray(list)) {
 		list = [list];
 	}
-	
+
 	while (pos!=-1) {
 		if ((pos_next = this.indexOf(search_tag,pos))>-1) {
 			replaced += this.substr(pos,pos_next-pos);
@@ -55,12 +55,12 @@ var isArray = (function () {
 	// Use compiler's own isArray when available
 	if (Array.isArray) {
 		return Array.isArray;
-	} 
- 
+	}
+
 	// Retain references to variables for performance
 	// optimization
-	var objectToStringFn = Object.prototype.toString, arrayToStringResult = objectToStringFn.call([]); 
- 
+	var objectToStringFn = Object.prototype.toString, arrayToStringResult = objectToStringFn.call([]);
+
 	return function (subject) {
 		return objectToStringFn.call(subject) === arrayToStringResult;
 	};

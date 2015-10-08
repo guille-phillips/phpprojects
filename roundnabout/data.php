@@ -1,7 +1,7 @@
 <?php
 	header('Content-Type: text/plain; charset=utf-8');
 	ini_set('html_errors', false);
-	
+
 	switch ($_SERVER['HTTP_HOST']) {
 		case 'localhost:8080':
 			$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
@@ -12,7 +12,7 @@
 		default:
 			$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
 	}
-	
+
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');
 	}
@@ -21,7 +21,7 @@
 
 	switch ($_GET['method']) {
 		case 'GetPlaces':
-		
+
 			$value = json_decode($_GET['value']);
 
 			$search_categories = $value->categories;
@@ -39,14 +39,14 @@ SQL;
 			};
 
 			$image_extensions = array('jpg','png','gif');
-			
+
 			$rows = array();
 			while($row = $list->fetch_assoc()){
 				$latitude = (float) $row['latitude'];
 				$longitude = (float) $row['longitude'];
 
 				$slug = strtolower(str_replace(' ','-',$row['name']));
-				
+
 				$image_extension = 'jpg';
 				$image_url='#';
 				foreach ($image_extensions as $image_extension) {
@@ -54,7 +54,7 @@ SQL;
 						$image_url = 'images/'.$slug.'.'.$image_extension;
 					}
 				}
-				
+
 				$categories_json = DecodeJSONField($row['category']);
 
 				$ok_to_add = false;
@@ -63,8 +63,8 @@ SQL;
 						$ok_to_add = true;
 						break;
 					}
-				}				
-				
+				}
+
 				if ($ok_to_add) {
 					$rows[(int) $row['id']]=array(
 						'id'=>(int) $row['id'],
@@ -103,10 +103,10 @@ SQL;
 			return $field;
 		}
 	}
-	
+
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
-	}	
+	}
 
 	function DistanceBetween($latlong1,$latlong2) {
 		$lat2 = $latlong2[0];
@@ -114,18 +114,18 @@ SQL;
 		$lat1 = $latlong1[0];
 		$lon1 = $latlong1[1];
 
-		$R = 3959; // miles 
+		$R = 3959; // miles
 
 		$x1 = $lat2-$lat1;
-		$dLat = 2*pi()*$x1/360;  
+		$dLat = 2*pi()*$x1/360;
 		$x2 = $lon2-$lon1;
-		$dLon = 2*pi()*$x2/360;  
-		$a = sin($dLat/2) * sin($dLat/2) + 
-						cos(2*pi()*$lat1/360) * cos(2*pi()*$lat2/360) * 
-						sin($dLon/2) * sin($dLon/2);  
-		$c = 2 * atan2(sqrt($a), sqrt(1-$a)); 
-		$d = $R * $c; 
-		
+		$dLon = 2*pi()*$x2/360;
+		$a = sin($dLat/2) * sin($dLat/2) +
+						cos(2*pi()*$lat1/360) * cos(2*pi()*$lat2/360) *
+						sin($dLon/2) * sin($dLon/2);
+		$c = 2 * atan2(sqrt($a), sqrt(1-$a));
+		$d = $R * $c;
+
 		return $d;
-	}	
+	}
 ?>
