@@ -25,6 +25,13 @@
 			$value = json_decode($_GET['value']);
 
 			$search_categories = $value->categories;
+			if (count($search_categories)>0) {
+				$search_values = array_fill(0,count($search_categories),false);
+				$filter = array_combine($search_categories,$search_values);
+			} else {
+				$filter = array();
+			}
+			
 			$centre_latitude = $value->position[0];
 			$centre_longitude = $value->position[1];
 
@@ -57,14 +64,22 @@ SQL;
 
 				$categories_json = DecodeJSONField($row['category']);
 
+				if (count($search_categories)>0) {
+					$search_values = array_fill(0,count($search_categories),false);
+					$filter = array_combine($search_categories,$search_values);
+				} else {
+					$filter = array();
+				}
+			
 				$ok_to_add = false;
 				foreach ($search_categories as $search_category) {
 					if (in_array($search_category,$categories_json)) {
-						$ok_to_add = true;
-						break;
+						$filter[$search_category] = true;
 					}
 				}
 
+				$ok_to_add = CategoryExpression($filter);
+				
 				if ($ok_to_add) {
 					$rows[(int) $row['id']]=array(
 						'id'=>(int) $row['id'],
@@ -90,7 +105,6 @@ SQL;
 				}
 			}
 
-			// print_r($rows);
 			echo json_encode($rows);
 			break;
 	}
@@ -104,6 +118,42 @@ SQL;
 		}
 	}
 
+	function CategoryExpression($filter) {
+		if (isset($filter['All'])) {
+			return true;
+		} else {
+			$has_other_category = false;
+			foreach ($filter as $category=>$has_category) {
+				switch ($category) {
+					case 'All':
+					case 'Paid':
+					case 'Free':
+					case 'Indoor':
+					case 'Outdoor':
+						break;
+					default:
+						if ($has_category) {
+							$has_other_category = true;
+							break;
+						}
+				}
+			}
+// echo $has_other_category?'y':'n';
+			$paid = isset($filter['Paid'])?$filter['Paid']:true;
+			$free = isset($filter['Free'])?$filter['Free']:true;
+			$indoor = isset($filter['Indoor'])?$filter['Indoor']:true;
+			$outdoor = isset($filter['Outdoor'])?$filter['Outdoor']:true;
+return $has_other_category;
+			if (!$has_other_category) {
+				return $paid && $free && $indoor && $outdoor;
+			} else {
+				return $paid && $free && $indoor && $outdoor && $has_other_category;
+			}
+		}
+		return false;
+	}
+	
+	
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
 	}

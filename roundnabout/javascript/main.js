@@ -5,53 +5,64 @@ var categories = [];
 
 function CategoryController() {
 	var self = this;
+	var category_array;
+	var has_all_category;
+	
 	this.categories = {
-		"Free": true,
-		"Paid": true,
-		"Indoor": true,
-		"Outdoor": true,
-		"Animals": true,
-		"Water Fun": true,
-		"Rides": true,
-		"Transport": true,
-		"Activity Centre": true,
-		"Adventure": true,
-		"Bowling": true,
-		"Educational": true,
-		"Farm": true,
-		"Go Karting": true,
-		"Historical": true,
-		"Leisure Centre": true,
-		"Museum": true,
-		"Nature": true,
-		"Park": true,
-		"Play Centre": true,
-		"Playground": true,
-		"Skatepark": true,
-		"Softplay": true,
-		"Theme Park": true
+		"All": true
 	};
 
 	this.Include = function (category) {
 		self.categories[category] = true;
+		category_array = void 0;
+		has_all_category = void 0;
 	}
 
 	this.Exclude = function (category) {
+		console.log("Exclude("+category+")");
 		delete self.categories[category];
+		category_array = void 0;
+		has_all_category = void 0;
+	}
+	
+	this.Toggle = function(category) {
+		if (self.categories[category]) {
+			self.Exclude(category);
+		} else {
+			self.Include(category);
+		}	
+	}
+	
+	this.ExcludeEverything = function () {
+		self.categories = {};
+		category_array = void 0;
+		has_all_category = void 0;
 	}
 
 	this.Categories = function() {
-		var category_array = [];
+		if (category_array) {
+			return category_array;
+		}
+		category_array = [];
 		for (category in self.categories) {
 			category_array.push(category);
 		}
 		return category_array;
+	}
+	
+	this.HasAllCategory = function() {
+		if (has_all_category) {
+			return has_all_category;
+		}
+		has_all_category = category_controller.Categories().indexOf('All')!=-1;
+		return has_all_category;
 	}
 }
 
 function InteractionController() {
 	var menu_mapping =
 	{
+		"filter-all":"All",
 		"filter-free":"Free",
 		"filter-paid":"Paid",
 		"filter-indoor":"Indoor",
@@ -78,13 +89,43 @@ function InteractionController() {
 		"filter-theme-park":"Theme Park"
 	};
 
+	function FindElementIdFromCategory(category) {
+		var index = Object.keys(menu_mapping).map(function(e){return menu_mapping[e];}).indexOf(category);
+		return Object.keys(menu_mapping)[index];
+	}
+	
+	function DisplayCategories() {
+		for (var filter_index in category_controller.Categories()){
+			var element_id = FindElementIdFromCategory(category_controller.Categories()[filter_index]);
+			$('#'+element_id).removeClass('switch-off');
+			$('#'+element_id).addClass('switch-on');
+		}		
+	}
+	
 	function ToggleCategory(element,category) {
-		$(element).toggleClass('switch-on');
-		$(element).toggleClass('switch-off');
-		if ($(element).hasClass('switch-on')) {
-			category_controller.Include(category);
+		$('#filter li').removeClass('switch-on');
+		$('#filter li').addClass('switch-off');		
+		
+		if (category=='All') {
+			category_controller.Toggle(category);
+
+			if (category_controller.HasAllCategory()) {
+				$('#filter-all').removeClass('switch-off');
+				$('#filter-all').addClass('switch-on');				
+			} else {
+				DisplayCategories();
+			}
 		} else {
-			category_controller.Exclude(category);
+			if (!category_controller.HasAllCategory()) {
+				category_controller.Toggle(category);
+
+				DisplayCategories();
+			} else {
+				category_controller.ExcludeEverything();
+				category_controller.Include(category);
+				
+				DisplayCategories();		
+			}
 		}
 
 		place_controller.Show(category_controller.Categories());
@@ -429,7 +470,11 @@ function ConfigurationController() {
 		};
 		navigator.geolocation.getCurrentPosition(LocationSuccess, LocationError, options);
 
-		$('#filter li').addClass('switch-on');
+		$('#filter li').addClass('switch-off');
+		$('#filter-all').removeClass('switch-off');
+		$('#filter-all').addClass('switch-on');
+		$('#filter-more').removeClass('switch-off');
+		
 		$('li').click(interaction_controller.MenuClick);
 	}
 
