@@ -137,6 +137,7 @@ function InteractionController() {
 		} else {
 			switch (this.id) {
 				case 'menu-home':
+					
 					break;
 				case 'menu-about-us':
 					break;

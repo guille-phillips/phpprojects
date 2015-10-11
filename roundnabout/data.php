@@ -23,15 +23,7 @@
 		case 'GetPlaces':
 
 			$value = json_decode($_GET['value']);
-
-			$search_categories = $value->categories;
-			if (count($search_categories)>0) {
-				$search_values = array_fill(0,count($search_categories),false);
-				$filter = array_combine($search_categories,$search_values);
-			} else {
-				$filter = array();
-			}
-			
+			$category_controller = new CategoryController($value->categories);
 			$centre_latitude = $value->position[0];
 			$centre_longitude = $value->position[1];
 
@@ -63,24 +55,8 @@ SQL;
 				}
 
 				$categories_json = DecodeJSONField($row['category']);
-
-				if (count($search_categories)>0) {
-					$search_values = array_fill(0,count($search_categories),false);
-					$filter = array_combine($search_categories,$search_values);
-				} else {
-					$filter = array();
-				}
-			
-				$ok_to_add = false;
-				foreach ($search_categories as $search_category) {
-					if (in_array($search_category,$categories_json)) {
-						$filter[$search_category] = true;
-					}
-				}
-
-				$ok_to_add = CategoryExpression($filter);
 				
-				if ($ok_to_add) {
+				if ($category_controller->Accept($categories_json)) {
 					$rows[(int) $row['id']]=array(
 						'id'=>(int) $row['id'],
 						'name'=>$row['name'],
@@ -117,14 +93,26 @@ SQL;
 			return $field;
 		}
 	}
-
-	function CategoryExpression($filter) {
-		if (isset($filter['All'])) {
-			return true;
-		} else {
-			$has_other_category = false;
-			foreach ($filter as $category=>$has_category) {
-				switch ($category) {
+	
+	class CategoryController {
+		private $filter = array();
+		private $has_all = false;
+		private $has_paid = false;
+		private $has_free = false;
+		private $has_indoor = false;
+		private $has_outdoor = false;
+		private $has_other = false;
+		
+		public function __construct($filter) {
+			$this->filter = $filter;
+			$this->has_all = in_array('All',$filter);
+			$this->has_paid = in_array('Paid',$filter);
+			$this->has_free = in_array('Free',$filter);
+			$this->has_indoor = in_array('Indoor',$filter);
+			$this->has_outdoor = in_array('Outdoor',$filter);
+			
+			foreach ($filter as $filter_category) {
+				switch ($filter_category) {
 					case 'All':
 					case 'Paid':
 					case 'Free':
@@ -132,27 +120,62 @@ SQL;
 					case 'Outdoor':
 						break;
 					default:
-						if ($has_category) {
-							$has_other_category = true;
-							break;
-						}
+						$this->has_other = true;
+						break 2;
 				}
 			}
-// echo $has_other_category?'y':'n';
-			$paid = isset($filter['Paid'])?$filter['Paid']:true;
-			$free = isset($filter['Free'])?$filter['Free']:true;
-			$indoor = isset($filter['Indoor'])?$filter['Indoor']:true;
-			$outdoor = isset($filter['Outdoor'])?$filter['Outdoor']:true;
-return $has_other_category;
-			if (!$has_other_category) {
-				return $paid && $free && $indoor && $outdoor;
-			} else {
-				return $paid && $free && $indoor && $outdoor && $has_other_category;
-			}
 		}
-		return false;
+		
+		public function Accept($categories) {
+			// return true;
+			if ($this->has_all) {
+				return true;
+			}
+			$paid = in_array('Paid',$categories);
+			$free = in_array('Free',$categories);
+			$indoor = in_array('Indoor',$categories);
+			$outdoor = in_array('Outdoor',$categories);
+			$other = false;
+			foreach ($categories as $category) {
+				switch ($category) {
+					case 'Paid':
+					case 'Free':
+					case 'Indoor':
+					case 'Outdoor':
+						break;
+					default:
+						$other = in_array($category,$this->filter);
+						if ($other) {
+							break 2;
+						}
+				}			
+			}
+			
+			$ok1 = true;
+			if ($this->has_paid && $this->has_free) {
+				$ok1 = $paid || $free;
+			} elseif ($this->has_paid) {
+				$ok1 = $paid;
+			} elseif ($this->has_free) {
+				$ok1 = $free;
+			}
+			
+			$ok2 = true;
+			if ($this->has_indoor && $this->has_outdoor) {
+				$ok2 = $indoor || $outdoor;
+			} elseif ($this->has_indoor) {
+				$ok2 = $indoor;
+			} elseif ($this->has_outdoor) {
+				$ok2 = $outdoor;
+			}
+			
+			$ok3 = true;
+			if ($this->has_other) {
+				$ok3 = $other;
+			}
+			return $ok1 && $ok2 && $ok3;
+		}
 	}
-	
 	
 	function Error($description) {
 		die(json_encode(array('error' => $description)));
