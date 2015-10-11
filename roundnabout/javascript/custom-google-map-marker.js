@@ -7,7 +7,7 @@ function CustomMarker(latlng, map, args) {
 CustomMarker.prototype = new google.maps.OverlayView();
 
 CustomMarker.prototype.draw = function() {
-
+console.log("CustomMarker.prototype::draw");
 	var self = this;
 
 	var div = this.div;
@@ -40,12 +40,16 @@ CustomMarker.prototype.draw = function() {
 };
 
 CustomMarker.prototype.remove = function() {
+	// alert('removing');
+console.log("CustomMarker.prototype::remove");
 	if (this.div) {
 		this.div.parentNode.removeChild(this.div);
+		delete this.div;
 		this.div = null;
 	}
 };
 
 CustomMarker.prototype.getPosition = function() {
+console.log("CustomMarker.prototype::getPosition");	
 	return this.latlng;
 };

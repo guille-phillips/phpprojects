@@ -7,39 +7,43 @@ function CategoryController() {
 	var self = this;
 	var category_array;
 	var has_all_category;
-	
+
 	this.categories = {
 		"All": true
 	};
 
 	this.Include = function (category) {
+console.log("CategoryController::Include");
 		self.categories[category] = true;
 		category_array = void 0;
 		has_all_category = void 0;
 	}
 
 	this.Exclude = function (category) {
-		console.log("Exclude("+category+")");
+console.log("CategoryController::Exclude");
 		delete self.categories[category];
 		category_array = void 0;
 		has_all_category = void 0;
 	}
-	
+
 	this.Toggle = function(category) {
+console.log("CategoryController::Toggle");
 		if (self.categories[category]) {
 			self.Exclude(category);
 		} else {
 			self.Include(category);
-		}	
+		}
 	}
-	
+
 	this.ExcludeEverything = function () {
+console.log("CategoryController::ExcludeEverything");
 		self.categories = {};
 		category_array = void 0;
 		has_all_category = void 0;
 	}
 
 	this.Categories = function() {
+console.log("CategoryController::Categories");
 		if (category_array) {
 			return category_array;
 		}
@@ -49,8 +53,9 @@ function CategoryController() {
 		}
 		return category_array;
 	}
-	
+
 	this.HasAllCategory = function() {
+console.log("CategoryController::HasAllCategory");
 		if (has_all_category) {
 			return has_all_category;
 		}
@@ -90,28 +95,31 @@ function InteractionController() {
 	};
 
 	function FindElementIdFromCategory(category) {
+console.log("InteractionController::FindElementIdFromCategory");
 		var index = Object.keys(menu_mapping).map(function(e){return menu_mapping[e];}).indexOf(category);
 		return Object.keys(menu_mapping)[index];
 	}
-	
+
 	function DisplayCategories() {
+console.log("InteractionController::DisplayCategories");
 		for (var filter_index in category_controller.Categories()){
 			var element_id = FindElementIdFromCategory(category_controller.Categories()[filter_index]);
 			$('#'+element_id).removeClass('switch-off');
 			$('#'+element_id).addClass('switch-on');
-		}		
+		}
 	}
-	
+
 	function ToggleCategory(element,category) {
+console.log("InteractionController::ToggleCategory");
 		$('#filter li').removeClass('switch-on');
-		$('#filter li').addClass('switch-off');		
-		
+		$('#filter li').addClass('switch-off');
+
 		if (category=='All') {
 			category_controller.Toggle(category);
 
 			if (category_controller.HasAllCategory()) {
 				$('#filter-all').removeClass('switch-off');
-				$('#filter-all').addClass('switch-on');				
+				$('#filter-all').addClass('switch-on');
 			} else {
 				DisplayCategories();
 			}
@@ -123,21 +131,24 @@ function InteractionController() {
 			} else {
 				category_controller.ExcludeEverything();
 				category_controller.Include(category);
-				
-				DisplayCategories();		
+
+				DisplayCategories();
 			}
 		}
+
+		marker_controller.marker_state_controller.Event({name:'click_category'});
 
 		place_controller.Show(category_controller.Categories());
 	}
 
 	this.MenuClick = function() {
+console.log("InteractionController::MenuClick");
 		if (menu_mapping[this.id]) {
 			ToggleCategory(this,menu_mapping[this.id]);
 		} else {
 			switch (this.id) {
 				case 'menu-home':
-					
+
 					break;
 				case 'menu-about-us':
 					break;
@@ -161,12 +172,15 @@ function HomeMarkerClicked() {
 
 function MarkerController() {
 	var overlays = [];
-	
+
 	this.marker_state_controller = new MarkerStateController();
 
 	this.AddMarker = function(place,id,name,lat,lon,resource,callback) {
+console.log("MarkerController::AddMarker()");
+		var overlay;
+		
 		var pin_html = "<div class='marker-pin'>"+name+"</div>";
-		var overlay = new CustomMarker(
+		overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
 			map_controller.google_map,
 			{marker_id: id,
@@ -175,13 +189,13 @@ function MarkerController() {
 			click_event: callback
 			}
 		);
-
+		
 		overlays.push(overlay);
 
 		var info_html = CreateInfoBox(place);
 
 		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-left'>"+info_html+"</div>";
-		var overlay = new CustomMarker(
+		overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
 			map_controller.google_map,
 			{marker_id: id,
@@ -195,6 +209,7 @@ function MarkerController() {
 	}
 
 	this.AddHomeMarker = function(lat,lon,callback) {
+console.log("MarkerController::AddHomeMarker");
 		var marker_html = "<div class='marker-home'>"+name+"</div>";
 		var overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
@@ -209,14 +224,18 @@ function MarkerController() {
 
 
 	this.RemoveAll = function() {
+console.log("MarkerController::RemoveAll");
 		for (index in overlays) {
 			overlays[index].remove();
+			delete overlays[index];
 		}
 		overlays = [];
 		this.marker_state_controller.Reset();
+		alert('RemoveAll finished');
 	}
 
 	function CreateInfoBox(place) {
+console.log("MarkerController::CreateInfoBox");
 		var html_array = [];
 
 		html_array.push(Tag('img','',{class:'square'}));
@@ -239,12 +258,14 @@ function MarkerController() {
 function MarkerStateController(){
 	var previous_id = undefined;
 	var ignore_next_click_map = false;
-	
+
 	this.Reset = function() {
+console.log("MarkerStateController::Reset");
 		previous_id = undefined;
 		ignore_next_click_map = false;
 	}
 	this.Event = function(info) {
+console.log("MarkerStateController::Event");
 		switch (info.name) {
 			case 'click_marker':
 				ignore_next_click_map = true;
@@ -283,14 +304,23 @@ function MarkerStateController(){
 				var place = place_controller.GetPlaceById(info.id);
 				map_controller.SetCentre(place.latitude,place.longitude);
 				previous_id = info.id;
+				break;
+			case 'click_category':
+				if (previous_id !== undefined) {
+					HideBubble(previous_id);
+					previous_id = undefined;
+				}
+				break;
 		}
 	}
 
 	var ShowBubble = function(id) {
+console.log("MarkerStateController::ShowBubble");
 		document.getElementById("bubble"+id).style.display="inherit";
 	}
 
 	var HideBubble = function(id) {
+console.log("MarkerStateController::HideBubble");
 		document.getElementById("bubble"+id).style.display="none";
 	}
 }
@@ -305,6 +335,7 @@ function AjaxController() {
 	}
 
 	this.Message = function (method,value,id) {
+console.log("AjaxController::Message");
 		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),false);
 		xmlhttp.send();
 		try {
@@ -324,6 +355,7 @@ function PlacesController() {
 	var places = [];
 
 	this.Show = function (categories) {
+console.log("PlacesController::Show");
 		places = ajax_controller.Message('GetPlaces',JSON.stringify({categories:categories,position:[map_controller.home_lat,map_controller.home_long]}) );
 		if (places.error) {
 			alert(places.error);
@@ -341,7 +373,7 @@ function PlacesController() {
 		var place_list = document.getElementById('place_list');
 
 		var marker_index = 1;
-		
+
 		for (var index in places) {
 			var place = places[index];
 
@@ -375,6 +407,7 @@ function PlacesController() {
 	}
 
 	this.GetPlaceById = function (id) {
+console.log("PlacesController::GetPlaceById");
 		var place_id = places.map(function(e){return e.id;}).indexOf(id);
 		return places[place_id];
 	}
@@ -382,6 +415,7 @@ function PlacesController() {
 
 function ListController() {
 	this.CreatePlaceListItem = function(place,marker_index) {
+console.log("ListController::CreatePlaceListItem");
 		var pl = document.getElementById('place_list').firstChild.innerHTML;
 
 		pl = pl.replaceBlock('index',marker_index);
@@ -396,6 +430,7 @@ function ListController() {
 	}
 
 	this.RemoveAll = function() {
+console.log("ListController::RemoveAll");
 		$('#place_list > div').not(':first').remove();
 	}
 }
@@ -403,13 +438,14 @@ function ListController() {
 function MapController(centre_lat,centre_long) {
 	var self = this;
 	this.google_map = undefined;
-	
+
 	this.home_lat = undefined;
 	this.home_long = undefined;
 	this.centre_lat = centre_lat;
 	this.centre_long = centre_long;
-	
+
 	this.CentreChanged = function() {
+console.log("MapController::CentreChanged");
 		var centre = self.google_map.getCenter();
 
 		this.centre_lat = centre.lat();
@@ -417,14 +453,17 @@ function MapController(centre_lat,centre_long) {
 	}
 
 	this.SetCentre = function(lat,lon) {
+console.log("MapController::SetCentre");
 		self.google_map.setCenter(new google.maps.LatLng(lat, lon));
 	}
 
 	this.ZoomChanged = function() {
+console.log("MapController::ZoomChanged");
 		// new_zoom_google = map.getZoom();
 	}
-	
+
 	this.Initialise = function () {
+console.log("MapController::Initialise");
 		var mapOptions = {
 			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
 			zoom: 14,
@@ -436,18 +475,18 @@ function MapController(centre_lat,centre_long) {
 			scaleControl: true
 		}
 
-		self.google_map = new google.maps.Map(document.getElementById('map_box'), mapOptions);	
-		
+		self.google_map = new google.maps.Map(document.getElementById('map_box'), mapOptions);
+
 		google.maps.event.addListener(self.google_map, 'zoom_changed', self.ZoomChanged);
 		google.maps.event.addListener(self.google_map, 'center_changed', self.CentreChanged);
 		google.maps.event.addListener(self.google_map, 'click',
 			function() {
 				marker_controller.marker_state_controller.Event(
 					{name:'click_map'}
-				) 
-			} 
+				)
+			}
 		);
-		
+
 		self.ZoomChanged();
 	}
 
@@ -462,8 +501,9 @@ function ConfigurationController() {
 	var max_attempts = 4;
 
 	this.Initialise = function () {
+console.log("ConfigurationController::Initialise");
 		map_controller.Initialise();
-			
+
 		var options = {
 		  enableHighAccuracy: true,
 		  timeout: 20000,
@@ -475,12 +515,13 @@ function ConfigurationController() {
 		$('#filter-all').removeClass('switch-off');
 		$('#filter-all').addClass('switch-on');
 		$('#filter-more').removeClass('switch-off');
-		
+
 		$('li').click(interaction_controller.MenuClick);
 	}
 
 
 	function LocationSuccess(location_info) {
+console.log("ConfigurationController::LocationSuccess");
 		map_controller.home_lat = location_info.coords.latitude;
 		map_controller.home_long = location_info.coords.longitude;
 		map_controller.SetCentre(map_controller.home_lat, map_controller.home_long);
@@ -491,6 +532,7 @@ function ConfigurationController() {
 	};
 
 	function LocationError(error) {
+console.log("ConfigurationController::LocationError");
 		if (attempts < max_attempts) {
 			self.Initialise();
 			attempts++;

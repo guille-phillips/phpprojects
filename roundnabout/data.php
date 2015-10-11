@@ -131,6 +131,9 @@ SQL;
 			if ($this->has_all) {
 				return true;
 			}
+			if (!is_array($categories)) {
+				return false;
+			}
 			$paid = in_array('Paid',$categories);
 			$free = in_array('Free',$categories);
 			$indoor = in_array('Indoor',$categories);
