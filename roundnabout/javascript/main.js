@@ -426,7 +426,7 @@ function MapController(centre_lat,centre_long) {
 	
 	this.Initialise = function () {
 		var mapOptions = {
-			center: new google.maps.LatLng(centre_lat, centre_long),
+			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
 			zoom: 14,
 			minZoom: 11,
 			maxZoom: 18,
@@ -507,6 +507,6 @@ var marker_controller = new MarkerController();
 var list_controller = new ListController();
 var interaction_controller = new InteractionController();
 var category_controller = new CategoryController();
-var map_controller = new MapController(50.0,0.0);
+var map_controller = new MapController(51.5072,-0.1275);
 
 google.maps.event.addDomListener(window, 'load', configuration_controller.Initialise);
