@@ -35,7 +35,7 @@
 SQL;
 			if (!$list = $db->query($sql)) {
 				Error('There was an error running the query [' . $db->error . ']');
-			};
+			}
 
 			$image_extensions = array('jpg','png','gif');
 
