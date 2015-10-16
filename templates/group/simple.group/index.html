@@ -1,0 +1,64 @@
+{preload_replace:chnl="simple_page"}
+
+{exp:channel:entries cache="yes" refresh="360" limit="1" status="{publisher:entry_status}" require_entry="yes" disable="member_data"}
+
+    {if (site_id == 18 OR site_id == 16) AND simple_page_c6_reqire_login == 'yes'}
+        {if logged_out}
+            {redirect='login'}
+        {/if}
+        {if logged_in}
+            {exp:member:custom_profile_data member_id="{logged_in_member_id}"}
+
+                {!-- To access the page on Rooms site, login user's custom_user_group should be 'rooms' else redirect to login --}
+                {!-- To access the page on Stud site, login user's custom_user_group should be 'stud' else redirect it to login --}
+
+                {if (site_id == 18 AND custom_user_group != 'rooms') || (site_id == 16 AND custom_user_group != 'stud')}
+                    {redirect='login'}
+                {/if}
+            {/exp:member:custom_profile_data}            
+        {/if}
+    {/if}
+
+    {if no_results}
+        {redirect="404"}
+    {/if}
+
+    {embed="layout/_header" page_id="{entry_id}"}
+
+    <div class="page-content__inner grid">
+
+        {embed="layout/_content-area" number="c1" type="intro-alpha" page_id="{entry_id}" chnl="{chnl}" breadcrumbs="true"}
+
+        {if simple_page_c2_type == 'map'}
+            {embed="layout/_content-area" number="c2" type="map" page_id="{entry_id}" chnl="{chnl}" modifier="media-container"}
+        {if:elseif simple_page_c2_type == 'image' && '{simple_page_c2_image:medium}' != ''}
+            <div class="media-container">
+                <img alt="" src="{simple_page_c2_image:medium}" data-img-large="{simple_page_c2_image:large}">
+            </div>
+        {/if}
+
+        <section class="grid__row">
+            <article class="grid__column column--alpha sm--column-12-12 med--column-9-12">
+                <div class="box box--alpha box--content">
+                    <!--index-->
+                    {embed="layout/_content-area" number="c3" page_id="{entry_id}" chnl="{chnl}"}
+                    <!--/index-->
+                </div>
+
+                <div class="grid grid--alpha">
+
+                    {embed="layout/_content-area" number="c4" type="cta" page_id="{entry_id}" chnl="{chnl}"}
+
+                    {embed="layout/_content-area" number="c5" type="related-links" page_id="{entry_id}" chnl="{chnl}" modifier="box"}
+
+                </div>
+            </article>
+            <aside class="grid__column column--alpha sm--column-12-12 med--column-3-12">
+                {embed="navigation/_sidebar"}
+            </aside>
+        </section>
+
+    </div>
+
+    {embed="layout/_footer"}
+{/exp:channel:entries}

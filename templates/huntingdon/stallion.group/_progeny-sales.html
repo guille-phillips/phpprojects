@@ -1,0 +1,48 @@
+{exp:essence_stallion_filter parse="inward" entryID="{embed:entryID}" search_grid_field="stallions_progeny_sales"}
+    {exp:channel:entries cache="yes" refresh="360" channel="stallions" parse="inward"}
+
+        <header class="heading line--heading">
+            <h1 class="heading__title">
+                <span class="line__span span--alpha">Progeny Sales</span>
+            </h1>
+        </header>
+
+        {embed="stallion/_progeny-sales-search-form" pageUri="{page_uri}"}
+
+        <table class="standard-table js-table">
+            <thead>
+                <tr>
+                    <th class="is-first">Purchase Price</th>
+                    <th>Auction Name</th>
+                    <th>Sale Date</th>
+                    <th>Progeny Name</th>
+                    <th>Col</th>
+                    <th>YOB</th>
+                    <th>Sex</th>
+                    <th>Dam</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if stallions_progeny_sales:total_rows == 0 || '{progeny_sales_search}' == 'no-result'}
+                    <tr>
+                        <td colspan="8">Sorry, no progeny sales found.</td>
+                    </tr>
+                {if:else}
+                    {stallions_progeny_sales {progeny_sales_search}}
+                        <tr>
+                            <th>{stallions_progeny_sales:price}</th>
+                            <td>{stallions_progeny_sales:auction}</td>
+                            <td>{stallions_progeny_sales:date format='%d.%m.%Y'}</td>
+                            <td>{stallions_progeny_sales:progeny}</td>
+                            <td>{stallions_progeny_sales:col}</td>
+                            <td>{stallions_progeny_sales:yob}</td>
+                            <td>{stallions_progeny_sales:sex}</td>
+                            <td>{stallions_progeny_sales:dam}</td>
+                        </tr>
+                    {/stallions_progeny_sales}
+                {/if}
+            </tbody>
+        </table>
+
+    {/exp:channel:entries}
+{/exp:essence_stallion_filter}

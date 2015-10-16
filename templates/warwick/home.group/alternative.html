@@ -1,0 +1,77 @@
+{preload_replace:chnl="home"}
+
+{exp:channel:entries cache="yes" refresh="360"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    {if no_results}
+        {redirect="404"}
+    {/if}
+
+    {embed="layout/_header" show_hero="y" advanced_hero="y" page_channel="{chnl}" page_id="{entry_id}"}
+
+    {if {chnl}_sponsorship == 'on' && {chnl}_spon_bar_image && {chnl}_spon_bar_bg}
+        <div class="sponsor-box" style="background:{{chnl}_spon_bar_bg}">
+            <img alt="{{chnl}_spon_bar_alt}" src="{{chnl}_spon_bar_image:medium}">
+        </div>
+    {/if}
+
+    <section class="grid grid--alpha promo-box-container">
+        <div class="grid__row box box--gamma no--pt no--pb">
+            <div class="grid__column column--alpha grid__column sm--column-12-12 med--column-6-12">
+                {embed="layout/_content-area" number="s1" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+            <div class="grid__column column--alpha grid__column sm--column-12-12 med--column-6-12">
+                {embed="layout/_content-area" number="s2" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </div>
+    </section>
+    
+    {if site_id == 1}
+        <section class="page-content__inner grid">
+            <div class="home-primary-events-heading-section">
+                {embed="layout/_content-area" number="p1" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </section>
+    
+        <section class="page-content__inner grid">
+            <div class="grid__row box event-listing-home">
+                {embed="layout/_content-area" number="p2" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </section>
+    
+        <section class="page-content__inner grid">
+            <div class="home-primary-service">
+                {embed="layout/_content-area" number="p3" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </section>
+    
+    {/if}
+    <section class="page-content__inner grid">
+        <div class="grid__row box">
+            <div class="grid__column grid__column sm--column-12-12 med--column-4-12">
+                {embed="layout/_content-area" number="t1" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+            <div class="grid__column grid__column sm--column-12-12 med--column-4-12">
+                {embed="layout/_content-area" number="t2" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+            <div class="grid__column grid__column sm--column-12-12 med--column-4-12">
+                {embed="layout/_content-area" number="t3" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </div>
+    </section>
+    
+   {if site_id == 1}
+        <section class="grid__row box box--gamma home-racecourse-logo-listing">
+            <div class="home-racecourses-listing">
+                {embed="layout/_content-area" number="r1" page_id="{entry_id}" chnl="{chnl}"}
+            </div>
+        </section>
+    {/if}
+    {embed="layout/_footer"}
+
+{/exp:channel:entries}

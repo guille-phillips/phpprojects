@@ -1,0 +1,17 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+{{embed:area}_headings}
+    <header class="heading line--heading">
+        <h1 class="heading__title"><span class="line__span {embed:modifier}">{heading}</span></h1>
+        {if sub_heading}
+            <h2 class="heading__subtitle subtitle--alpha">{sub_heading}</h2>
+        {/if}
+    </header>
+{/{embed:area}_headings}
+{/exp:channel:entries}

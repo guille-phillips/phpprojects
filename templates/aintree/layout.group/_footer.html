@@ -1,0 +1,217 @@
+            <footer class="page-footer">
+                <div class="page-footer__section section--back">
+                    <a href="#top" class="link js-scrollto">Back to top <span class="icon icon--arrow-up-alpha"></span></a>
+                </div>
+                <div class="grid">
+                    <nav class="fnav page-footer__section section--navigation" role="navigation">
+                        <ul class="fnav__parent__list grid__row">
+                        {exp:essence_taxonomy_id tree_name="footer_navigation" parse="inward"}
+                            {exp:taxonomy:nav tree_id="{essence_tree_id}" style="linear" display_root="no" depth="2"}
+                                <?php if ('{node_level}' != 1 && '{node_level_count}' == 1): ?>
+                                    <ul class="fnav__child__list">
+                                <?php endif; ?>
+                                <?php if ('{node_level}' == 1): ?>
+                                    <li class="fnav__parent__item grid__column med--column-3-12">
+                                <?php else: ?>
+                                    <li class="fnav__child__item">
+                                <?php endif; ?>
+                                <?php if ('{node_level}' == 1): ?>
+                                    <a href="{node_url}" title="{node_title}">{node_title}</a>
+                                <?php else: ?>
+                                    <a href="{node_url}" title="{node_title}">{node_title}</a>
+                                <?php endif; ?>
+                                {children}
+                                </li>
+                                <?php if ('{node_level}' != 1 && '{node_level_count}' == '{node_level_total_count}'): ?>
+                                    </ul>
+                                <?php endif; ?>
+                            {/exp:taxonomy:nav}
+                        {/exp:essence_taxonomy_id}
+                        </ul>
+                    </nav>
+                    <div class="grid__row">
+                        {exp:channel:entries cache="yes" refresh="360" channel="settings" limit="1" dynamic="no"}
+                            <div class="page-footer__section section--social social-media grid__column sm--column-12-12 med--column-6-12">
+                                {setting_social_links}
+
+                                        <h3 class="social-media__title">Join The Conversation</h3>
+                                        <p class="social-media__subtitle">Discuss upcoming events and connect with the racing community.</p>
+                                        <ul class="inline-list">
+                                            <li class="inline-list__item is-first"><a href="{twitter}" title="Twitter" class="social-media__icon icon icon--twitter-alpha icon--xlg" target="_blank"><span>Twitter</span></a></li>
+                                            <li class="inline-list__item"><a href="{facebook}" title="Facebook" class="social-media__icon icon icon--facebook-alpha icon--xlg" target="_blank"><span>Facebook</span></a></li>
+                                            <li class="inline-list__item is-last"><a href="{gplus}" title="Google Plus" class="social-media__icon icon icon--googleplus-alpha icon--xlg" target="_blank"><span>Google Plus</span></a></li>
+                                        </ul>
+
+                                {/setting_social_links}
+                            </div>
+                            <div class="page-footer__section section--details grid__column sm--column-12-12 med--column-6-12" role="contentinfo">
+
+                                <p class="page-footer__text is-last"><strong>{exp:essence_site_description}</strong> is a Jockey Club Racecourse &copy; <?php echo date('Y'); ?><br>Company registered in England No. {setting_company_number}<br>{setting_address}</p>
+
+                            </div>
+                        {/exp:channel:entries}
+                    </div>
+                </div>
+                <div class="page-footer__section section--sm--navigation">
+                    <nav class="inline-list list--alpha">
+                        <ul>
+                            {exp:essence_taxonomy_id tree_name="footer_navigation_mobile" parse="inward"}
+                                {exp:taxonomy:nav tree_id="{essence_tree_id}" style="linear" display_root="no" depth="2"}
+                                    <li class="inline-list__item is-first">
+                                        <a href="{node_url}" title="{node_title}">{node_title}</a>
+                                    </li>
+                                {/exp:taxonomy:nav}
+                            {/exp:essence_taxonomy_id}
+                        </ul>
+                    </nav>
+                </div>
+                <div class="grid">
+                    {exp:channel:entries cache="yes" refresh="360" channel="settings" limit="1" dynamic="no"}
+                        <div class="grid__row box box--gamma">
+                            {setting_sponsors}
+                                {if logo}
+                                    <div class="grid__column sm--column-12-12 med--column-3-12">
+                                        <a href="{url}"><img src="{logo:medium}" alt="{name}"></a>
+                                    </div>
+                                {/if}
+                            {/setting_sponsors}
+                        </div>
+
+                        <!-- Setting Group Partners -->
+                        <div class="grid__row box box--sm">
+                            {setting_group_partners}
+				                {if logo}
+                                    <div class="grid__column sm--column-12-12 med--column-2-12">
+                                        <a href="{url}"><img src="{logo:medium}" alt="{name}"></a>
+                                    </div>
+				                {/if}
+                            {/setting_group_partners}
+                        </div>
+
+                        <div class="grid__row box box--sm">
+                            {setting_partners}
+                                {if logo}
+                                    <div class="grid__column sm--column-12-12 med--column-2-12">
+                                        <a href="{url}"><img src="{logo:medium}" alt="{name}"></a>
+                                    </div>
+                                {/if}
+                            {/setting_partners}
+                        </div>
+                    {/exp:channel:entries}
+                </div>
+                <div class="page-footer__section is-last">
+                    <nav class="inline-list list--alpha">
+                        <ul class="text-center">
+                            {exp:essence_taxonomy_id tree_name="footer_navigation_secondary" parse="inward"}
+                                {exp:taxonomy:nav tree_id="{essence_tree_id}" style="linear" display_root="no" depth="2"}
+                                    <li class="inline-list__item is-first">
+                                        <a href="{node_url}" title="{node_title}">{node_title}</a>
+                                    </li>
+                                {/exp:taxonomy:nav}
+                            {/exp:essence_taxonomy_id}
+                        </ul>
+                    </nav>
+                </div>
+            </footer>
+        </div>
+
+        <div class="site-toggle">
+            <a href="#" id="navigation-toggle" class="site-toggle__link icon icon--list-alpha icon--lg" data-body-class="visible-navigation" title="Toggle navigation"><span>Toggle navigation</span></a>
+        </div>
+
+        <form action="/search" class="site-search">
+            <button type="submit" class="site-search__submit">
+                <span class="icon icon--block icon--search"></span>
+            </button>
+            <input type="search" name="q" id="mobile-search" placeholder="Search the site" class="site-search__input">
+        </form>
+
+        <div class="faux-table site-js-message">
+            <div class="faux-table__cell">
+                To get the best possible user experience on our website please <a href="http://enable-javascript.com/" title="enable JavaScript">enable JavaScript</a>
+            </div>
+        </div>
+
+        <?php if($_SERVER['APPLICATION_ENV'] == 'development' && !isset($_GET['minified'])): ?>
+            <script data-main="/js/main.dev.js" src="/js/vendor/require.2.1.9.js"></script>
+            <script>
+                (function() {
+                    if(Modernizr.websockets) {
+                        var location = window.location,
+                            hostName = location.hostname;
+                        document.write('<script src="//' + hostName + ':35729/livereload.js"><\/script>');
+                    }
+                })();
+            </script>
+        <?php else: ?>
+            <script data-main="/js/minified.js" src="/js/vendor/require.2.1.9.js"></script>
+        <?php endif; ?>
+        <?php 
+            switch (substr(strtolower($_SERVER['REQUEST_URI']),1)) {
+                case 'more-information/contact/venue-hire-enquiry':
+        ?>
+                    <!-- Tag for Activity Group: Counter Tags, Activity Name: 100. Venue Hire Landing Page, Activity ID: 2073933 -->
+                    <!-- Expected URL: http://? -->
+
+                    <!--
+                    Activity ID: 2073933
+                    Activity Name: 100. Venue Hire Landing Page
+                    Activity Group Name: Counter Tags
+                    -->
+
+                    <!--
+                    Start of DoubleClick Floodlight Tag: Please do not remove
+                    Activity name of this tag: 100. Venue Hire Landing Page
+                    URL of the webpage where the tag is expected to be placed: http://?
+                    This tag must be placed between the <body> and </body> tags, as close as possible to the opening tag.
+                    Creation Date: 12/16/2014
+                    -->
+                    <script type="text/javascript">
+                    var axel = Math.random() + "";
+                    var a = axel * 10000000000000;
+                    document.write('<iframe src="https://2236209.fls.doubleclick.net/activityi;src=2236209;type=count831;cat=100ve0;u1=[Site];u12=aintree;ord=1;num=' + a + '?" width="1" height="1" frameborder="0" style="display:none"></iframe>');
+                    </script>
+
+                    <noscript>
+                    <iframe src="https://2236209.fls.doubleclick.net/activityi;src=2236209;type=count831;cat=100ve0;u1=[Site];u12=aintree;ord=1;num=1?" width="1" height="1" frameborder="0" style="display:none"></iframe>
+                    </noscript>
+
+                    <!-- End of DoubleClick Floodlight Tag: Please do not remove -->
+        <?php
+                    break;
+                    
+                case 'more-information/contact/venue-hire-enquiry?submitted=true':
+        ?>
+                    <!-- Tag for Activity Group: Counter Tags, Activity Name: 101. Venue Hire Confirmation, Activity ID: 2074100 -->
+                    <!-- Expected URL: http://? -->
+
+                    <!--
+                    Activity ID: 2074100
+                    Activity Name: 101. Venue Hire Confirmation
+                    Activity Group Name: Counter Tags
+                    -->
+
+                    <!--
+                    Start of DoubleClick Floodlight Tag: Please do not remove
+                    Activity name of this tag: 101. Venue Hire Confirmation
+                    URL of the webpage where the tag is expected to be placed: http://?
+                    This tag must be placed between the <body> and </body> tags, as close as possible to the opening tag.
+                    Creation Date: 12/16/2014
+                    -->
+                    <script type="text/javascript">
+                    var axel = Math.random() + "";
+                    var a = axel * 10000000000000;
+                    document.write('<iframe src="https://2236209.fls.doubleclick.net/activityi;src=2236209;type=count831;cat=101ve0;u1=[Site];u3=[Event_Description];u12=aintree;ord=1;num=' + a + '?" width="1" height="1" frameborder="0" style="display:none"></iframe>');
+                    </script>
+
+                    <noscript>
+                    <iframe src="https://2236209.fls.doubleclick.net/activityi;src=2236209;type=count831;cat=101ve0;u1=[Site];u3=[Event_Description];u12=aintree;ord=1;num=1?" width="1" height="1" frameborder="0" style="display:none"></iframe>
+                    </noscript>
+
+                    <!-- End of DoubleClick Floodlight Tag: Please do not remove -->
+        <?php
+                    break;
+            }
+        ?>
+    </body>
+</html>

@@ -1,0 +1,71 @@
+{embed="layout/_header"}
+
+    <div class="page-content__inner grid">
+
+        {exp:channel:entries cache="yes" refresh="360" limit="1" require_entry="yes"}
+
+            <header class="grid__row box box--charlie box--sm">
+                <div class="grid__column sm--column-12-12 med--column-12-12">
+                    {embed="navigation/_breadcrumbs"}
+                    <div class="heading line--diamond--heading">
+                        <h1 class="heading__title title--delta">
+                            <span class="diamond__group group--left group--alpha">
+                                <span class="diamond__icon"></span>
+                            </span>
+                             {listing_page_c1_intro}
+                                {if heading}
+                                    {heading}
+                                {if:else}
+                                    {title}
+                                {/if}
+                            {/listing_page_c1_intro}
+                            <span class="diamond__group group--right group--alpha">
+                                <span class="diamond__icon"></span>
+                            </span>
+                        </h1>
+                        {listing_page_c1_intro}
+                            {if sub_heading}
+                                <h2 class="heading__subtitle subtitle--charlie">
+                                    {sub_heading}
+                                </h2>
+                            {/if}
+                            {if description}
+                                <p class="heading__desc desc--charlie">
+                                    {description}
+                                </p>
+                            {/if}
+                        {/listing_page_c1_intro}
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid__row">
+                <div class="grid__column column--alpha sm--column-12-12 med--column-9-12">
+                    <div class="box box--alpha box--content">
+                        <header class="heading line--heading">
+                            {listing_page_c2_headings}
+                                {if heading}
+                                    <h1 class="heading__title">
+                                        <span class="line__span">{heading}</span>
+                                    </h1>
+                                {/if}
+                                {if sub_heading}
+                                    <h2 class="heading__subtitle subtitle--alpha">
+                                        {sub_heading}
+                                    </h2>
+                                {/if}
+                            {/listing_page_c2_headings}
+                        </header>
+                        {embed="stallion/_entries-loop"}
+                    </div>
+                </div>
+                <aside class="grid__column column--alpha sm--column-12-12 med--column-3-12">
+                    {embed="navigation/_sidebar"}
+                </aside>
+            </div>
+
+        {/exp:channel:entries}
+
+    </div>
+
+{embed="layout/_footer"}

@@ -1,0 +1,33 @@
+{preload_replace:chnl="media_pages"}
+{embed="layout/_header"}
+
+{exp:channel:entries cache="yes" refresh="360"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    {if no_results}
+        {redirect="404"}
+    {/if}
+
+    <div class="page-content__inner grid">
+
+        {embed="layout/_content-area" number="c1" type="intro-beta" page_id="{entry_id}" chnl="{chnl}" breadcrumbs="true"}
+
+        <div class="grid__row">
+
+            {embed="media/_{{chnl}_c2_type}" area="{chnl}_c2" page_id="{entry_id}"}
+
+        </div>
+
+        {embed="layout/_content-area" number="c3" type="cta" page_id="{entry_id}" chnl="{chnl}" modifier="gutter-pull"}
+
+        {embed="layout/_content-area" number="c4" type="related-links" page_id="{entry_id}" chnl="{chnl}" modifier="box"}
+
+    </div>
+{/exp:channel:entries}
+
+{embed="layout/_footer"}

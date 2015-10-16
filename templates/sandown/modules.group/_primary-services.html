@@ -1,0 +1,29 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+    <header class="heading event-heading-home">
+        {{embed:area}_head}
+            <div class="home-primary-service-heading-and-services ">
+                <h1 class="heading__title">{heading}</h1>
+                <p class="service-sub-heading heading__subtitle subtitle--alpha">{sub_heading}</p>
+                <p class="view-all-events"><a href="{link}{page_uri}{/link}"><strong>View all services</strong></a></p>
+            </div>
+        {/{embed:area}_head}    
+        {{embed:area}_cta}
+            <div class="home-primary-service-listing">
+                <figure class="home-primary-service_figure">
+                    <img src="{homepage}{image}">
+                </figure>
+                <h3 class="heading__title home-primary-service-heading-title">{heading}</h3>
+                <p class="home-primary-service-sub-heading-title">{sub_heading}</p>
+                <p class="home-primary-service-more-info"><a href="{link}{page_uri}{/link}"><button class="more-info">More Information</button></a></p>
+            </div>    
+        {/{embed:area}_cta}
+    </header>
+
+{/exp:channel:entries}

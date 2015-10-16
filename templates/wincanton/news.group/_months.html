@@ -1,0 +1,22 @@
+{exp:essence_filter parse="inward"}
+
+    <div class="results-filter__filter has-title">
+
+        <span class="results-filter__label">Months</span>
+        <label for="date-0" class="select-tab {if get_post:year != get_post:previous-year || get_post:month == ''}is-checked{/if} js-radio" data-active="is-checked" data-group="date">
+            <input name="month" id="date-0" type="radio" value="" class="select-tab__input" {if get_post:year != get_post:previous-year || get_post:month == ''}checked{/if}> All
+        </label>
+    </div>
+
+    {exp:essence_year_months year="{year}"}
+
+        <div class="results-filter__filter">
+            <label for="date-{index}" class="select-tab {if '{get_post:month}' == '{month}' && get_post:year == get_post:previous-year}is-checked{/if} js-radio" data-active="is-checked" data-group="date">
+                <input name="month" id="date-{index}" type="radio" value="{month}" class="select-tab__input" {if '{get_post:month}' == '{month}' && get_post:year == get_post:previous-year}checked{/if}> {month_name}
+            </label>
+        </div>
+
+    {/exp:essence_year_months}
+
+    <input type="hidden" name="previous-year" value="{year}">
+{/exp:essence_filter}

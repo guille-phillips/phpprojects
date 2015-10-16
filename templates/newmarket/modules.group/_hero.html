@@ -1,0 +1,118 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    <?php if ('{{embed:area}_type}' == 'event-hero'): ?>
+
+        {{embed:area}_event}
+
+            {exp:timespan date="{events_date}"}
+
+                <div class="faux-table faux--table--alpha promo-box__inner" role="banner">
+                    <div class="faux-table__cell cell--alpha">
+                        <p class="promo-box__subdesc">
+                            <?php if ('{exp:playa:total_parents field="events_parent_event" entry_id="{entry_id}" channel="events"}' != 0): ?>
+                                {exp:essence_date_range start='
+                                    {exp:playa:parents field="events_parent_event" channel="events" entry_id="{entry_id}" orderby="events_date" sort="asc" limit="1"}
+                                        {events_date}
+                                    {/exp:playa:parents}
+                                    ' end='
+                                    {exp:playa:parents field="events_parent_event" channel="events" entry_id="{entry_id}" orderby="events_date" sort="desc" limit="1"}
+                                        {events_date}
+                                    {/exp:playa:parents}'
+                                parse="inward"}
+                            <?php else: ?>
+
+                                {exp:essence_date_range start="{events_date}" end="{events_date}"}
+                            <?php endif; ?>
+                        </p>
+                        <h1 class="promo-box__title">{title}</h1>
+                        <h2 class="promo-box__subtitle">{events_home_description}</h2>
+   
+                        <div class="promo-box__cta-aside">
+                            {if "{timespan:today}" == '1'}
+                                <a href="/plan-your-race-day" class="button button--beta" title="More info">Plan Your Race Day</a>
+                            {if:else}
+                                <a href="{page_uri}" class="button button--beta" title="Book now">Book now</a>
+                            {/if}
+
+                            {if "{timespan:today}" == '1'}
+                                {embed="home/_weather" description="{events_the_going}"}
+                            {if:elseif '{timespan:days_rounded}' >= '1'}
+                                <aside class="weather">
+                                    <div class="weather__icon">
+                                        {if '{timespan:days_rounded}' == '1'}
+                                            1 <span class="weather__icon__text">day</span>
+                                        {if:else}
+                                            {timespan:days_rounded} <span class="weather__icon__text">days</span>
+                                        {/if}
+                                        <span class="icon icon--flag"></span>
+                                    </div>
+                                    <p class="weather__desc">Until {title}</p>
+                                </aside>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+
+            {/exp:timespan}
+
+        {/{embed:area}_event}
+
+    <?php elseif ('{{embed:area}_type}' == 'custom-hero'): ?>
+
+        <div class="faux-table faux--table--alpha promo-box__inner" role="banner">
+            <div class="faux-table__cell cell--alpha custom-hero-heading">
+                {{embed:area}_headings}
+                    <h1 class="promo-box__title">{heading}</h1>
+                    <h2 class="promo-box__subtitle">{sub_heading}</h2>
+                {/{embed:area}_headings}
+
+                <?php if ('{{embed:area}_cta:total_rows}' > 0): ?>
+                    {{embed:area}_cta}
+                        <a href="{if url != ''}{url}{if:else}{link}{page_uri}{/link}{/if}" class="button button--beta moreHeroButton" title="{button_text}"> {button_text} </a>
+                    {/{embed:area}_cta}
+                <?php else: ?>
+                    <a href="#custom-hero-content" class="heading__action action--alpha icon icon--arrow-down-alpha js-scrollto" title="Read on to find out more"><span>Read on to find out more</span></a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    <?php else: ?>
+
+        <div class="faux-table faux--table--alpha promo-box__inner" role="banner">
+            <div class="faux-table__cell cell--alpha">
+                {{embed:area}_hero_headings}
+                    <div class="heading line--diamond--heading">
+                        <h1 class="heading__title title--beta">
+                            <span class="diamond__group group--left group--beta">
+                                <span class="diamond__icon"></span>
+                            </span>
+                            {heading}
+                            <span class="diamond__group group--right group--beta">
+                                <span class="diamond__icon"></span>
+                            </span>
+                        </h1>
+                        <h2 class="heading__desc desc--beta">{sub_heading}</h2>
+                        <?php if ('{{embed:area}_hero_cta:total_rows}' > 0): ?>
+                            {{embed:area}_hero_cta}
+                                <a href="{if url != ''}{url}{if:else}{link}{page_uri}{/link}{/if}" class="heading__action button button--beta" title="{button_text}">{button_text}</a>
+                            {/{embed:area}_hero_cta}
+                        <?php else: ?>
+                                <a href="#content" class="heading__action action--alpha icon icon--arrow-down-alpha js-scrollto" title="Read on to find out more"><span>Read on to find out more</span></a>
+                        <?php endif; ?>
+                    </div>
+                {/{embed:area}_hero_headings}
+            </div>
+        </div>
+
+    <?php endif; ?>
+
+    <span class="promo-box__img__overlay img--overlay"></span>
+
+{/exp:channel:entries}

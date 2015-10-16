@@ -1,0 +1,44 @@
+{exp:channel:entries cache="yes" refresh="360" channel="stallions"}
+
+    <header class="heading line--heading">
+        <h1 class="heading__title">
+            <span class="line__span span--alpha">Race Results</span>
+        </h1>
+    </header>
+
+    {if stallions_race_desc}
+        <p>{stallions_race_desc}</p>
+    {/if}
+
+    <table class="standard-table js-table">
+        <thead>
+            <tr>
+                <th class="is-first">Position</th>
+                <th>Race</th>
+                <th>Distance</th>
+                <th>Course</th>
+                <th>Class</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        {if stallions_race_results:total_rows == 0}
+            <tr>
+                <td colspan="8">Sorry, no stallion race result found.</td>
+            </tr>
+        {if:else}
+            {stallions_race_results}
+                <tr>
+                    <th>{stallions_race_results:position}</th>
+                    <td>{stallions_race_results:race}</td>
+                    <td>{stallions_race_results:distance}</td>
+                    <td>{stallions_race_results:course}</td>
+                    <td>{stallions_race_results:class}</td>
+                    <td>{stallions_race_results:details}</td>
+                </tr>
+            {/stallions_race_results}
+        {/if}
+        </tbody>
+    </table>
+
+{/exp:channel:entries}

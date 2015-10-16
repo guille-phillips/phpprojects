@@ -1,0 +1,26 @@
+{exp:channel:entries cache="yes" refresh="360" limit="1" channel="stallions"}
+
+    <header class="heading line--heading">
+        <h1 class="heading__title">
+            <span class="line__span span--alpha">Progeny Gallery</span>
+        </h1>
+    </header>
+
+    {if stallions_progeny_gallery:total_rows == 0}
+        <p>Sorry, no progeny gallery item found.</p>
+    {if:else}
+        {stallions_progeny_gallery}
+            {if stallions_progeny_gallery:count % 2 == 1}
+                <div class="grid__row">
+            {/if}
+                <div class="grid__column sm--column-12-12 med--column-6-12 box no--pt">
+                    <img src="{stallions_progeny_gallery:image:medium_4x2}">
+                    <span>{stallions_progeny_gallery:caption}</span>
+                </div>
+            {if stallions_progeny_gallery:count % 2 == 0}
+                </div>
+            {/if}
+        {/stallions_progeny_gallery}
+    {/if}
+
+{/exp:channel:entries}

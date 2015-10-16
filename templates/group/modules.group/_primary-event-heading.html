@@ -1,0 +1,19 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+    <header class="heading event-heading-home">
+        {{embed:area}_cta}
+            <div class="event-heading">
+                <h1 class="heading__title">{heading}</h1>
+                <p class="heading__subtitle subtitle--alpha">{sub_heading}</p>
+                <p class="view-all-events"><a href="{link}{page_uri}{/link}"><strong>View all events</strong></a></p>
+            </div>
+        {/{embed:area}_cta}
+    </header>
+
+{/exp:channel:entries}

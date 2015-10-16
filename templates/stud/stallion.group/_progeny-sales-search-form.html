@@ -1,0 +1,23 @@
+<form action="{embed:pageUri}" method="get" class="form stallion_progeny_sale">
+    <input type="hidden" name="search" value="progeny-sales" />
+    <ul>
+        <li class="form__input">
+            <span>Sale Dates</span>
+            <div class="inputPanel">
+                <label for="sales_start_date" class="form-label">From</label>
+                <input type="text" name="sales_start_date" id="sales_start_date" class="form-input datepicker" value="{if get_post:sales_start_date}{get_post:sales_start_date}{/if}" />
+            </div>
+            <div class="inputPanel">
+                <label for="sales_end_date" class="form-label">To</label>
+                <input type="text" name="sales_end_date" id="sales_end_date" class="form-input datepicker" value="{if get_post:sales_end_date}{get_post:sales_end_date}{/if}" />
+            </div>
+        </li>
+
+        <li class="form__input last">
+            <span>Keyword</span>
+            <input type="text" name="keyword" class="form-input" value="{if get_post:keyword}{get_post:keyword}{/if}" />
+            <input name="submit" type="submit" value="Filter Results" class="button button--beta" data-site="{site_short_name}" />
+        </li>
+
+    </ul>
+</form>

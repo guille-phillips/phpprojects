@@ -1,0 +1,72 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:entry_id}"
+    site="not none"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    {exp:switchee variable = "{channel_short_name}" parse="inward"}
+
+        {case value="events"}
+            <article class="listing {if embed:count == 1 && get_post:more == ''}is-first{/if} listing--sm">
+                <div class="listing__media label">
+                    {if events_image}
+                        <img src="{events_image:medium}" alt="">
+                    {if:else}
+                        <img src="/images/placeholder-16x9.jpg" alt="">
+                    {/if}
+                    <h1 class="listing__media__title">{title}</h1>
+                </div>
+                <header class="heading">
+                    <h2 class="heading__subtitle subtitle--alpha"><time datetime="{events_date format="%Y-%m-%d"} {events_opening_time}">{events_date format="%j%S %F %Y"}
+			{if events_closing_time != '' || events_opening_time != ''}
+				| {events_opening_time} 
+				{if events_closing_time != ''}
+					{if events_opening_time != ''}
+						-
+					{if:else}
+						finishes 
+					{/if} 
+					{events_closing_time}
+				{/if}
+			{/if}
+		    </time></h2>
+                </header>
+                <p>{events_short_description}</p>
+                <aside class="listing__sidebar tickets-box">
+                    {if events_ticket_availability == 'available'}
+                        <p class="tickets-box__title">Limited advanced tickets</p>
+                    {if:elseif events_ticket_availability == 'otd'}
+                        <p class="tickets-box__title">Tickets on the door</p>
+                    {if:elseif events_ticket_availability == 'sold-out'}
+                        <p class="tickets-box__title">Tickets sold out</p>
+                    {if:elseif events_ticket_availability == 'tba'}
+                        <p class="tickets-box__title">Tickets to be announced</p>
+                    {/if}
+                    <p class="is-last">
+                        {if '{entry_site_id}' == '{site_id}'}
+                            <a href="{page_uri}" class="tickets-box__action button button--alpha button--sm button--inline" title="More info &amp; tickets">More info &amp; tickets</a>
+                        {if:else}
+                            <a href="{structure:all_sites_page_url_for:{entry_id}}" class="tickets-box__action button button--alpha button--sm button--inline tooltip" title="Link to another racecourse">
+                                More info &amp; tickets
+                                <span class="tooltip__content">By clicking here you will be redirected away from {site_name} racecourse</span>
+                            </a>
+                        {/if}
+                    </p>
+                    <p class="tickets-box__desc">
+                        {exp:essence_lowest_number values="{events_admission_tickets}{advanced_single_price}|{advanced_group_price}|{otd_price}|{/events_admission_tickets}"}
+                            {if '{lowest}' != '0'}
+                                <p class="highlight">Prices From &pound;{lowest} per person</p>
+                            {/if}
+                        {/exp:essence_lowest_number}
+                    </p>
+                </aside>
+            </article>
+        {/case}
+
+    {/exp:switchee}
+
+{/exp:channel:entries}

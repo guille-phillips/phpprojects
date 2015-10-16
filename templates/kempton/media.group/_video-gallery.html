@@ -1,0 +1,97 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+    disable="member_data"
+}
+    
+    {if site_id == 1 AND media_pages_c2_require_login == 'yes'}
+        {if logged_out}
+            {redirect='login'}
+        {/if}
+        {if logged_in}
+            {exp:member:custom_profile_data member_id="{logged_in_member_id}"}
+                {if custom_user_group != 'group'}
+                    {redirect='login'}
+                {/if}
+            {/exp:member:custom_profile_data}            
+        {/if}
+    {/if}
+    
+    <div class="grid__column column--alpha sm--column-12-12 med--column-8-12">
+        <div class="box box--alpha box--content no--bl">
+
+            {{embed:area}_video_gallery}
+
+                {if row_count == get_post:item || (get_post:item == '' && row_count == 1)}
+
+                    {exp:switchee variable="{type}" parse="inward"}
+
+                        {case value="youtube"}
+
+                            {exp:essence_inline_media:render_youtube id="{identifier}"}
+
+                        {/case}
+
+                        {case value="racinguk"}
+
+                            {exp:essence_inline_media:render_racinguk id="{identifier}"}
+
+                        {/case}
+
+                        {case value="vimeo"}
+
+                            {exp:essence_inline_media:render_vimeo id="{identifier}"}
+
+                        {/case}
+
+                    {/exp:switchee}
+
+                    <div class="heading line--heading">
+                        <div class="heading__title"><span class="line__span span--alpha">{video_title}</span></div>
+                    </div>
+
+                    <p>{caption}</p>
+                {/if}
+
+            {/{embed:area}_video_gallery}
+
+        </div>
+    </div>
+
+    {if {{embed:area}_video_gallery:total_rows} > 1}
+        <div class="grid__column column--alpha sm--column-12-12 med--column-4-12">
+
+            <div class="box box--beta box--content no--br no--bl">
+
+                <div class="heading line--heading">
+                    <div class="heading__title"><span class="line__span">More videos</span></div>
+                </div>
+
+                {{embed:area}_video_gallery}
+                    <a href="?item={row_count}" class="listing listing--video {if row_count == 1}is-first{/if} {if row_count == total_rows}is-last{/if} {if row_count == get_post:item || (get_post:item == '' && row_count == 1)}is-active{/if} grid__row" title="{video_title}">
+                        <div class="grid__column column--alpha sm--column-6-12 med--column-5-12">
+                            <div class="listing__media">
+                                {if thumbnail}
+                                    <img src="{thumbnail:medium_4x2}" alt="{caption}">
+                                {if:else}
+                                    <img src="/images/placeholder-4x2.jpg" alt="{caption}">
+                                {/if}
+                                <span class="listing__media__icon icon icon--play"></span>
+                            </div>
+                        </div>
+                        <div class="grid__column sm--column-6-12 med--column-7-12">
+                            <p><strong>{video_title}</strong><br>{caption}</p>
+                        </div>
+                    </a>
+                {/{embed:area}_video_gallery}
+
+            </div>
+
+        </div>
+    {/if}
+
+{/exp:channel:entries}

@@ -1,0 +1,25 @@
+{exp:channel:entries cache="yes" refresh="360" channel="accommodations" dynamic="yes"}
+    {accommodations_hotels row_id="{embed:row_id}"}
+        <table class="standard-table hotel-rent-table table {embed:class}">
+            <thead>
+                <tr>
+                    <th colspan="2">Room rates <span>(Includes breakfast)</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Single</th>
+                    <td>{price1}</td>
+                </tr>
+                <tr>
+                    <th>Double</th>
+                    <td>{price2}</td>
+                </tr>
+                <tr>
+                    <th>Triple</th>
+                    <td>{price3}</td>
+                </tr>
+            </tbody>
+        </table>
+    {/accommodations_hotels}
+{/exp:channel:entries}

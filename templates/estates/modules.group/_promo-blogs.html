@@ -1,0 +1,50 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    <header class="heading line--heading">
+        {{embed:area}_headings}
+            <h1 class="heading__title"><span class="line__span">{heading}</span></h1>
+            <h2 class="heading__subtitle subtitle--alpha">{sub_heading}</h2>
+        {/{embed:area}_headings}
+    </header>
+
+    <section class="plain-listing">
+        {{embed:area}_blogs}
+
+            {exp:magpie url="{rss_url}"
+                limit="{rss_limit}"
+                parse="inward" refresh="720"
+            }
+
+                <?php $count = 1;?>
+
+                {magpie:items}
+                    <article class="plain-listing__item">
+                        <time class="plain-listing__subtitle">
+                            <?php echo date('jS F Y',strtotime('{magpie:pubdate}')); ?>
+                        </time>
+                        <p class="plain-listing__desc">{magpie:title}</p>
+                        <a href="{magpie:link}" target="_blank" class="link link--sm link--sm--faux-btn" title="More information">More information</a>
+                    </article>
+                    
+                    <?php if ($count != {rss_limit}) { ?>
+                        <div class="divider">
+                            <div class="divider__diamond"></div>
+                        </div>
+                    <?php } ?>
+
+                    <?php $count++; ?>
+                {/magpie:items}
+
+            {/exp:magpie}
+
+        {/{embed:area}_blogs}
+    </section>
+
+{/exp:channel:entries}

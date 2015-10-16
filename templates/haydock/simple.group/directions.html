@@ -1,0 +1,72 @@
+{preload_replace:chnl="simple_page"}
+
+{exp:channel:entries cache="yes" refresh="360"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    {if no_results}
+        {redirect="404"}
+    {/if}
+
+    {embed="layout/_header" page_id="{entry_id}"}
+
+    <div class="page-content__inner grid">
+
+        {embed="layout/_content-area" number="c1" type="intro-beta" page_id="{entry_id}" chnl="{chnl}" breadcrumbs="true"}
+
+        {if simple_page_c2_type == 'map'}
+            {embed="layout/_content-area" number="c2" type="map" page_id="{entry_id}" chnl="{chnl}" modifier="media-container"}
+        {if:elseif simple_page_c2_type == 'image'}
+            <img alt="" src="{simple_page_c2_image}">
+        {/if}
+
+        <section class="grid__row">
+            <article class="grid__column column--alpha sm--column-12-12 med--column-9-12">
+
+                {if simple_page_c3_directions:total_rows > 0}
+                    <div class="box box--alpha box--content">
+
+                        <header class="heading line--heading">
+                            <h1 class="heading__title"><span class="line__span span--alpha">Directions</span></h1>
+                        </header>
+
+                        {simple_page_c3_directions}
+                            <div class="heading">
+                                <h2 class="heading__subtitle subtitle--alpha">{if 'other' != icon}<span class="heading__subtitle__icon icon icon--{icon}"></span>{/if} {heading}</h2>
+                            </div>
+
+                            <p>{instructions}</p>
+                        {/simple_page_c3_directions}
+
+                    </div>
+                {/if}
+
+                <div class="box box--beta box--content no--bt no--br">
+
+                    <header class="heading line--heading">
+                        <h1 class="heading__title"><span class="line__span">Parking</span></h1>
+                    </header>
+
+                    {embed="layout/_content-area" number="c3" type="copy" page_id="{entry_id}" chnl="{chnl}"}
+
+                </div>
+
+            </article>
+            <aside class="grid__column column--alpha sm--column-12-12 med--column-3-12">
+                {embed="navigation/_sidebar"}
+            </aside>
+
+        </section>
+
+        {embed="layout/_content-area" number="c4" type="cta" page_id="{entry_id}" chnl="{chnl}" modifier="gutter-pull"}
+
+        {embed="layout/_content-area" number="c5" type="related-links" page_id="{entry_id}" chnl="{chnl}" modifier="box"}
+
+    </div>
+
+    {embed="layout/_footer"}
+{/exp:channel:entries}

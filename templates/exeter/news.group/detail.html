@@ -1,0 +1,43 @@
+{embed="layout/_header"}
+
+{exp:channel:entries cache="yes" refresh="360"
+    limit="1"
+    site="not none"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+    {if no_results}
+        {redirect="404"}
+    {/if}
+
+    <div class="page-content__inner grid">
+
+        <section class="grid__row box">
+
+            <article class="grid__column sm--column-12-12 med--column-10-12">
+
+                <header class="heading line--heading">
+                    <h1 class="heading__title"><span class="line__span">{title}</span></h1>
+                    <time class="heading__subtitle subtitle--alpha">{news_date format="%j%S %F %Y"}</time>
+                    {embed="modules/_share" url="{page_url}" placement="content--bottom--left"}
+                </header>
+
+                <!--index-->
+                <p>{news_content}</p>
+                <!--/index-->
+
+                <a href="{parent_url}" class="button button--sm" title="All News Articles">All {if channel_name == 'news'}News Articles{if:else}Press Releases{/if}</a>
+
+            </article>
+
+        </section>
+
+        {embed="layout/_content-area" number="c5" type="related-links" heading="Related Links" page_id="{entry_id}" chnl="{chnl}" modifier="box"}
+
+    </div>
+
+{/exp:channel:entries}
+
+{embed="layout/_footer"}

@@ -1,0 +1,42 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+    {{embed:area}_half_half}
+        <article class="listing {switch='is-even|is-odd'} grid__row {if '{is_large}' == 'yes'}has-image{/if}">
+            <div class="grid__column sm--column-12-12 med--column-6-12 {switch='column--right|'}">
+                {if '{is_large}' == 'no'}
+                    {if image}
+                        <img src="{image:medium}" alt="" class="listing__media">
+                    {if:else}
+                        <img src="/images/placeholder-16x9.jpg" alt="" class="listing__media">
+                    {/if}
+                {if:else}
+                    &nbsp;
+                {/if}
+            </div>
+            <div class="listing__desc grid__column sm--column-12-12 med--column-6-12">
+                <header class="heading line--heading">
+                    <h1 class="heading__title"><span class="line__span {switch='|span--alpha'} ">{heading}</span></h1>
+                    <h2 class="heading__subtitle subtitle--alpha">{sub_heading}</h2>
+                </header>
+                <p>{text}</p>
+                {if cta_text != ''}
+                    <p><a href="{cta_link}{page_uri}{/cta_link}" class="button button--alpha button--sm" title="{cta_text}">{cta_text}</a></p>
+                {/if}
+            </div>
+            {if row_count != total_rows}
+                <div class="divider__listing divider divider--sm">
+                    <div class="divider__diamond"></div>
+                </div>
+            {/if}
+            {if '{is_large}' == 'yes'}
+                <span class="listing__img__overlay" style="background-image: url({image:medium});"></span>
+            {/if}
+        </article>
+    {/{embed:area}_half_half}
+{/exp:channel:entries}

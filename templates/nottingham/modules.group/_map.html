@@ -1,0 +1,30 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+    {if "{{embed:area}_headings:total_rows}" == 1}
+        <header class="heading box">
+            {{embed:area}_headings}
+                <h1 class="heading__title">{heading}</h1>
+                <h1 class="heading__subtitle subtitle--alpha">{sub_heading}</h1>
+            {/{embed:area}_headings}
+        </header>
+    {/if}
+    {if "{{embed:area}_map:total_rows}" == 1}
+        {{embed:area}_map}
+            <div class="gutter-pull map {embed:modifier}">
+                <div class="map__container js-map" data-lat="{lat}" data-lng="{lon}"></div>
+                <div class="map__desc">
+                    {if '{box_heading}' != ''}
+                        <p><strong>{box_heading}</strong><br>{box_sub_heading}</p>
+                    {/if}
+                    <a href="https://maps.google.co.uk/maps?daddr={lat},{lon}" target="_blank" class="link">View on Google Maps</a>
+                </div>
+            </div>
+        {/{embed:area}_map}
+    {/if}
+{/exp:channel:entries}

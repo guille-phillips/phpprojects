@@ -1,0 +1,21 @@
+{exp:channel:entries cache="yes" refresh="360" limit="1" channel="stallions"}
+
+    <header class="heading line--heading">
+        <h1 class="heading__title">
+            <span class="line__span span--alpha">Pedigree</span>
+        </h1>
+    </header>
+
+    {stallions_pedigree}
+
+        {if stallions_pedigree:description}
+            <p>{stallions_pedigree:description}</p>
+        {/if}
+
+        {if stallions_pedigree:image}
+            <img src="{stallions_pedigree:image}">
+        {/if}
+
+    {/stallions_pedigree}
+
+{/exp:channel:entries}

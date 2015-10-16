@@ -1,0 +1,58 @@
+{preload_replace:chnl="category_page"}
+{preload_replace:tmpl=""}
+
+{embed="layout/_header"}
+
+    <section class="page-content__inner grid">
+
+        {exp:channel:entries cache="yes" refresh="360"
+            limit="1"
+            status="{publisher:entry_status}"
+            require_entry="yes"
+            show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+            show_expired="{if get_post:publisher_status != ''}yes{/if}"
+        }
+
+            {if no_results}
+                {redirect="404"}
+            {/if}
+
+            {embed="layout/_content-area" number="c1" type="intro-alpha" page_id="{entry_id}" tmpl="{tmpl}" chnl="{chnl}" breadcrumbs="true"}
+        {/exp:channel:entries}
+
+        <div class="grid__row box">
+
+            <div class="grid__column sm--column-12-12 med--column-12-12">
+
+                <div class="grid med--grid--table">
+
+                        {if structure:child_ids != ''}
+
+                            {exp:channel:entries cache="yes" refresh="360" fixed_order="{structure:child_ids}" require_entry="yes" dynamic="no"}
+                                {if "{switch="is-first|||is-last"}" == "is-first"}
+                                    <ul class="promo-list list--alpha grid__row">
+                                {/if}
+                                {if 1 == count}{/if}
+                                    <li class="promo-list__item {switch="is-first|||"} {if total_results == count || "{switch="is-first|||is-last"}" == "is-last"}is-last{/if} grid__column sm--column-12-12 med--column-3-12">
+                                        <span class="promo-list__divider">
+                                            <a href="{page_uri}" title="{title}"><span class="promo-list__title">{title}</span><br>
+                                            Find Out More</a>
+                                            <span class="promo-list__icon"></span>
+                                        </span>
+                                    </li>
+                                {if total_results == count || "{switch="is-first|||is-last"}" == "is-last"}
+                                    </ul>
+                                {/if}
+                            {/exp:channel:entries}
+
+                        {/if}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+{embed="layout/_footer"}

@@ -1,0 +1,57 @@
+{!--
+    All re-usable modules should be embedded using this file.
+    It can pick up the type from a CMS field or by passing one specifically in a param names 'type'
+    It takes care of selecting the right fields in the CMS and passing the relevant info through to the modules.
+
+    The templates in the home group show examples of the module types being chosen in the CMS
+    The restaurant detail page shows examples of the module types being hardcoded.
+--}
+
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    {!-- If the type set in the CMS is an event or custom hero, use the hero module --}
+    <?php if ('{{embed:chnl}_{embed:number}{embed:tmpl}_type}' == 'event-hero' || '{{embed:chnl}_{embed:number}{embed:tmpl}_type}' == 'custom-hero'): ?>
+        {embed="modules/_hero"
+            page_id="{embed:page_id}"
+            area="{embed:chnl}_{embed:number}{embed:tmpl}"
+        }
+
+    {!-- If the type set in the CMS is a text or custom promo use the promo module --}
+    <?php elseif ('{{embed:chnl}_{embed:number}{embed:tmpl}_type}' == 'promo-text' || '{{embed:chnl}_{embed:number}{embed:tmpl}_type}' == 'promo-event'): ?>
+
+        {embed="modules/_promo"
+            page_id="{embed:page_id}"
+            area="{embed:chnl}_{embed:number}{embed:tmpl}"
+        }
+
+    {!-- If the type has been passed explicitly in the embed, use that instead --}
+    <?php elseif ('{embed:type}' != ''): ?>
+
+        {!-- Pass through some extra params from the embedding template such as heading and style modifiers --}
+        {embed="modules/{embed:prefix_template_path}_{embed:type}"
+            heading="{embed:heading}"
+            sub_heading="{embed:sub_heading}"
+            modifier="{embed:modifier}"
+            page_id="{embed:page_id}"
+            area="{embed:chnl}{if embed:number || embed:tmpl}_{embed:number}{embed:tmpl}{/if}"
+            overwrite="{embed:overwrite}"
+            breadcrumbs="{embed:breadcrumbs}"
+        }
+
+    {!-- If a different type has been set in the CMS (Twitter etc) use that --}
+    <?php else: ?>
+
+        {embed="modules/_{{embed:chnl}_{embed:number}{embed:tmpl}_type}"
+            page_id="{embed:page_id}"
+            area="{embed:chnl}_{embed:number}{embed:tmpl}"
+        }
+
+    <?php endif; ?>
+
+{/exp:channel:entries}

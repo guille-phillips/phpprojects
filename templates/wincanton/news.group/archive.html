@@ -1,0 +1,99 @@
+{preload_replace:chnl="listing_page"}
+
+{if ajax}
+    {
+        "containers":
+        {
+            "#news-listings" :
+            {essence_json}
+                {embed="news/_entries-loop"}
+            {/essence_json}
+        },
+        "filters" :
+        {
+            "#news-months" :
+            {essence_json}
+                {embed="news/_months"}
+            {/essence_json}
+        },
+        "fields" : { "from" : {exp:essence_filter parse="inward"}{next_from}{/exp:essence_filter} }
+    }
+
+{if:else}
+
+    {embed="layout/_header"}
+
+        <form id="ajax-form" action="{structure:page:uri}" method="GET" class="page-content__inner results-filter">
+
+            <div class="grid">
+
+                {exp:channel:entries cache="yes" refresh="360" limit="1" status="{publisher:entry_status}" require_entry="yes"}
+                    {embed="layout/_content-area" number="c1" type="intro-alpha" page_id="{entry_id}" chnl="{chnl}"}
+                {/exp:channel:entries}
+
+            </div>
+
+            <a href="#news-filters" class="results-filter__toggle is-hidden-large" data-toggle>
+                Refine by <span class="results-filter__toggle__marker"><span class="results-filter__toggle__icon icon icon--arrow-down-alpha"></span></span>
+            </a>
+
+            <fieldset id="news-filters" class="results-filter__container grid">
+
+                <section class="grid__row">
+
+                    <div id="news-years" class="grid__column sm--column-12-12 med--column-3-12">
+
+                        <div class="results-filter__filter has-title">
+
+                            <span class="results-filter__label">Years</span>
+
+                            <select name="year" id="year">
+                                {exp:essence_year_loop for="3"}
+                                    <option value="{year}" {if '{get_post:year}' == '{year}'}selected{/if}>{year}</option>
+                                {/exp:essence_year_loop}
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div id="news-months" class="grid__column sm--column-12-12 med--column-9-12">
+
+                        {embed="news/_months"}
+
+                    </div>
+
+                    <input type="submit" class="button button--sm is-js-hidden" value="Filter news">
+
+                </section>
+
+            </fieldset>
+
+            <div class="grid">
+
+                <section class="grid__row box box--alpha no--br no--bb no--bl">
+
+                    <div id="news-listings" class="grid__column sm--column-12-12 med--column-12-12">
+
+                        {embed="news/_entries-loop"}
+
+                    </div>
+
+                </section>
+
+                <div class="grid__row box box--beta no--br no--bb no--bl">
+                    <div class="grid__column sm--column-12-12 med--column-12-12 text-center">
+                        {exp:essence_filter parse="inward"}
+                            <input type="hidden" name="from" value="{next_from}">
+                        {/exp:essence_filter}
+                        <input type="submit" name="more" value="View more" class="listing-page__submit button button--sm">
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+
+
+    {embed="layout/_footer"}
+{/if}

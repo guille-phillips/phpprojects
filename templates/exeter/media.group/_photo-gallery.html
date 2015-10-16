@@ -1,0 +1,52 @@
+{exp:channel:entries cache="yes" refresh="360"
+    entry_id="{embed:page_id}"
+    limit="1"
+    status="{publisher:entry_status}"
+    require_entry="yes"
+    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+}
+
+    <div class="grid__column column--alpha sm--column-12-12 med--column-12-12">
+
+        <section class="gallery gallery--photo js-gallery">
+            <div class="gallery__wrapper">
+                <div class="gallery__inner">
+                    {{embed:area}_photo_gallery}
+                        {if row_count == get_post:item || (get_post:item == '' && row_count == 1)}
+                            <figure class="gallery__slide">
+                                {if image}
+                                    <img src="{image:medium}" alt="{caption}">
+                                {if:else}
+                                    <img src="/images/placeholder-16x9.jpg" alt="">
+                                {/if}
+                                <figcaption class="gallery__slide__caption">{caption}</figcaption>
+                            </figure>
+                        {/if}
+                    {/{embed:area}_photo_gallery}
+                </div>
+            </div>
+            <nav class="gallery__navigation">
+                <div class="gallery__navigation__heading heading line--heading">
+                    <h1 class="heading__title"><span class="line__span">All photos in this gallery</span></h1>
+                </div>
+                <ul>
+                    {{embed:area}_photo_gallery}
+                        <li class="gallery__navigation__item">
+                            <a href="?item={row_count}" data-gallery-img="{image:large}" data-gallery-caption="{caption}" class="{if row_count == get_post:item || (get_post:item == '' && row_count == 1)}is-active{/if}">
+                                {if image}
+                                    <img src="{image:small}" alt="{caption}">
+                                {if:else}
+                                    <img src="/images/placeholder-16x9.jpg" alt="">
+                                {/if}
+                            </a>
+                        </li>
+                    {/{embed:area}_photo_gallery}
+                </ul>
+            </nav>
+
+        </section>
+
+    </div>
+
+{/exp:channel:entries}

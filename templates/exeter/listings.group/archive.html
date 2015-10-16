@@ -1,0 +1,119 @@
+{preload_replace:chnl="listing_page"}
+{embed="layout/_header"}
+
+    <div class="page-content__inner grid">
+
+        {exp:channel:entries cache="yes" refresh="360"
+            limit="1"
+            status="{publisher:entry_status}"
+            require_entry="yes"
+            show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+            show_expired="{if get_post:publisher_status != ''}yes{/if}"
+        }
+            {if no_results}
+                {redirect="404"}
+            {/if}
+
+            {embed="layout/_content-area" number="c1" type="intro-alpha" page_id="{entry_id}" chnl="{chnl}" breadcrumbs="true"}
+        {/exp:channel:entries}
+
+        <div class="grid__row">
+
+            <div class="grid__column column--alpha sm--column-12-12 med--column-9-12">
+
+                <div class="box box--alpha box--content">
+
+                    {exp:channel:entries cache="yes" refresh="360"
+                        limit="1"
+                        status="{publisher:entry_status}"
+                        require_entry="yes"
+                        show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+                        show_expired="{if get_post:publisher_status != ''}yes{/if}"
+                    }
+
+                        {embed="layout/_content-area" number="c2" type="heading" page_id="{entry_id}" chnl="{chnl}" modifier="span--alpha"}
+
+                    {/exp:channel:entries}
+
+                    {if structure:is:listing:parent == 1}
+
+                        {exp:channel:entries cache="yes" refresh="360" channel="{structure:child_listing:short_name}" dynamic="no" require_entry="true" orderby="title" sort="asc"}
+
+                            {embed="listings/_item-medium" entry_id="{entry_id}" count="{count}" total_results="{total_results}"}
+
+                        {/exp:channel:entries}
+
+                    {if:else}
+
+                        {exp:channel:entries cache="yes" refresh="360"
+                            limit="1"
+                            status="{publisher:entry_status}"
+                            require_entry="yes"
+                            show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+                            show_expired="{if get_post:publisher_status != ''}yes{/if}"
+                        }
+                            {listing_page_items}
+
+                                <article class="listing {if 1 == row_count}is-first{/if} grid__row">
+                                    <div class="grid__column sm--column-12-12 med--column-4-12">
+                                        {if '' != tag}
+                                            <div class="listing__media label">
+                                                <span class="label__icon icon--left">{tag}</span>
+                                        {if:else}
+                                            <div class="listing__media label">
+                                        {/if}
+                                            {if image}
+                                                <img src="{image:medium}" alt="{heading}">
+                                            {if:else}
+                                                <img src="/images/placeholder-16x9.jpg" alt="">
+                                            {/if}
+                                        </div>
+                                    </div>
+                                    <div class="listing__desc grid__column sm--column-12-12 med--column-8-12">
+                                        <header class="heading">
+                                            <h1 class="heading__title">{heading}</h1>
+                                            <h2 class="heading__subtitle subtitle--alpha">{sub_heading}</h2>
+                                        </header>
+                                        <!--index-->
+                                        <p>{description}</p>
+                                        <!--/index-->
+                                        {if cta_link || cta_url != ''}
+                                            <p><a href="{if cta_url != ''}{cta_url}{if:else}{cta_link}{page_uri}{/cta_link}{/if}" class="button button--sm button--inline" title="{cta_text}">{cta_text}</a></p>
+                                        {/if}
+                                    </div>
+                                </article>
+
+                                {if row_count != total_rows}
+                                    <div class="divider divider--sm">
+                                        <div class="divider__diamond"></div>
+                                    </div>
+                                {/if}
+
+                            {/listing_page_items}
+                        {/exp:channel:entries}
+                    {/if}
+
+                </div>
+
+                {exp:channel:entries cache="yes" refresh="360"
+                    limit="1"
+                    status="{publisher:entry_status}"
+                    require_entry="yes"
+                    show_future_entries="{if get_post:publisher_status != ''}yes{/if}"
+                    show_expired="{if get_post:publisher_status != ''}yes{/if}"
+                }
+                    {embed="layout/_content-area" number="c3" type="cta" page_id="{entry_id}" chnl="{chnl}"}
+                {/exp:channel:entries}
+
+            </div>
+            <aside class="grid__column column--alpha sm--column-12-12 med--column-3-12">
+
+                {embed="navigation/_sidebar"}
+
+            </aside>
+
+        </div>
+
+    </div>
+
+{embed="layout/_footer"}
