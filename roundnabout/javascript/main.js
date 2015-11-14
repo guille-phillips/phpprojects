@@ -231,7 +231,7 @@ console.log("MarkerController::RemoveAll");
 		}
 		overlays = [];
 		this.marker_state_controller.Reset();
-		alert('RemoveAll finished');
+		// alert('RemoveAll finished');
 	}
 
 	function CreateInfoBox(place) {
