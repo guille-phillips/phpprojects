@@ -1,4 +1,4 @@
-var marker_resource = 'resources/pin-144ppi.png';
+var marker_resource = 'resources/pin.png';
 var home_marker_resource = 'resources/home-marker.png';
 
 var categories = [];
@@ -399,8 +399,51 @@ console.log("PlacesController::Show");
 					};
 				}(place.id)
 			);
-
+			div.addEventListener("mouseout",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);
+		
 			place_list.appendChild(div);
+			
+			document.getElementById("opening_times_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"opening_times",id:place_id});
+					};
+				}(place.id)
+			);
+			document.getElementById("entry_rates_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"entry_rates",id:place_id});
+					};
+				}(place.id)
+			);
+			document.getElementById("comments_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"comments",id:place_id});
+					};
+				}(place.id)
+			);
+			document.getElementById("disabled_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"disabled",id:place_id});
+					};
+				}(place.id)
+			);			
+			document.getElementById("email_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"email",id:place_id});
+					};
+				}(place.id)
+			);
 
 			marker_index++;
 		}
@@ -410,6 +453,55 @@ console.log("PlacesController::Show");
 console.log("PlacesController::GetPlaceById");
 		var place_id = places.map(function(e){return e.id;}).indexOf(id);
 		return places[place_id];
+	}
+	
+	this.ShowInfo = function (info) {
+		switch (info.category) {
+			case "opening_times":
+				var info_element = document.getElementById("opening_times_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.left="-2px";
+				break;
+			case "entry_rates":
+				var info_element = document.getElementById("entry_rates_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.left="-2px";				
+				break;
+			case "comments":
+				var info_element = document.getElementById("comments_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.left="-2px";
+				break;
+			case "disabled":
+				var info_element = document.getElementById("disabled_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.left="-2px";
+				break;				
+			case "email":
+				var info_element = document.getElementById("email_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.left="-2px";
+				break;
+		}
+	}
+	
+	this.HideAllInfo = function (info) {
+console.log("HideAllInfo");
+		document.getElementById("opening_times_info_"+info.id).style.display = "none";
+		document.getElementById("entry_rates_info_"+info.id).style.display = "none";
+		document.getElementById("comments_info_"+info.id).style.display = "none";
+		document.getElementById("disabled_info_"+info.id).style.display = "none";
+		document.getElementById("email_info_"+info.id).style.display = "none";
 	}
 }
 

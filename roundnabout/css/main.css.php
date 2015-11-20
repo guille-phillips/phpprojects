@@ -3,9 +3,9 @@
 
 	define('MENU_HEIGHT',56);
 	define('FILTER_HEIGHT',34);
-	define('LIST_WIDTH',650);
+	define('LIST_WIDTH',600);
 
-	$colours[0] = '#001fb7';
+	$colours[0] = '#8E48E3'; // #001fb7
 	$colours[1] = '#8f8f8f';
 
 	$filter_top = (MENU_HEIGHT).'px';
@@ -14,6 +14,8 @@
 	$filter_height = (FILTER_HEIGHT).'px';
 	$list_width = (LIST_WIDTH).'px';
 	$menu_horiz_offset = '300px';
+	$list_image_dimension = '170px';
+	$list_hover = '#ecf8fe';
 ?>
 @font-face {
 	font-family: "Rooney Sans";
@@ -169,33 +171,89 @@ body {
 }
 
 .place_list_item {
+	position:relative;
 	width:calc(<?=$list_width?> - 4px - 30px);
-	height:calc(237px - 30px);
+	height:calc(199px - 30px);
 	border:2px solid white;
 	padding:15px;
 	cursor:pointer;
 }
 
 .place_list_item:hover {
-	background-color:#ecf8fe;
+	background-color:<?=$list_hover?>;
 	border:2px solid <?=$colours[0]?>;
 }
 
-.place_list_item > div {
+.place_list_item > div:nth-child(1) {
 	display:inline-block;
 	vertical-align:top;
-	/* border:1px solid red; */
-	width:calc(650px - 30px - 209px - 14px);
+	width:calc(<?=$list_width?> - 30px - <?=$list_image_dimension?> - 14px);
 	height:calc(207px - 2px);
 }
 
-.place_list_item > img {
+.place_list_item > div:nth-child(2) {
+	position:relative;	
 	display:inline-block;
 	vertical-align:top;
-	width:calc(207px - 2px);
-	height:calc(207px - 2px);
-	border:1px solid #ccc;
+	vertical-align:top;
+	width:calc(<?=$list_image_dimension?> - 2px);
+	height:calc(<?=$list_image_dimension?> - 2px);	
 	margin-right:10px;
+	border:1px solid #ccc;
+}
+
+.rating {
+	position:absolute;
+	top:0px;
+	right:0px;
+	width:40px;
+	height:34px;
+	padding:0px 2px 0px 2px;
+
+	background-color:<?=$colours[0]?>;
+	color:white;
+
+	text-align:center;
+	font-size:23px;
+}
+
+.place_list_item > div:nth-child(2) > img {
+	border:1px solid #ccc;
+	width:100%;
+	height:100%;
+}
+
+.info_box {
+	border-left:2px solid <?=$colours[0]?>;
+	border-right:2px solid <?=$colours[0]?>;
+	border-bottom:2px solid <?=$colours[0]?>;
+	background-color:white;
+	z-index:999;
+	display:none;
+	padding:0px 10px 3px 10px;
+	background-color:#ecf8fe;
+}
+
+.place_list_item > div:nth-child(3) {
+
+}
+.place_list_item > div:nth-child(4) {
+
+}
+.place_list_item > div:nth-child(5) {
+
+}
+.place_list_item > div:nth-child(6) {
+
+}
+.place_list_item > div:nth-child(7) {
+
+}
+.place_list_item > div:nth-child(8) {
+
+}
+.place_list_item > div:nth-child(9) {
+
 }
 
 h1 {
@@ -203,6 +261,14 @@ h1 {
 	margin-top:0;
 	margin-bottom:4px;
 	font-size:22px;
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
+}
+
+h1:hover {
+	overflow:initial;
+	background-color:<?=$list_hover;?>;
 }
 
 .category_item {
@@ -225,9 +291,12 @@ h1 {
 }
 
 .website {
-	/*border:1px solid red;*/
+	display:block;
 	color:<?=$colours[0]?>;
 	text-decoration:none;
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
 }
 
 .website:hover {
@@ -245,40 +314,37 @@ h1 {
 	height:45px;
 	*border:1px solid black;
 	margin-right:20px;
-	background-size:45px;
+	background-size:35px;
 	background-repeat:no-repeat;
-	background-position:center bottom;
+	background-position:left bottom;
 }
 
 .opening_times {
-	background-image:url('../resources/clock-icon.png');
+	background-image:url('../resources/openingtimes-icon.svg');
+	background-repeat:no-repeat;
 }
 
-.prices {
-	background-image:url('../resources/pound-icon.png');
+.entry_rates {
+	background-image:url('../resources/entryrates-icon.svg');
+	background-repeat:no-repeat;
 }
 
 .comments {
-	background-image:url('../resources/speech-icon.png');
+	background-image:url('../resources/moreinfo-icon.svg');
+	background-repeat:no-repeat;
+}
+
+.disabled {
+	background-image:url('../resources/disabled-icon.svg');
+	background-repeat:no-repeat;
 }
 
 .email {
-	background-image:url('../resources/envelope-icon.png');
+	background-image:url('../resources/email-icon.svg');
+	background-repeat:no-repeat;
 }
 
-.rating {
-	display:inline-block;
-	vertical-align:top;
-	width:45px;
-	height:45px;
 
-	border-radius:10px;
-	background-color:<?=$colours[0]?>;
-	color:white;
-
-	text-align:center;
-	font-size:30px;
-}
 
 .description {
 	border:1px solid black;
@@ -298,7 +364,7 @@ h1 {
 	top:-52px;
 	width:42px;
 	height:60px;
-	background-image:url('../resources/pin-144ppi.png');
+	background-image:url('../resources/pin.png');
 	background-repeat:no-repeat;
 	font-family:'Rooney Sans';
 	font-size:18px;

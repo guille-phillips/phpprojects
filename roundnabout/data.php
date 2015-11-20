@@ -47,7 +47,7 @@ SQL;
 				$slug = strtolower(str_replace(' ','-',$row['name']));
 
 				$image_extension = 'jpg';
-				$image_url='#';
+				$image_url='images/no-image.png';
 				foreach ($image_extensions as $image_extension) {
 					if (file_exists('images/'.$slug.'.'.$image_extension)) {
 						$image_url = 'images/'.$slug.'.'.$image_extension;
@@ -71,8 +71,9 @@ SQL;
 						'website'=>$row['website'],
 						'entry_rates'=>DecodeJSONField($row['entry_rates']),
 						'opening_times'=>DecodeJSONField($row['opening_times']),
-						'rating'=>(int) $row['rating'],
+						'rating'=>number_format((float) $row['rating'],1,'.',''),
 						'more_info'=>$row['more_info'],
+						'disabled_facilities'=>$row['disabled_facilities'],
 						'facilities'=>$row['facilities'],
 						'good_stuff'=>$row['good_stuff'],
 						'bad_stuff'=>$row['bad_stuff'],

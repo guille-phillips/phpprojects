@@ -55,14 +55,18 @@
 		<div id="place_list"><div id="place_{id}" class="place_list_item" data-id="{id}">
 			<div>
 				<h1>{index}. {name}</h1>
-				<div class="address">{address}</div>
+				<div class="address">{address} {postcode}</div>
 				<div class="telephone">{telephone}</div>
-				<a href="http://{website}" class="website">{website}</a>
-				<br>
+				<a href="http://{website}" class="website" target="_blank">{website}</a>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
-				<div class="icon opening_times">&nbsp;</div><div class="icon prices">&nbsp;</div><div class="icon comments">&nbsp;</div><div class="icon email">&nbsp;</div><div class="rating">{rating}</div>
-			</div><img src="{image_url}">
-		</div><div>
+				<div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="comments_{id}" class="icon comments">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="email_{id}" class="icon email">&nbsp;</div>
+			</div><div><img src="{image_url}"><div class="rating">{rating}</div></div>
+			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
+			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
+			<div id="comments_info_{id}" class="info_box"><p>{more_info}</p><p>{facilities}</p><p>{good_stuff}</p><p>{bad_stuff}</p></div>
+			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
+			<div id="email_info_{id}" class="info_box">{email}</div>
+		</div></div>
 	</body>
 </html>
