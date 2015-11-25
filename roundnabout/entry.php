@@ -54,7 +54,7 @@
 	$category_js = '';
 
 	// print_r($_POST);
-	if (isset($_POST['entry']) && $_POST['id']=='0') {
+	if (isset($_POST['entry']) && $_POST['id']=='0') {			
 		$telephone = CleanUp($_POST['telephone']);
 		$address = CleanUp($_POST['address']);
 		$entry_rates = CleanUp($_POST['entry_rates']);
@@ -140,6 +140,14 @@ SQL;
 			$stmt->execute();
 			$stmt->close();
 
+			$crop_image_post = $_POST['crop_image_post'];
+			$crop_image_post = str_replace('data:image/png;base64,', '', $crop_image_post);
+			$crop_image_post = str_replace(' ', '+', $crop_image_post);
+			$data = base64_decode($crop_image_post);
+			$slug = strtolower(str_replace(' ','-',$name));
+			$file = "images/$slug.png";
+			$success = file_put_contents($file, $data);
+							
 			echo 'New record inserted<br><br>';
 		} else {
 			echo htmlspecialchars($db->error);
@@ -222,6 +230,14 @@ SQL;
 			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
 			$category_field = $category;
 
+			$crop_image_post = $_POST['crop_image_post'];
+			$crop_image_post = str_replace('data:image/png;base64,', '', $crop_image_post);
+			$crop_image_post = str_replace(' ', '+', $crop_image_post);
+			$data = base64_decode($crop_image_post);
+			$slug = strtolower(str_replace(' ','-',$name));
+			$file = "images/$slug.png";
+			$success = file_put_contents($file, $data);
+			
 			echo 'Record updated<br><br>';
 		} else {
 			echo htmlspecialchars($db->error);
@@ -342,22 +358,22 @@ SQL;
 				color: white;
 			}
 
-			.crop_image {
+			#crop_image {
 				width:200px;
 				height:200px;
 				border:1px solid black;
+				background-repeat:no-repeat;
+				background-color:#888;
+			}
+			
+			#upload_image_img {
+				display:none;
 			}
 		</style>
 		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
 			var categories={<?=$category_js?>};
 
-			$(document).ready(
-				function () {
-					$('input,textarea').focus(function(){$('#focus').val(this.name);} );
-					$('.category').click(ToggleCategory);
-				}
-			);
 
 			function ToggleCategory() {
 				$(this).toggleClass('category-selected');
@@ -394,6 +410,10 @@ SQL;
 				return true;
 			}
 
+			function SetImageForPost() {
+				document.getElementById("crop_image_post").value = document.getElementById('crop_image').toDataURL('image/png');
+			}
+			
 			function Validate() {
 				if (submit_button=='entry') {
 					if (!ValidateBlank('name',$('#name').val())) {return false;}
@@ -446,19 +466,135 @@ SQL;
 				return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 			}
 
-			function DisplayImage(inputbox) {
-				if (inputbox.files && inputbox.files[0]) {
-					var reader = new FileReader();
-					reader.onload = function(e) {
-						$('#image_preview').attr('src',e.target.result);
+
+			
+			function ImageController() {
+				var self = this;
+				var dragging = false;
+				var drag_start;
+				var image_offset=[0,0];
+				var image_zoom=100; // percent
+				var cursor;
+				var canvas;
+				var context;
+				var image_source;
+				
+				this.DrawImage = function(x,y) {
+					context.fillStyle = '#888';
+					context.fillRect(0, 0, canvas.width, canvas.height);
+					context.drawImage(image_source, x, y, image_zoom*image_source.width/100, image_zoom*image_source.height/100);
+				};
+				
+				this.DisplayImage = function(inputbox) {
+					if (inputbox.files && inputbox.files[0]) {
+						dragging = false;
+						image_offset=[0,0];
+						image_zoom=100;
+						
+						var reader = new FileReader();
+						reader.onload = function(e) {
+							$('#upload_image_img').attr("src",e.target.result);
+							canvas = document.getElementById('crop_image');
+							context = canvas.getContext("2d");
+							image_source = document.getElementById("upload_image_img");
+							
+							self.DrawImage(0,0);
+							self.InitMouseEvents();
+						}
+						reader.readAsDataURL(inputbox.files[0]);
 					}
-					reader.readAsDataURL(inputbox.files[0]);
+				}				
+				
+				this.StartDrag = function(x,y) {
+					drag_start = [x,y];
+					dragging = true;
+				};
+				
+				this.Drag = function(x,y) {
+					if (dragging) {
+						var drag_offset = [x-drag_start[0],y-drag_start[1]];
+						var offset = [image_offset[0]+drag_offset[0],image_offset[1]+drag_offset[1]];
+						//$('#crop_image').css('background-position', offset[0]+'px '+offset[1]+'px');
+						self.DrawImage(offset[0],offset[1]);
+					}
+					var position = $("#crop_image").position();
+					cursor = [x-position.left,y-position.top];
+				};
+				
+				this.StopDrag = function(x,y) {
+					if (dragging) {
+						image_offset = [image_offset[0]+x-drag_start[0],image_offset[1]+y-drag_start[1]];
+					}
+					dragging = false;
+				};
+				
+				this.ChangeZoom = function(direction) {
+					var ratio;
+					var ok = false;
+					switch (direction) {
+						case -1:
+							if (image_zoom>10) {
+								image_zoom -= 10;
+								ratio = image_zoom/(image_zoom+10);
+								ok = true;
+							}
+							break;
+						case 1:
+							if (image_zoom<1000) {
+								image_zoom += 10;
+								ratio = image_zoom/(image_zoom-10);
+								ok = true;
+							}
+							break;
+					}
+					if (ok) {
+						image_offset = [cursor[0]+ratio*(image_offset[0]-cursor[0]),cursor[1]+ratio*(image_offset[1]-cursor[1])];
+						self.DrawImage(image_offset[0],image_offset[1]);
+					}
+				}
+				
+				this.InitMouseEvents = function() {
+					$('#crop_image').mousedown( function(e) {
+						self.StartDrag(e.pageX,e.pageY);
+					});
+					$('#crop_image').mousemove( function(e) {
+						self.Drag(e.pageX,e.pageY);
+					});
+					$('#crop_image').mouseup( function(e) {
+						self.StopDrag(e.pageX,e.pageY);
+					});
+					$('#crop_image').mouseleave( function(e) {
+						self.StopDrag(e.pageX,e.pageY);
+					});
+					
+					 //Firefox
+					$('#crop_image').on('DOMMouseScroll', function(e){
+						self.ChangeZoom((e.originalEvent.detail>0)?-1:1);
+						return false;
+					});
+
+					 //IE, Opera, Safari
+					 $('#crop_image').on('mousewheel', function(e){
+						self.ChangeZoom((e.originalEvent.wheelDelta>0)?-1:1);
+						return false;
+					 });
 				}
 			}
+			
+			var image_controller;
+			
+			$(document).ready(
+				function () {
+					$('input,textarea').focus(function(){$('#focus').val(this.name);} );
+					$('.category').click(ToggleCategory);
+					
+					image_controller = new ImageController();
+				}
+			);
 		</script>
 	</head>
 	<body>
-		<form method="post" action="entry.php" onsubmit="return Validate();">
+		<form method="post" action="entry.php" onsubmit="SetImageForPost(); return Validate();" enctype="multipart/form-data">
 			<input type="hidden" name="id" value="<?=$id?>">
 			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name" value="<?=$name?>"></div><br><br>
 			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude" value="<?=$latitude?>"></div><br><br>
@@ -484,12 +620,12 @@ SQL;
 			<div class="field_name">Disabled Facilities</div><div class="field_value"><textarea id="disabled_facilities" name="disabled_facilities" rows="6"><?=htmlspecialchars($disabled_facilities, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"><?=htmlspecialchars($good_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
-			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="DisplayImage(this);" accept="image/*"></div>
-			<img id="image_preview" src="#">
-			<canvas class="crop_image" DOMMouseScroll="alert('zoom');" mousewheel="alert('zoom');"></canvas>
+			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="image_controller.DisplayImage(this);" accept="image/*"></div>
+			<canvas id="crop_image" width="200" height="200"></canvas>
+			<img id="upload_image_img" src="#">
+			<input type="hidden" name="crop_image_post" id="crop_image_post">
 			<br><br>
-
-
+		
 			<input id='focus' type='hidden' name='focus' value=''>
 
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
