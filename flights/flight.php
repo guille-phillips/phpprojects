@@ -247,8 +247,10 @@
 					if (flights[key][CALLSIGN]!=undefined) {
 						var callsignx = flights[key][CALLSIGN].split('');
 						var ok = true;
+						var found;
+						var found = -1;
 						for (index in letters) {
-							if (callsignx.indexOf(letters[index])==-1) {
+							if ((found = callsignx.indexOf(letters[index],found+1))==-1) {
 								ok = false;
 								break;
 							}
@@ -314,20 +316,46 @@
 				for (var key in flights) {
 					var interval_new = Date.now()/1000-flights[key][UNIXTIME];
 					
+					
 					var estimates = ExtractHistory(flights[key][HISTORY]);
 					flights[key][ALTITUDE_RATE_EST] = estimates[0];
 					flights[key][SPEED_RATE_EST] = estimates[1];
 					flights[key][HEADING_RATE_EST] = estimates[2];
+
+					flights[key][ALTITUDE] = flights[key][ALTITUDE_ORIG]+interval_new*flights[key][ALTITUDE_RATE]/60;
+					if (flights[key][ALTITUDE] < 0) {
+						//flights[key][ALTITUDE] = interval_new*flights[key][ALTITUDE_RATE]/60;
+						//flights[key][SPEED] -= (10)*interval_new;
+						flights[key][ALTITUDE] = 0;
+					}
+					if (flights[key][SPEED]<0) {
+						flights[key][SPEED] = 0;
+					}				
+					if (flights[key].dead) {
+						flights[key].dead--;
+						if (flights[key][LANDED]==1 || flights[key][ALTITUDE]==0) {
+							flights[key][SPEED] = 0;
+							flights[key][ALTITUDE] = 0;
+						}
+							
+						if (flights[key].dead <= 0) {
+							delete flights[key];
+							delete boxes[key];
+						}						
+						
+					}
 					
 					var heading = flights[key][HEADING];
 					var speed = flights[key][SPEED];
-					var speed_rate = flights[key][SPEED_RATE_EST];
+					var speed_rate = flights[key][SPEED_RATE];
 					var speed_est = speed+speed_rate*interval_new;
 					
 					var heading_rate_est = flights[key][HEADING_RATE_EST];
 					var heading_est = heading+heading_rate_est*interval_new;
 					flights[key][SPEED_EST] = speed_est;
 					flights[key][HEADING_EST] = heading_est;
+					
+
 					
 					var speed_x = Math.cos((90-heading)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
 					var speed_y = Math.sin((90-heading)*2*Math.PI/360)*(speed_est)*1852/3600; // metres per second
@@ -337,24 +365,7 @@
 					
 					ConvertLatLonToXY(key);
 
-					flights[key][ALTITUDE] = flights[key][ALTITUDE_ORIG]+interval_new*flights[key][ALTITUDE_RATE]/60;
-					if (flights[key][ALTITUDE] < 0) {
-						flights[key][ALTITUDE] = interval_new*flights[key][ALTITUDE_RATE]/60;
-						flights[key][SPEED] -= (10)*interval_new;
-						if (flights[key][SPEED]<0) {
-							flights[key][SPEED] = 0;
-						}
-					}
-				
-					if (flights[key].dead) {
-						if (flights[key][ALTITUDE]<100) {
-							flights[key].dead--;
-							if (flights[key].dead <= 0) {
-								delete flights[key];
-								delete boxes[key];
-							}
-						}
-					}
+
 				}
 			}
 
@@ -362,7 +373,7 @@
 				dir = dir-90;
 				var size = 5;
 				var points = [];
-				points[0] = new Vector2d(x,y).Add(new Vector2d(0,-alt/100));
+				points[0] = new Vector2d(x,y);//.Add(new Vector2d(0,-alt/100));
 				points[1] = VectorPolar(size,dir).Add(points[0]);
 				points[2] = VectorPolar(size,dir+120).Add(points[0]);
 				points[3] = VectorPolar(size,dir-120).Add(points[0]);
@@ -376,6 +387,7 @@
 				context.closePath();
 				context.fill();
 				
+				/*
 				context.strokeStyle = '#808080';
 				context.beginPath();
 				context.moveTo(x,y);
@@ -383,6 +395,7 @@
 				context.line
 				context.closePath();
 				context.stroke();
+				*/
 			}
 
 			function DrawFix(x,y,name) {
@@ -482,8 +495,8 @@
 					if (show_labels) {
 						context.strokeStyle = '#808080';
 						context.beginPath();
-						context.moveTo(boxes[key][0], boxes[key][1]-altitude/100);
-						context.lineTo(graph_x,graph_y-altitude/100);
+						context.moveTo(boxes[key][0], boxes[key][1]);
+						context.lineTo(graph_x,graph_y);
 						context.stroke();
 	
 						var box_left = boxes[key][0]-boxes[key][2]/2;
@@ -509,8 +522,8 @@
 						context.fillText(callsign_short, box_left+padding_left,box_top+spacing*1+padding_top);
 						context.fillText(model+' '+reg, box_left+padding_left,box_top+spacing*2+padding_top);
 						context.fillText(origin+'-'+destination, box_left+padding_left,box_top+spacing*3+padding_top);
-						context.fillText(Whole(altitude)+'-'+Whole(speed)+'-'+Pad(Whole(heading),3), box_left+padding_left,box_top+spacing*4+padding_top);
-						context.fillText(Whole(DistanceBetween(initial_latlong,[lat,lon])), box_right-padding_left*2,box_top+spacing*0+padding_top);
+						context.fillText(Whole(altitude)+((altitude>0 && landed==1)?'L':'')+'-'+Whole(speed)+'-'+Pad(Whole(heading),3), box_left+padding_left,box_top+spacing*4+padding_top);
+						context.fillText(Whole(DistanceBetween(initial_latlong,[lat,lon])), box_right-padding_left*2.5,box_top+spacing*0+padding_top);
 						//context.fillText(Whole(Date.now()/1000-unixtime), box_left+padding_left,box_top+spacing*5+padding_top);
 
 /*
@@ -914,46 +927,44 @@
 				background-color:blue !important;
 			}
 			
-			#info {
+
+		
+			#search_div {
 				position:absolute;
-				right:11px;
-				top:250px;
-				/*width:200px;*/
-				display:none;
+				top:50px;
+				right:100px;				
+				width:87px;
+			}
+			#search_div > input {
+				width:87px;
+				margin-bottom:2px;
+			}
+			
+			#info {
+				height:300px;
 			}
 
 			.strip {
 				background-color: #0000FF;
 				color:white;
-				width:160px;
-				height:20px;
-				margin-bottom: 4px;
+				width:87px;
+				height:17px;
+				margin-bottom: 2px;
 				padding:3px;
 				cursor:pointer;
 			}
 			
 			.strip:hover {
 				background-color: #0080FF;
-			}
-
-			#search_div {
-				width:170px;
-				height:25px;
-				position:absolute;
-				top:0px;
-				right:5px;
-				display:none;
-			}
-			input {
-				/*position:absolute;*/
-			}
+			}			
 		</style>		
 	</head>
 	<body>
 		<div id="google_map"></div>
 		<canvas id="flights_map"></canvas> 
 		<div id="search_div">
-			<input id="search" onchange="ListFlights();" value="">
+			<input id="search" onchange="ListFlights();" value="" placeholder="search">
+			<div id="info"></div>
 		</div>
 		<div id="hover_menu">
 			<div id="option0" onclick="Options(this);" data-id="0">Options</div>
