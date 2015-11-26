@@ -19,6 +19,19 @@
 		$split_array = array_map(function($e){return StripSpace($e);},$split_array);
 		return json_encode($split_array);
 	}
+	
+	function FindImageURLFromName($name) {
+		$slug = strtolower(str_replace(' ','-',$name));
+		$image_extensions = array('jpg','png','gif');
+		$image_url='images/no-image.png';
+		foreach ($image_extensions as $image_extension) {
+			if (file_exists('images/'.$slug.'.'.$image_extension)) {
+				$image_url = 'images/'.$slug.'.'.$image_extension;
+			}
+		}		
+		
+		return $image_url;
+	}
 
 	switch ($_SERVER['HTTP_HOST']) {
 		case 'localhost:8080':
@@ -52,6 +65,8 @@
 	$category_array = array();
 	$category_field = '[]';
 	$category_js = '';
+	
+	$image_url = FindImageURLFromName(''); // default No Image image
 
 	// print_r($_POST);
 	if (isset($_POST['entry']) && $_POST['id']=='0') {			
@@ -147,7 +162,9 @@ SQL;
 			$slug = strtolower(str_replace(' ','-',$name));
 			$file = "images/$slug.png";
 			$success = file_put_contents($file, $data);
-							
+			
+			$image_url = FindImageURLFromName($name);
+			
 			echo 'New record inserted<br><br>';
 		} else {
 			echo htmlspecialchars($db->error);
@@ -238,12 +255,15 @@ SQL;
 			$file = "images/$slug.png";
 			$success = file_put_contents($file, $data);
 			
+			$image_url = FindImageURLFromName($name);
+			
 			echo 'Record updated<br><br>';
 		} else {
 			echo htmlspecialchars($db->error);
 		}
 	} elseif (isset($_POST['search'])) {
 		$name = '%'.StripSpace($_POST['name']).'%';
+		
 		$id = 0;
 
 		$sql = <<<SQL
@@ -291,9 +311,13 @@ SQL;
 			$opening_times = implode(",\n",json_decode($opening_times));
 			$category_array = json_decode($category_field);
 			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
+			
+			$image_url = FindImageURLFromName($name);
 		}
 	}
 
+
+	
 	$sql = "SELECT category FROM places";
 	if (!$list = $db->query($sql)) {
 		Error('There was an error running the query [' . $db->error . ']');
@@ -480,10 +504,17 @@ SQL;
 				var image_source;
 				
 				this.DrawImage = function(x,y) {
-					context.fillStyle = '#888';
+					context.fillStyle = '#fff';
 					context.fillRect(0, 0, canvas.width, canvas.height);
 					context.drawImage(image_source, x, y, image_zoom*image_source.width/100, image_zoom*image_source.height/100);
 				};
+				
+				this.Initialise = function() {
+					canvas = document.getElementById('crop_image');
+					context = canvas.getContext("2d");
+					image_source = document.getElementById("upload_image_img");		
+					self.DrawImage(0,0);
+				}
 				
 				this.DisplayImage = function(inputbox) {
 					if (inputbox.files && inputbox.files[0]) {
@@ -534,15 +565,17 @@ SQL;
 					switch (direction) {
 						case -1:
 							if (image_zoom>10) {
-								image_zoom -= 10;
-								ratio = image_zoom/(image_zoom+10);
+								var image_zoom_previous = image_zoom;
+								image_zoom = image_zoom/1.1;
+								ratio = image_zoom/image_zoom_previous;
 								ok = true;
 							}
 							break;
 						case 1:
 							if (image_zoom<1000) {
-								image_zoom += 10;
-								ratio = image_zoom/(image_zoom-10);
+								var image_zoom_previous = image_zoom;
+								image_zoom = image_zoom*1.1;
+								ratio = image_zoom/image_zoom_previous;
 								ok = true;
 							}
 							break;
@@ -589,6 +622,7 @@ SQL;
 					$('.category').click(ToggleCategory);
 					
 					image_controller = new ImageController();
+					image_controller.Initialise();
 				}
 			);
 		</script>
@@ -622,7 +656,7 @@ SQL;
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="image_controller.DisplayImage(this);" accept="image/*"></div>
 			<canvas id="crop_image" width="200" height="200"></canvas>
-			<img id="upload_image_img" src="#">
+			<img id="upload_image_img" src="<?=$image_url?>">
 			<input type="hidden" name="crop_image_post" id="crop_image_post">
 			<br><br>
 		
