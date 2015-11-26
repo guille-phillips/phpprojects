@@ -347,8 +347,8 @@
 					
 					var heading = flights[key][HEADING];
 					var speed = flights[key][SPEED];
-					var speed_rate = flights[key][SPEED_RATE];
-					var speed_est = speed+speed_rate*interval_new;
+					//var speed_rate = flights[key][SPEED_RATE];
+					var speed_est = speed;//+speed_rate*interval_new;
 					
 					var heading_rate_est = flights[key][HEADING_RATE_EST];
 					var heading_est = heading+heading_rate_est*interval_new;
