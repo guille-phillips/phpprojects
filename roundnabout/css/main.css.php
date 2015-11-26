@@ -217,6 +217,36 @@ body {
 	font-size:23px;
 }
 
+.edit {
+	position:absolute;
+	top:76px;
+	right:0px;
+	width:100%;
+	height:31px;
+	background-color:#888;
+	border:1px solid white;
+	color:white;
+	text-align:center;
+	font-size:24px;	
+	font-weight:bold;
+	    opacity: 0.7;
+}
+
+.move {
+	position:absolute;
+	top:126px;
+	right:0px;
+	width:100%;
+	height:31px;
+	background-color:#888;
+	border:1px solid white;
+	color:white;
+	text-align:center;
+	font-size:24px;	
+	font-weight:bold;
+	    opacity: 0.7;
+}
+
 .place_list_item > div:nth-child(2) > img {
 	border:1px solid #ccc;
 	width:100%;

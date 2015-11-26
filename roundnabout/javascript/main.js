@@ -169,7 +169,6 @@ function HomeMarkerClicked() {
 	alert('HomeMarkerClicked');
 }
 
-
 function MarkerController() {
 	var overlays = [];
 
@@ -253,12 +252,20 @@ console.log("MarkerController::CreateInfoBox");
 		return html_array.join('');
 	}
 
+	this.Move = function() {
+		//alert('Move1');
+		map_controller.StartMove();
+	}
 }
 
 function MarkerStateController(){
 	var previous_id = undefined;
 	var ignore_next_click_map = false;
 
+	this.SelectedPlaceId = function() {
+		return previous_id;
+	}
+	
 	this.Reset = function() {
 console.log("MarkerStateController::Reset");
 		previous_id = undefined;
@@ -324,7 +331,6 @@ console.log("MarkerStateController::HideBubble");
 		document.getElementById("bubble"+id).style.display="none";
 	}
 }
-
 
 function AjaxController() {
 	var xmlhttp;
@@ -399,7 +405,7 @@ console.log("PlacesController::Show");
 					};
 				}(place.id)
 			);
-			div.addEventListener("mouseout",
+			div.addEventListener("mouseleave",
 				function(place_id) {
 					return function(){
 						place_controller.HideAllInfo({id:place_id});
@@ -445,6 +451,28 @@ console.log("PlacesController::Show");
 				}(place.id)
 			);
 
+			var edit_element = document.getElementById("edit_"+place.id);
+			if (edit_element) {
+				edit_element.addEventListener("click",
+					function(place_id){
+						return function() {
+							place_controller.ShowEditPage(place_id);
+						};
+					}(place.id)
+				);
+			}
+			
+			var move_element = document.getElementById("move_"+place.id)
+			if (move_element) {
+				move_element.addEventListener("click",
+					function(place_id){
+						return function() {
+							marker_controller.Move(place_id);
+						};
+					}(place.id)
+				);
+			}
+			
 			marker_index++;
 		}
 	}
@@ -503,6 +531,10 @@ console.log("HideAllInfo");
 		document.getElementById("disabled_info_"+info.id).style.display = "none";
 		document.getElementById("email_info_"+info.id).style.display = "none";
 	}
+	
+	this.ShowEditPage = function (place_id) {
+		window.open('entry.php?id='+place_id,'_blank');
+	}
 }
 
 function ListController() {
@@ -536,6 +568,23 @@ function MapController(centre_lat,centre_long) {
 	this.centre_lat = centre_lat;
 	this.centre_long = centre_long;
 
+	var moving = false;
+	this.StartMove = function() {
+		moving = true;
+		self.google_map.setOptions({draggableCursor:'crosshair'});
+	}
+	
+	this.EndMove = function(latlong) {
+		if (moving) {
+			console.log(latlong);
+			moving = false;
+			self.google_map.setOptions({draggableCursor:'grab'});
+			window.open('entry.php?id='+marker_controller.marker_state_controller.SelectedPlaceId()+'&lat='+latlong[0]+'&long='+latlong[1],'_blank');
+			return true;
+		}
+		return false;
+	}
+	
 	this.CentreChanged = function() {
 console.log("MapController::CentreChanged");
 		var centre = self.google_map.getCenter();
@@ -572,7 +621,8 @@ console.log("MapController::Initialise");
 		google.maps.event.addListener(self.google_map, 'zoom_changed', self.ZoomChanged);
 		google.maps.event.addListener(self.google_map, 'center_changed', self.CentreChanged);
 		google.maps.event.addListener(self.google_map, 'click',
-			function() {
+			function(event) {
+				if (map_controller.EndMove([event.latLng.lat(),event.latLng.lng()]) ) return;
 				marker_controller.marker_state_controller.Event(
 					{name:'click_map'}
 				)

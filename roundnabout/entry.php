@@ -187,8 +187,7 @@ SQL;
 		$disabled_facilities = StripSpace($_POST['disabled_facilities']);
 		$good_stuff = StripSpace($_POST['good_stuff']);
 		$bad_stuff = StripSpace($_POST['bad_stuff']);
-		$id = $_POST['id'];
-
+		
 		$sql = <<<SQL
 			UPDATE
 				places
@@ -314,6 +313,80 @@ SQL;
 			
 			$image_url = FindImageURLFromName($name);
 		}
+		
+	} elseif (isset($_POST['delete'])) {
+		$id = $_POST['id'];
+		
+		$sql = <<<SQL
+			DELETE
+			FROM
+				places
+			WHERE
+				id = ?
+SQL;
+		if ($stmt = $db->prepare($sql)) {
+			$stmt->bind_param("i",$d);
+			$stmt->execute();
+			$stmt->close();
+
+			$id = 0;
+		}
+		
+	} elseif (isset($_GET['id'])) {
+		$id = $_GET['id'];
+
+		$sql = <<<SQL
+			SELECT
+				*
+			FROM
+				places
+			WHERE
+				id = ?
+			ORDER BY
+				id
+SQL;
+		if ($stmt = $db->prepare($sql)) {
+			$stmt->bind_param("i",$id);
+			$stmt->execute();
+			$stmt->bind_result(
+				$id,
+				$name,
+				$latitude,
+				$longitude,
+				$category_field,
+				$email,
+				$telephone,
+				$address,
+				$postcode,
+				$website,
+				$entry_rates,
+				$opening_times,
+				$rating,
+				$more_info,
+				$disabled_facilities,
+				$facilities,
+				$good_stuff,
+				$bad_stuff);
+
+			$stmt->fetch();
+			$stmt->close();
+
+			$telephone = implode(', ',json_decode($telephone));
+			$address = implode(",\n",json_decode($address));
+			$entry_rates = implode(",\n",json_decode($entry_rates));
+			$opening_times = implode(",\n",json_decode($opening_times));
+			$category_array = json_decode($category_field);
+			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
+			
+			if (isset($_GET['lat'])) {
+				$latitude = $_GET['lat'];
+			}
+			if (isset($_GET['long'])) {
+				$longitude = $_GET['long'];
+			}
+			
+			$image_url = FindImageURLFromName($name);		
+		}
 	}
 
 
@@ -327,8 +400,10 @@ SQL;
 	$rows = array();
 	while ($row = $list->fetch_assoc()){
 		$category_list = json_decode($row['category']);
-		foreach ($category_list as $category) {
-			$categories[$category] = $category;
+		if (count($category_list)>0) {
+			foreach ($category_list as $category) {
+				$categories[$category] = $category;
+			}
 		}
 	}
 	ksort($categories);
@@ -445,14 +520,19 @@ SQL;
 			}
 			
 			function Validate() {
-				if (submit_button=='entry') {
-					if (!ValidateBlank('name',$('#name').val())) {return false;}
-					if (!ValidateNumeric('latitude',$('#latitude').val())) {return false;}
-					if (!ValidateNumeric('longitude',$('#longitude').val())) {return false;}
+				switch (submit_button) {
+					case 'entry':
+						if (!ValidateBlank('name',$('#name').val())) {return false;}
+						if (!ValidateNumeric('latitude',$('#latitude').val())) {return false;}
+						if (!ValidateNumeric('longitude',$('#longitude').val())) {return false;}
 
-					return true;
-				} else {
-					return true;
+						return true;
+						break;
+					case 'delete':
+						return confirm("This will permanently delete this record. Are you sure?");
+						break;
+					default:
+						return true;
 				}
 			}
 
@@ -674,6 +754,7 @@ SQL;
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
 			<input type="submit" value="New" name="new" onclick="submit_button='new';">
+			<input type="submit" value="Delete" name="delete" onclick="submit_button='delete';">
 		</form>
 	</body>
 </html>

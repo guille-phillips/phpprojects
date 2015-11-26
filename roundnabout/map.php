@@ -1,3 +1,10 @@
+<?php
+	if (isset($_GET['pin']) && $_GET['pin']=='3141') {
+		$editable = true;
+	} else {
+		$editable = false;
+	}
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -61,7 +68,14 @@
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
 				<div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="comments_{id}" class="icon comments">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="email_{id}" class="icon email">&nbsp;</div>
-			</div><div><img src="{image_url}"><div class="rating">{rating}</div></div>
+			</div><div><img src="{image_url}">
+				<div class="rating">{rating}</div>
+				<?php if ($editable): ?>
+				<div id="edit_{id}" class="edit">EDIT</div>
+				<div id="move_{id}" class="move">MOVE</div>
+				<?php endif; ?>
+			</div>
+
 			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
 			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
 			<div id="comments_info_{id}" class="info_box"><p>{more_info}</p><p>{facilities}</p><p>{good_stuff}</p><p>{bad_stuff}</p></div>
