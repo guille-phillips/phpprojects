@@ -1,6 +1,6 @@
 <?php
 	header('Content-Type: text/html; charset=utf-8');
-
+	
 	function Nullable($field,$is_text=false) {
 		if ($field=='') {
 			return null;
@@ -238,6 +238,7 @@ SQL;
 			$stmt->execute();
 			$stmt->close();
 
+			$id = $_POST['id'];
 			$telephone = implode(', ',json_decode($telephone));
 			$address = implode(",\n",json_decode($address));
 			$entry_rates = implode(",\n",json_decode($entry_rates));
@@ -526,6 +527,8 @@ SQL;
 						if (!ValidateNumeric('latitude',$('#latitude').val())) {return false;}
 						if (!ValidateNumeric('longitude',$('#longitude').val())) {return false;}
 
+						SetImageForPost();
+						
 						return true;
 						break;
 					case 'delete':
@@ -737,7 +740,7 @@ SQL;
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="image_controller.DisplayImage(this);" accept="image/*"></div>
 			<br>
-			<div class="field_name">OR...</div><input class="long_field_value" placeholder="Enter URL and press Tab to get image" onkeydown='e = event || window.event;if (e.keyCode==9) {image_controller.LoadURL(this.value,true);return false;}'>
+			<!--div class="field_name">OR...</div><input class="long_field_value" placeholder="Enter URL and press Tab to get image" onkeydown='e = event || window.event;if (e.keyCode==9) {image_controller.LoadURL(this.value,true);return false;}'-->
 			<br>
 			<canvas id="crop_image" width="200" height="200"></canvas>
 			<br>
@@ -754,7 +757,7 @@ SQL;
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
 			<input type="submit" value="New" name="new" onclick="submit_button='new';">
-			<input type="submit" value="Delete" name="delete" onclick="submit_button='delete';">
+			<!--input type="submit" value="Delete" name="delete" onclick="submit_button='delete';"-->
 		</form>
 	</body>
 </html>
