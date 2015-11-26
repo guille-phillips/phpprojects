@@ -368,6 +368,12 @@ SQL;
 				vertical-align: top;
 			}
 
+			.long_field_value {
+				width:50%;
+				margin-top:8px;
+				margin-bottom:8px;
+			}
+			
 			.category {
 				border:1px solid #888;
 				cursor:default;
@@ -499,38 +505,34 @@ SQL;
 				var image_offset=[0,0];
 				var image_zoom=100; // percent
 				var cursor;
-				var canvas;
-				var context;
-				var image_source;
-				
-				this.DrawImage = function(x,y) {
+				var image_source = new Image();
+				var canvas = document.getElementById('crop_image');
+				var context = canvas.getContext("2d");			
+					
+				function DrawImage(x,y) {
 					context.fillStyle = '#fff';
 					context.fillRect(0, 0, canvas.width, canvas.height);
 					context.drawImage(image_source, x, y, image_zoom*image_source.width/100, image_zoom*image_source.height/100);
-				};
-				
-				this.Initialise = function() {
-					canvas = document.getElementById('crop_image');
-					context = canvas.getContext("2d");
-					image_source = document.getElementById("upload_image_img");		
-					self.DrawImage(0,0);
 				}
+	
+				this.LoadURL = function(url,dragable,callback){
+					image_source.onload = function() {
+						DrawImage(0,0);
+						if (dragable) {
+							InitMouseEvents();
+						}						
+					};
+					image_source.src = url;
+				};
 				
 				this.DisplayImage = function(inputbox) {
 					if (inputbox.files && inputbox.files[0]) {
 						dragging = false;
 						image_offset=[0,0];
 						image_zoom=100;
-						
 						var reader = new FileReader();
 						reader.onload = function(e) {
-							$('#upload_image_img').attr("src",e.target.result);
-							canvas = document.getElementById('crop_image');
-							context = canvas.getContext("2d");
-							image_source = document.getElementById("upload_image_img");
-							
-							self.DrawImage(0,0);
-							self.InitMouseEvents();
+							self.LoadURL(e.target.result, true);
 						}
 						reader.readAsDataURL(inputbox.files[0]);
 					}
@@ -545,8 +547,7 @@ SQL;
 					if (dragging) {
 						var drag_offset = [x-drag_start[0],y-drag_start[1]];
 						var offset = [image_offset[0]+drag_offset[0],image_offset[1]+drag_offset[1]];
-						//$('#crop_image').css('background-position', offset[0]+'px '+offset[1]+'px');
-						self.DrawImage(offset[0],offset[1]);
+						DrawImage(offset[0],offset[1]);
 					}
 					var position = $("#crop_image").position();
 					cursor = [x-position.left,y-position.top];
@@ -582,11 +583,11 @@ SQL;
 					}
 					if (ok) {
 						image_offset = [cursor[0]+ratio*(image_offset[0]-cursor[0]),cursor[1]+ratio*(image_offset[1]-cursor[1])];
-						self.DrawImage(image_offset[0],image_offset[1]);
+						DrawImage(image_offset[0],image_offset[1]);
 					}
 				}
 				
-				this.InitMouseEvents = function() {
+				function InitMouseEvents() {
 					$('#crop_image').mousedown( function(e) {
 						self.StartDrag(e.pageX,e.pageY);
 					});
@@ -622,7 +623,7 @@ SQL;
 					$('.category').click(ToggleCategory);
 					
 					image_controller = new ImageController();
-					image_controller.Initialise();
+					image_controller.LoadURL('<?=$image_url?>',false);
 				}
 			);
 		</script>
@@ -655,8 +656,16 @@ SQL;
 			<div class="field_name">Good Stuff</div><div class="field_value"><textarea id="good_stuff" name="good_stuff" rows="6"><?=htmlspecialchars($good_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Bad Stuff</div><div class="field_value"><textarea id="bad_stuff" name="bad_stuff" rows="6"><?=htmlspecialchars($bad_stuff, ENT_QUOTES, "UTF-8")?></textarea></div><br><br>
 			<div class="field_name">Picture</div><div class="field_value"><input id="upload_image" type="file" onchange="image_controller.DisplayImage(this);" accept="image/*"></div>
+			<br>
+			<div class="field_name">OR...</div><input class="long_field_value" placeholder="Enter URL and press Tab to get image" onkeydown='e = event || window.event;if (e.keyCode==9) {image_controller.LoadURL(this.value,true);return false;}'>
+			<br>
 			<canvas id="crop_image" width="200" height="200"></canvas>
-			<img id="upload_image_img" src="<?=$image_url?>">
+			<br>
+			<input type="button" value="Zoom In" onclick="image_controller.ChangeZoom(1);">
+			<br>
+			<input type="button" value="Zoom Out" onclick="image_controller.ChangeZoom(-1);">
+			<br>
+			Or use mouse wheel over image to zoom.
 			<input type="hidden" name="crop_image_post" id="crop_image_post">
 			<br><br>
 		
