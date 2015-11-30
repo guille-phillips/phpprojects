@@ -15,7 +15,7 @@
 	$list_width = (LIST_WIDTH).'px';
 	$menu_horiz_offset = '300px';
 	$list_image_dimension = '170px';
-	$list_hover = '#ecf8fe';
+	$list_hover = '#F4EDFF';
 ?>
 @font-face {
 	font-family: "Rooney Sans";
