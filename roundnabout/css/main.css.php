@@ -50,9 +50,9 @@ body {
 
 #map_box {
 	position:absolute;
-	left:<?=$list_width?>;
+	left: calc(<?=$list_width?> + 17px);
 	top:<?=$body_top?>;
-	width: calc(100% - <?=$list_width?>);
+	width: calc(100% - <?=$list_width?> - 17px);
 	height: calc(100% - <?=$body_top?>);
 	background-color: #CCC;
 }
@@ -67,27 +67,25 @@ body {
 	background-color: blue;
 	padding-left:<?=$menu_horiz_offset?>;
 
-	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1e5799+0,007eff+50,2989d8+100,7db9e8+100 */
-	background: #1e5799; /* Old browsers */
-	background: -moz-linear-gradient(left,  #1e5799 0%, #007eff 50%, #2989d8 100%, #7db9e8 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,#1e5799), color-stop(50%,#007eff), color-stop(100%,#2989d8), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* IE10+ */
-	background: linear-gradient(to right,  #1e5799 0%,#007eff 50%,#2989d8 100%,#7db9e8 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=1 ); /* IE6-9 */
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4b1e7f+0,b87fff+51,8c36e3+100 */
+	background: #4b1e7f; /* Old browsers */
+	background: -moz-linear-gradient(left,  #4b1e7f 0%, #b87fff 51%, #8c36e3 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4b1e7f', endColorstr='#8c36e3',GradientType=1 ); /* IE6-9 */
+
 }
 
 #menu > ul {
 	color: white;
 	margin:0;
+	cursor:default;
 }
 #menu > ul > li {
 	display:inline-block;
-	/* border-right:1px solid #888; */
 	padding:0px 5px 0px 5px;
 	vertical-align:top;
-	cursor:default;
+	cursor:pointer;
 	height:<?=$menu_height?>;
 }
 
@@ -436,11 +434,12 @@ h1:hover {
 #logo {
 	background-image:url('../resources/logo.png');
 	background-repeat:no-repeat;
-	background-size: 130px;
+	background-size: 192px;
 	position:absolute;
 	top:0px;
 	left:0px;
-	width:<?=$menu_horiz_offset?>;
-	height:<?=$body_top?>;
-	background-position: right top;
+	width:calc(<?=$menu_horiz_offset?> - 7px);
+	height:calc(<?=$body_top?> + 11px);
+	background-position: right -3px;
+	z-index: 1;
 }
