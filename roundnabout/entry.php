@@ -68,7 +68,7 @@
 	
 	$image_url = FindImageURLFromName(''); // default No Image image
 
-	// print_r($_POST);
+	//print_r($_POST);
 	if (isset($_POST['entry']) && $_POST['id']=='0') {			
 		$telephone = CleanUp($_POST['telephone']);
 		$address = CleanUp($_POST['address']);
@@ -170,17 +170,19 @@ SQL;
 			echo htmlspecialchars($db->error);
 		}
 	} elseif (isset($_POST['entry']) && $_POST['id']!='0') {
-		$telephone = CleanUp($_POST['telephone']);
-		$address = CleanUp($_POST['address']);
-		$entry_rates = CleanUp($_POST['entry_rates']);
-		$opening_times = Nullable(CleanUp($_POST['opening_times']),true);
+		
+		$id = $_POST['id'];
 		$name = StripSpace($_POST['name']);
 		$latitude = StripSpace($_POST['latitude']);
-		$longitude = StripSpace($_POST['longitude']);
+		$longitude = StripSpace($_POST['longitude']);	
 		$category = $_POST['category_list'];
 		$email = Nullable(StripSpace($_POST['email']),true);
+		$telephone = CleanUp($_POST['telephone']);
+		$address = CleanUp($_POST['address']);
 		$postcode = StripSpace($_POST['postcode']);
 		$website = StripSpace($_POST['website']);
+		$entry_rates = CleanUp($_POST['entry_rates']);
+		$opening_times = Nullable(CleanUp($_POST['opening_times']),true);
 		$rating = Nullable(StripSpace($_POST['rating']));
 		$more_info = StripSpace($_POST['more_info']);
 		$facilities = StripSpace($_POST['facilities']);
@@ -192,29 +194,28 @@ SQL;
 			UPDATE
 				places
 			SET
-				name = ?,
-				latitude = ?,
-				longitude = ?,
-				category = ?,
-				email = ?,
-				telephone = ?,
-				address = ?,
-				postcode = ?,
-				website = ?,
-				entry_rates = ?,
-				opening_times = ?,
-				rating = ?,
-				more_info = ?,
-				facilities = ?,
-				disabled_facilities = ?,
-				good_stuff = ?,
-				bad_stuff = ?
+				`name` = ?,
+				`latitude` = ?,
+				`longitude` = ?,
+				`category` = ?,
+				`email` = ?,
+				`telephone` = ?,
+				`address` = ?,
+				`postcode` = ?,
+				`website` = ?,
+				`entry_rates` = ?,
+				`opening_times` = ?,
+				`rating` = ?,
+				`more_info` = ?,
+				`facilities` = ?,
+				`disabled_facilities` = ?,
+				`good_stuff` = ?,
+				`bad_stuff` = ?
 			WHERE
 				id = ?
 SQL;
 
-		if ($stmt = $db->prepare($sql)) {
-			/* bind parameters for markers */
+		if ($stmt = $db->prepare($sql)) {	
 			$stmt->bind_param("sddssssssssdsssssi",
 					$name,
 					$latitude,
@@ -233,12 +234,12 @@ SQL;
 					$facilities,
 					$good_stuff,
 					$bad_stuff,
-					$id);
+					$id);		
 
 			$stmt->execute();
+			//echo $db->error;
 			$stmt->close();
 
-			$id = $_POST['id'];
 			$telephone = implode(', ',json_decode($telephone));
 			$address = implode(",\n",json_decode($address));
 			$entry_rates = implode(",\n",json_decode($entry_rates));

@@ -230,6 +230,7 @@ console.log("MarkerController::RemoveAll");
 		}
 		overlays = [];
 		this.marker_state_controller.Reset();
+		map_controller.Initialise();
 		// alert('RemoveAll finished');
 	}
 
@@ -252,9 +253,8 @@ console.log("MarkerController::CreateInfoBox");
 		return html_array.join('');
 	}
 
-	this.Move = function() {
-		//alert('Move1');
-		map_controller.StartMove();
+	this.Move = function(place_id) {
+		map_controller.StartMove(place_id);
 	}
 }
 
@@ -263,6 +263,7 @@ function MarkerStateController(){
 	var ignore_next_click_map = false;
 
 	this.SelectedPlaceId = function() {
+		alert(previous_id);
 		return previous_id;
 	}
 	
@@ -567,19 +568,23 @@ function MapController(centre_lat,centre_long) {
 	this.home_long = undefined;
 	this.centre_lat = centre_lat;
 	this.centre_long = centre_long;
-
+	this.zoom = 14;
+	
 	var moving = false;
-	this.StartMove = function() {
+	var move_place_id = undefined;
+	
+	this.StartMove = function(place_id) {
 		moving = true;
+		move_place_id = place_id
 		self.google_map.setOptions({draggableCursor:'crosshair'});
 	}
 	
 	this.EndMove = function(latlong) {
 		if (moving) {
-			console.log(latlong);
+			//console.log(latlong);
 			moving = false;
 			self.google_map.setOptions({draggableCursor:'grab'});
-			window.open('entry.php?id='+marker_controller.marker_state_controller.SelectedPlaceId()+'&lat='+latlong[0]+'&long='+latlong[1],'_blank');
+			window.open('entry.php?id='+move_place_id+'&lat='+latlong[0]+'&long='+latlong[1],'_blank');
 			return true;
 		}
 		return false;
@@ -589,8 +594,8 @@ function MapController(centre_lat,centre_long) {
 console.log("MapController::CentreChanged");
 		var centre = self.google_map.getCenter();
 
-		this.centre_lat = centre.lat();
-		this.centre_long = centre.lng();
+		self.centre_lat = centre.lat();
+		self.centre_long = centre.lng();
 	}
 
 	this.SetCentre = function(lat,lon) {
@@ -600,14 +605,14 @@ console.log("MapController::SetCentre");
 
 	this.ZoomChanged = function() {
 console.log("MapController::ZoomChanged");
-		// new_zoom_google = map.getZoom();
+		self.zoom = self.google_map.getZoom();
 	}
 
 	this.Initialise = function () {
-console.log("MapController::Initialise");
+console.log("MapController::Initialise");	
 		var mapOptions = {
 			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
-			zoom: 14,
+			zoom: self.zoom,
 			minZoom: 11,
 			maxZoom: 18,
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
