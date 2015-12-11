@@ -610,6 +610,13 @@ console.log("MapController::ZoomChanged");
 
 	this.Initialise = function () {
 console.log("MapController::Initialise");	
+		
+		purple = [{"featureType":"administrative.province","elementType":"labels.text.fill","stylers":[{"color":"#00ebff"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ab21f2"}]},{"featureType":"road.highway.controlled_access","elementType":"geometry","stylers":[{"color":"#d900ff"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#edc3fa"}]}];
+		
+		purple2  = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"},{"hue":"#ad00ff"},{"lightness":"0"},{"gamma":"0.59"},{"saturation":"24"}]}];
+		
+		purple3 = [{"featureType":"landscape","elementType":"all","stylers":[{"hue":"#F600FF"},{"gamma":1}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#7200FF"},{"saturation":49},{"gamma":1}]},{"featureType":"road.highway","elementType":"all","stylers":[{"hue":"#DE00FF"},{"saturation":-4.6000000000000085},{"lightness":-1.4210854715202004e-14},{"gamma":1}]},{"featureType":"road.arterial","elementType":"all","stylers":[{"hue":"#FF009A"},{"gamma":1}]},{"featureType":"road.local","elementType":"all","stylers":[{"hue":"#FF0098"},{"gamma":1}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#EC00FF"},{"saturation":72.4},{"gamma":1}]}];
+		
 		var mapOptions = {
 			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
 			zoom: self.zoom,
@@ -618,7 +625,8 @@ console.log("MapController::Initialise");
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			streetViewControl: false,
 			navigationControl: false,
-			scaleControl: true
+			scaleControl: true,
+			styles: purple3
 		}
 
 		self.google_map = new google.maps.Map(document.getElementById('map_box'), mapOptions);
