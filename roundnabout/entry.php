@@ -153,6 +153,7 @@ SQL;
 					$bad_stuff);
 
 			$stmt->execute();
+			$id = $db->insert_id;
 			$stmt->close();
 
 			$crop_image_post = $_POST['crop_image_post'];
@@ -278,8 +279,6 @@ SQL;
 				AND id > ?
 			ORDER BY
 				id
-			LIMIT
-				1
 SQL;
 		if ($stmt = $db->prepare($sql)) {
 			$stmt->bind_param("si",$name,$id);
@@ -304,17 +303,25 @@ SQL;
 				$good_stuff,
 				$bad_stuff);
 
-			$stmt->fetch();
+			$count = 0;
+			while ($stmt->fetch()) {
+				echo "<div class='selectname' onclick='location=\"entry.php?id=$id\";'>$name</div>";
+				$count++;
+			}
 			$stmt->close();
-
-			$telephone = implode(', ',json_decode($telephone));
-			$address = implode(",\n",json_decode($address));
-			$entry_rates = implode(",\n",json_decode($entry_rates));
-			$opening_times = implode(",\n",json_decode($opening_times));
-			$category_array = json_decode($category_field);
-			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
 			
-			$image_url = FindImageURLFromName($name);
+			if ($count==1) {
+				$telephone = implode(', ',json_decode($telephone));
+				$address = implode(",\n",json_decode($address));
+				$entry_rates = implode(",\n",json_decode($entry_rates));
+				$opening_times = implode(",\n",json_decode($opening_times));
+				$category_array = json_decode($category_field);
+				$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
+				
+				$image_url = FindImageURLFromName($name);
+			} elseif ($count>1) {
+				$exit_early = true;
+			}
 		}
 		
 	} elseif (isset($_POST['delete'])) {
@@ -328,11 +335,13 @@ SQL;
 				id = ?
 SQL;
 		if ($stmt = $db->prepare($sql)) {
-			$stmt->bind_param("i",$d);
+			$stmt->bind_param("i",$id);
 			$stmt->execute();
 			$stmt->close();
 
 			$id = 0;
+			
+			echo 'Record deleted<br><br>';
 		}
 		
 	} elseif (isset($_GET['id'])) {
@@ -475,6 +484,19 @@ SQL;
 			#upload_image_img {
 				display:none;
 			}
+			
+			.selectname {
+				background-color:white;
+				color:black;	
+				border:1px solid black;
+				width:50%;
+				margin-bottom:2px;
+				cursor:default;
+			}
+			.selectname:hover{
+				background-color:black;
+				color:white;			
+			}
 		</style>
 		<script src="javascript/jquery-2.1.4.min.js"></script>
 		<script>
@@ -607,7 +629,6 @@ SQL;
 							InitMouseEvents();
 						}						
 					};
-
 					if (dragable) {
 						image_source.src = url;
 					} else {
@@ -719,6 +740,7 @@ SQL;
 			);
 		</script>
 	</head>
+	<?php if(isset($exit_early)) exit; ?>
 	<body>
 		<form method="post" action="entry.php" onsubmit="SetImageForPost(); return Validate();" enctype="multipart/form-data">
 			<input type="hidden" name="id" value="<?=$id?>">
@@ -765,7 +787,7 @@ SQL;
 			<input type="submit" value="Submit" name="entry" onclick="submit_button='entry';">
 			<input type="submit" value="Search" name="search" onclick="submit_button='search';">
 			<input type="submit" value="New" name="new" onclick="submit_button='new';">
-			<!--input type="submit" value="Delete" name="delete" onclick="submit_button='delete';"-->
+			<input type="submit" value="Delete" name="delete" onclick="submit_button='delete';">
 		</form>
 	</body>
 </html>
