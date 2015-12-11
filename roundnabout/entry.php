@@ -170,7 +170,7 @@ SQL;
 			echo htmlspecialchars($db->error);
 		}
 	} elseif (isset($_POST['entry']) && $_POST['id']!='0') {
-		
+//echo '<pre>';print_r($_POST);echo '</pre>';exit;
 		$id = $_POST['id'];
 		$name = StripSpace($_POST['name']);
 		$latitude = StripSpace($_POST['latitude']);
@@ -247,15 +247,16 @@ SQL;
 			$category_array = json_decode($category);
 			$category_js = implode(',',array_map(function($member){return "\"$member\":true";},$category_array));
 			$category_field = $category;
-
-			$crop_image_post = $_POST['crop_image_post'];
-			$crop_image_post = str_replace('data:image/png;base64,', '', $crop_image_post);
-			$crop_image_post = str_replace(' ', '+', $crop_image_post);
-			$data = base64_decode($crop_image_post);
-			$slug = strtolower(str_replace(' ','-',$name));
-			$file = "images/$slug.png";
-			$success = file_put_contents($file, $data);
 			
+			$crop_image_post = $_POST['crop_image_post'];
+			if ($crop_image_post != '') {
+				$crop_image_post = str_replace('data:image/png;base64,', '', $crop_image_post);
+				$crop_image_post = str_replace(' ', '+', $crop_image_post);
+				$data = base64_decode($crop_image_post);
+				$slug = strtolower(str_replace(' ','-',$name));
+				$file = "images/$slug.png";
+				$success = file_put_contents($file, $data);
+			}
 			$image_url = FindImageURLFromName($name);
 			
 			echo 'Record updated<br><br>';
@@ -390,8 +391,6 @@ SQL;
 			$image_url = FindImageURLFromName($name);		
 		}
 	}
-
-
 	
 	$sql = "SELECT category FROM places";
 	if (!$list = $db->query($sql)) {
@@ -481,7 +480,6 @@ SQL;
 		<script>
 			var categories={<?=$category_js?>};
 
-
 			function ToggleCategory() {
 				$(this).toggleClass('category-selected');
 				if ($(this).hasClass('category-selected')) {
@@ -518,7 +516,9 @@ SQL;
 			}
 
 			function SetImageForPost() {
-				document.getElementById("crop_image_post").value = document.getElementById('crop_image').toDataURL('image/png');
+				if (image_controller.has_image) { 
+					document.getElementById("crop_image_post").value = document.getElementById('crop_image').toDataURL('image/png');
+				}
 			}
 			
 			function Validate() {
@@ -592,7 +592,8 @@ SQL;
 				var image_source = new Image();
 				var canvas = document.getElementById('crop_image');
 				var context = canvas.getContext("2d");			
-					
+				this.has_image = false;
+				
 				function DrawImage(x,y) {
 					context.fillStyle = '#fff';
 					context.fillRect(0, 0, canvas.width, canvas.height);
@@ -606,7 +607,12 @@ SQL;
 							InitMouseEvents();
 						}						
 					};
-					image_source.src = url;
+
+					if (dragable) {
+						image_source.src = url;
+					} else {
+						image_source.src = url+'?'+(new Date().getTime());
+					}
 				};
 				
 				this.DisplayImage = function(inputbox) {
@@ -616,6 +622,7 @@ SQL;
 						image_zoom=100;
 						var reader = new FileReader();
 						reader.onload = function(e) {
+							self.has_image = true;
 							self.LoadURL(e.target.result, true);
 						}
 						reader.readAsDataURL(inputbox.files[0]);
