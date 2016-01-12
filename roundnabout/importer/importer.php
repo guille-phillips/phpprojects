@@ -22,10 +22,8 @@
 		return json_encode($split_array);
 	}
 	
-	function ProcessFile($file) {
+	function ProcessFile($file,$region) {
 		global $db;
-		
-		echo $file."<br><br>";
 
 		$sql_find = <<<SQL
 			SELECT
@@ -55,6 +53,7 @@ SQL;
 					name,
 					latitude,
 					longitude,
+					region,
 					category,
 					email,
 					telephone,
@@ -87,16 +86,18 @@ SQL;
 					?,
 					?,
 					?,
+					?,
 					?
 				)
 SQL;
 
 		if ($stmt_insert = $db->prepare($sql_insert)) {
 			/* bind parameters for markers */
-			$stmt_insert->bind_param("sddssssssssdsssss",
+			$stmt_insert->bind_param("sddsssssssssdsssss",
 				$name,
 				$latitude,
 				$longitude,
+				$region,
 				$category,
 				$email,
 				$telephone,
@@ -120,33 +121,34 @@ SQL;
 			UPDATE
 				places
 			SET
-				name = ?
-				latitude = ?
-				longitude = ?
-				category = ?
-				email = ?
-				telephone = ?
-				address = ?
-				postcode = ?
-				website = ?
-				entry_rates = ?
-				opening_times = ?
-				rating = ?
-				more_info = ?
-				facilities = ?
-				disabled_facilities = ?
-				good_stuff = ?
+				name = ?,
+				latitude = ?,
+				longitude = ?,
+				region = ?,
+				category = ?,
+				email = ?,
+				telephone = ?,
+				address = ?,
+				postcode = ?,
+				website = ?,
+				entry_rates = ?,
+				opening_times = ?,
+				rating = ?,
+				more_info = ?,
+				facilities = ?,
+				disabled_facilities = ?,
+				good_stuff = ?,
 				bad_stuff = ?
 			WHERE
 				id = ?
 SQL;
 		
 		if ($stmt_update = $db->prepare($sql_update)) {
-			/* bind parameters for markers */
-			$stmt_update->bind_param("sddssssssssdsssssi",
+			$stmt_update->bind_param("sddsssssssssdsssssi",
 				$name,
 				$latitude,
 				$longitude,
+				$region,
 				$category,
 				$email,
 				$telephone,
@@ -160,7 +162,7 @@ SQL;
 				$facilities,
 				$disabled_facilities,
 				$good_stuff,
-				$bad_stuff
+				$bad_stuff,
 				$update_id);
 			// echo 'New record inserted<br><br>';
 		} else {
@@ -174,31 +176,48 @@ SQL;
 		$updated = 0;
 		$skipped = 0;
 		
+		$header=fgetcsv($handle);
+		foreach ($header as $index=>$field_name) {
+			$slug = str_replace('.','',str_replace(' ','_',strtolower($field_name)));
+			$var_name = "csv_$slug";
+			$$var_name = $index;
+		}
+		// print_r(get_defined_vars());
+		// exit;
+		
 		while ($record=fgetcsv($handle)) {
 			if ($count==0) {
 				$count++;
 				continue;
 			}
 			
-			$name = StripSpace($record[1]);	
-			$latitude = StripSpace($record[2]);
-			$longitude = StripSpace($record[3]);
-			$email = Nullable(StripSpace($record[4]),true);
-			$telephone = CleanUp($record[5]);
-			$address = CleanUp($record[6]);
-			$postcode = StripSpace($record[7]);
-			$website = StripSpace($record[8]);
-			$entry_rates = CleanUp($record[9]);
-			$opening_times = Nullable(CleanUp($record[10]),true);
-			$rating = Nullable(StripSpace($record[11]));
-			$more_info = StripSpace($record[12]);
-			$facilities = StripSpace($record[13]);
-			$disabled_facilities = StripSpace($record[14]);
-			$good_stuff = StripSpace($record[15]);
-			$bad_stuff = StripSpace($record[16]);
+			$name = StripSpace($record[$csv_name]);	
+			
+			$latitude = StripSpace($record[$csv_latitude]);
+			$longitude = StripSpace($record[$csv_longitude]);
+			if ($name=='' || $latitude=='' || $longitude=='') {
+				if ($name!='') {
+					echo "skipped: $name,$latitude,$longitude<br>";
+					$skipped++;
+				}
+				continue;
+			}
+			$email = Nullable(StripSpace($record[$csv_email]),true);
+			$telephone = CleanUp($record[$csv_telephone]);
+			$address = CleanUp($record[$csv_address]);
+			$postcode = StripSpace($record[$csv_postcode]);
+			$website = StripSpace($record[$csv_website]);
+			$entry_rates = CleanUp($record[$csv_entry_rates]);
+			$opening_times = Nullable(CleanUp($record[$csv_opening_times]),true);
+			$rating = Nullable(StripSpace($record[$csv_rating]));
+			$more_info = StripSpace($record[$csv_more_info]);
+			$facilities = StripSpace($record[$csv_facilities]);
+			$disabled_facilities = StripSpace($record[$csv_disabled_facilities]);
+			$good_stuff = StripSpace($record[$csv_good_stuff]);
+			$bad_stuff = StripSpace($record[$csv_bad_stuff]);
 
 			$categories = array();
-			for ($index=17; $index<=40; $index++) {
+			for ($index=$csv_indoor; $index<=($csv_free+30); $index++) {
 				if (isset($record[$index]) && $record[$index]!='') {
 					$categories[] = $record[$index];
 				}
@@ -211,11 +230,11 @@ SQL;
 			$latitude_search = (float) $latitude;
 			$longitude_search = (float) $longitude;
 			$stmt_search->execute();
-			echo $stmt_insert->error;
+			
 			$match_id=0;
 			$found_count=0;
 			while ($stmt_search->fetch()) {
-				if ($name_search==$name) {
+				if ($search_name==$name) {
 					if ($match_id==0) {
 						$match_id=$search_id;
 					} 
@@ -229,19 +248,27 @@ SQL;
 				echo "inserted: $name,$latitude,$longitude<br>";
 				echo $stmt_insert->error;
 			} elseif ($found_count==1) {
-				
 				$updated++;
+				if ($match_id!=0) {
+					$update_id = $match_id;
+					$stmt_update->execute();
+				}
+				echo "updated (location match): $update_id, $name, $latitude, $longitude<br>";
 			} else {
 				if ($match_id != 0) {
-					
+					$updated++;
+					$update_id = $match_id;
+					$stmt_update->execute();
+					echo "updated (name match): $update_id, $name, $latitude, $longitude<br>";					
 				} else {
 					echo "skipped: $name,$latitude,$longitude<br>";
+					$skipped++;
 				}
-				$skipped++;
 			}
 			
 			$count++;
 		}
+		echo '<br><br>';
 		echo $inserted.' records were inserted<br>';
 		echo $updated.' records were updated<br>';
 		echo $skipped.' records were skipped<br>';
@@ -249,7 +276,7 @@ SQL;
 	
 	if (isset($_POST['import'])) {
 		
-		var_dump($_FILES); echo '<br>';
+		// var_dump($_FILES); echo '<br>'; exit;
 		
 		if ($_FILES['csv_file']['error'] != 0) {
 			echo 'There was a problem with the file. Please try again.<br><br>';
@@ -266,7 +293,46 @@ SQL;
 					$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
 			}
 			
-			ProcessFile($_FILES['csv_file']['tmp_name']);
+			$regions = array(
+				'channel islands',
+				'cheshire',
+				'cornwall',
+				'cumbria',
+				'devon',
+				'dorset',
+				'gloucestershire',
+				'greater london',
+				'highlands',
+				'isle of man',
+				'lancashire',
+				'manchester',
+				'merseyside',
+				'somerset',
+				'wiltshire'
+			);
+			
+			$filename = $_FILES['csv_file']['name'];
+			$file_region = '';
+			foreach ($regions as $region) {
+				// echo $region;
+				if (stripos($filename,$region)!==false) {
+					$file_region = $region;
+					break;
+				}
+			}
+			
+			if ($file_region == '') {
+				die('Region Not Recognised. Try again.');
+			}
+			echo "File: ".$filename;
+			echo '<br>';
+			echo "Region: ".ucwords($file_region);
+			echo '<br>';
+			echo '<br>';
+			
+			ProcessFile($_FILES['csv_file']['tmp_name'],$file_region);
+			
+			echo '<br><br>';
 			
 			// foreach (scandir('.') as $file) {
 				// if ($dot = strrpos($file,'.')) {
