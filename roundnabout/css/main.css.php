@@ -3,10 +3,12 @@
 
 	define('MENU_HEIGHT',56);
 	define('FILTER_HEIGHT',34);
-	define('LIST_WIDTH',600);
+	define('LIST_WIDTH',580);
 
-	$colours[0] = '#8E48E3'; // #001fb7
-	$colours[1] = '#8f8f8f';
+	$colours[0] = '#8b17e3'; // purple #8E48E3 old
+	$colours[1] = '#8f8f8f'; // grey
+	$colours[2] = '#0030b7'; // blue
+	$colours[3] = '#ac35f4'; // light purple
 
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
@@ -14,7 +16,7 @@
 	$filter_height = (FILTER_HEIGHT).'px';
 	$list_width = (LIST_WIDTH).'px';
 	$menu_horiz_offset = '300px';
-	$list_image_dimension = '170px';
+	$list_image_dimension = '164px';
 	$list_hover = '#F4EDFF';
 ?>
 @font-face {
@@ -170,22 +172,22 @@ body {
 
 .place_list_item {
 	position:relative;
-	width:calc(<?=$list_width?> - 4px - 30px);
-	height:calc(199px - 30px);
-	border:2px solid white;
-	padding:15px;
+	width:calc(<?=$list_width?> - 8px - 20px);
+	height:calc(240px - 20px);
+	border:4px solid <?=$colours[0]?>;
+	padding:10px;
 	cursor:pointer;
 }
 
 .place_list_item:hover {
 	background-color:<?=$list_hover?>;
-	border:2px solid <?=$colours[0]?>;
+	border:4px solid <?=$colours[3]?>;
 }
 
 .place_list_item > div:nth-child(1) {
 	display:inline-block;
 	vertical-align:top;
-	width:calc(<?=$list_width?> - 30px - <?=$list_image_dimension?> - 14px);
+	width:calc(<?=$list_width?> - <?=$list_image_dimension?> - 20px - 8px);
 	height:calc(207px - 2px);
 }
 
@@ -195,17 +197,16 @@ body {
 	vertical-align:top;
 	vertical-align:top;
 	width:calc(<?=$list_image_dimension?> - 2px);
-	height:calc(<?=$list_image_dimension?> - 2px);	
-	margin-right:10px;
+	height:calc(<?=$list_image_dimension?> - 2px);
 	border:1px solid #ccc;
 }
 
 .rating {
 	position:absolute;
-	top:0px;
-	right:0px;
-	width:40px;
-	height:34px;
+	top:7px;
+	right:7px;
+	width:48px;
+	height:48px;
 	padding:0px 2px 0px 2px;
 
 	background-color:<?=$colours[0]?>;
@@ -242,7 +243,7 @@ body {
 	text-align:center;
 	font-size:24px;	
 	font-weight:bold;
-	    opacity: 0.7;
+	opacity: 0.7;
 }
 
 .place_list_item > div:nth-child(2) > img {
@@ -285,8 +286,8 @@ body {
 }
 
 h1 {
-	color:<?=$colours[0]?>;
-	margin-top:0;
+	color:black;
+	margin-top:-5px;
 	margin-bottom:4px;
 	font-size:22px;
 	text-overflow:ellipsis;
@@ -315,12 +316,12 @@ h1:hover {
 }
 
 .telephone {
-	color:<?=$colours[0]?>;
+	color:<?=$colours[2]?>;
 }
 
 .website {
 	display:block;
-	color:<?=$colours[0]?>;
+	color:<?=$colours[2]?>;
 	text-decoration:none;
 	text-overflow:ellipsis;
 	overflow:hidden;
