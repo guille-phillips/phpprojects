@@ -19,13 +19,14 @@
 	<body>
 		<div id="menu">
 			<ul>
-				<li id="menu-home">Home</li>
-				<li id="menu-about-us">About Us</li>
-				<li id="menu-upload-a-place">Upload a Place</li>
+				<li id="menu-home">About Us</li>
+				<li id="menu-about-us">Claim a Business</li>
+				<li id="menu-upload-a-place">Add a Business</li>
 			</ul>
 		</div>
 		<div id="filter">
 			<ul>
+				<li>What day out do you fancy?&nbsp;&nbsp;&nbsp;&nbsp;</li>
 				<li id="filter-all">All</li>
 				<li id="filter-free">Free</li>
 				<li id="filter-paid">Paid</li>
@@ -35,7 +36,7 @@
 				<li id="filter-water-fun">Water Fun</li>
 				<li id="filter-rides">Rides</li>
 				<li id="filter-transport">Transport</li>
-				<li id="filter-more">More
+				<li id="filter-more" class="arrow">More
 					<ul>
 						<li id="filter-activity-centre">Activity Centre</li>
 						<li id="filter-adventure">Adventure</li>
@@ -67,7 +68,7 @@
 				<a href="http://{website}" class="website" target="_blank">{website}</a>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
-				<div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="comments_{id}" class="icon comments">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="email_{id}" class="icon email">&nbsp;</div>
+				<div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="comments_{id}" class="icon comments">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="email_{id}" class="icon email">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div>
 			</div><div><img src="{image_url}">
 				<div class="rating">{rating}</div>
 				<?php if ($editable): ?>
@@ -78,9 +79,11 @@
 
 			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
 			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
-			<div id="comments_info_{id}" class="info_box"><p>{more_info}</p><p>{facilities}</p><p>{good_stuff}</p><p>{bad_stuff}</p></div>
-			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
 			<div id="email_info_{id}" class="info_box">{email}</div>
+			<div id="comments_info_{id}" class="info_box"><p>{more_info}</p><p>{facilities}</p></div>
+			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
+			<div id="good_stuff_{id}" class="info_box">{good_stuff}</div>
+			<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div> 
 		</div></div>
 	</body>
 </html>

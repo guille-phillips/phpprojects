@@ -1,7 +1,7 @@
 <?php
 	header('Content-Type: text/css');
 
-	define('MENU_HEIGHT',56);
+	define('MENU_HEIGHT',103);
 	define('FILTER_HEIGHT',34);
 	define('LIST_WIDTH',580);
 
@@ -15,7 +15,7 @@
 	$menu_height = (MENU_HEIGHT).'px';
 	$filter_height = (FILTER_HEIGHT).'px';
 	$list_width = (LIST_WIDTH).'px';
-	$menu_horiz_offset = '300px';
+	$menu_horiz_offset = '0px';
 	$list_image_dimension = '164px';
 	$list_hover = '#F4EDFF';
 ?>
@@ -64,31 +64,36 @@ body {
 	width:calc(100% - <?=$menu_horiz_offset?>);
 	height:<?=$menu_height?>;
 	margin:0;
-	font-size:20px;
-	font-weight:600;
-	background-color: blue;
+	font-size:15px;
+	font-weight:0;
+	background-color: <?=$colours[0]?>;
 	padding-left:<?=$menu_horiz_offset?>;
 
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4b1e7f+0,b87fff+51,8c36e3+100 */
-	background: #4b1e7f; /* Old browsers */
-	background: -moz-linear-gradient(left,  #4b1e7f 0%, #b87fff 51%, #8c36e3 100%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(left,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to right,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4b1e7f', endColorstr='#8c36e3',GradientType=1 ); /* IE6-9 */
-
+	*background: #4b1e7f; /* Old browsers */
+	*background: -moz-linear-gradient(left,  #4b1e7f 0%, #b87fff 51%, #8c36e3 100%); /* FF3.6-15 */
+	*background: -webkit-linear-gradient(left,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* Chrome10-25,Safari5.1-6 */
+	*background: linear-gradient(to right,  #4b1e7f 0%,#b87fff 51%,#8c36e3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4b1e7f', endColorstr='#8c36e3',GradientType=1 ); /* IE6-9 */
 }
 
 #menu > ul {
 	color: white;
 	margin:0;
 	cursor:default;
+	text-align:right;
 }
 #menu > ul > li {
 	display:inline-block;
 	padding:0px 5px 0px 5px;
 	vertical-align:top;
 	cursor:pointer;
-	height:<?=$menu_height?>;
+	height:18px;
+	border-top:4px solid <?=$colours[0]?>
+}
+
+#menu > ul > li:not(:first-child) {
+	border-left:1px solid white;
 }
 
 /* Filter Menu */
@@ -104,6 +109,13 @@ body {
 	background-repeat:no-repeat;
 	background-position: right center;
 	background-size: 20px;
+}
+
+.arrow {
+	background-image:url('../resources/right-arrow.png');
+	background-repeat:no-repeat;
+	background-position: right 5px;
+	background-size: 15px;
 }
 
 #filter {
@@ -349,30 +361,39 @@ h1:hover {
 }
 
 .opening_times {
-	background-image:url('../resources/openingtimes-icon.svg');
+	background-image:url('../resources/openingtimes_icon.png');
 	background-repeat:no-repeat;
 }
 
 .entry_rates {
-	background-image:url('../resources/entryrates-icon.svg');
+	background-image:url('../resources/entryrates-icon.png');
 	background-repeat:no-repeat;
 }
 
 .comments {
-	background-image:url('../resources/moreinfo-icon.svg');
+	background-image:url('../resources/moreinfo-icon.png');
 	background-repeat:no-repeat;
 }
 
 .disabled {
-	background-image:url('../resources/disabled-icon.svg');
+	background-image:url('../resources/disabled_icon.png');
 	background-repeat:no-repeat;
 }
 
 .email {
-	background-image:url('../resources/email-icon.svg');
+	background-image:url('../resources/email-icon.png');
 	background-repeat:no-repeat;
 }
 
+.good_stuff {
+	background-image:url('../resources/goodstuff-icon.png');
+	background-repeat:no-repeat;
+}
+
+.bad_stuff {
+	background-image:url('../resources/badstuff-icon.png');
+	background-repeat:no-repeat;
+}
 
 
 .description {
@@ -406,10 +427,10 @@ h1:hover {
 
 .marker-home {
 	position:relative;
-	left:-64px;
-	top:-64px;
-	width:127px;
-	height:127px;
+	left:-61.5px;
+	top:-61.5px;
+	width:123px;
+	height:123px;
 	background-image:url('../resources/home-marker.png');
 	background-repeat:no-repeat;
 }
@@ -439,8 +460,8 @@ h1:hover {
 	position:absolute;
 	top:0px;
 	left:0px;
-	width:calc(<?=$menu_horiz_offset?> - 7px);
+	width:404px;
 	height:calc(<?=$body_top?> + 11px);
-	background-position: right -3px;
+	background-position: left -3px;
 	z-index: 1;
 }
