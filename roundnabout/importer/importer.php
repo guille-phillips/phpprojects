@@ -2,7 +2,7 @@
 
 	header('Content-Type: text/html; charset=utf-8');
 	
-
+	
 	function Nullable($field,$is_text=false) {
 		if ($field=='') {
 			return null;
@@ -274,7 +274,7 @@ SQL;
 		echo $skipped.' records were skipped<br>';
 	}
 	
-	if (isset($_POST['import'])) {
+	if (isset($_POST['import']) && isset($_POST['pin']) && $_POST['pin']=='3141') {
 		
 		// var_dump($_FILES); echo '<br>'; exit;
 		
@@ -362,7 +362,8 @@ SQL;
 	</head>
 	<body>
 		<form method="post" action="importer.php" onsubmit="SetImageForPost(); return Validate();" enctype="multipart/form-data">
-			<div class="field_name">CSV File To Upload</div><div class="field_value"><input type="file" name="csv_file" accept=".csv"></div>
+			<div class="field_name">CSV File To Upload</div><div class="field_value"><input type="file" name="csv_file" accept=".csv"></div><br><br>
+			<input type="text" placeholder="PIN" name="pin"><br><br>
 			<input type="submit" value="Submit" name="import">
 		</form>
 	</body>

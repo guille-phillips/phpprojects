@@ -8,6 +8,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<script>
+			map_min_zoom=<?=$editable?5:11;?>;
+			place_limit=<?=$editable?-1:30;?>;
+		</script>
 		<meta name="viewport" content="width=device-width">
 		<link rel="stylesheet" type="text/css" href="css/main.css.php">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
