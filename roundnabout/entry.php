@@ -48,6 +48,7 @@
 	$name = '';
 	$latitude = '';
 	$longitude = '';
+	$region = '';
 	$category = '[]';
 	$email = '';
 	$telephone = '';
@@ -77,6 +78,7 @@
 		$name = StripSpace($_POST['name']);
 		$latitude = StripSpace($_POST['latitude']);
 		$longitude = StripSpace($_POST['longitude']);
+		$region = Nullable(StripSpace($_POST['region']),true);
 		$category = $_POST['category_list'];
 		$email = Nullable(StripSpace($_POST['email']),true);
 		$postcode = StripSpace($_POST['postcode']);
@@ -95,6 +97,7 @@
 					name,
 					latitude,
 					longitude,
+					region
 					category,
 					email,
 					telephone,
@@ -127,16 +130,18 @@
 					?,
 					?,
 					?,
+					?,
 					?
 				)
 SQL;
 
 		if ($stmt = $db->prepare($sql)) {
 			/* bind parameters for markers */
-			$stmt->bind_param("sddssssssssdsssss",
+			$stmt->bind_param("sddsssssssssdsssss",
 					$name,
 					$latitude,
 					$longitude,
+					$region,
 					$category,
 					$email,
 					$telephone,
@@ -175,7 +180,8 @@ SQL;
 		$id = $_POST['id'];
 		$name = StripSpace($_POST['name']);
 		$latitude = StripSpace($_POST['latitude']);
-		$longitude = StripSpace($_POST['longitude']);	
+		$longitude = StripSpace($_POST['longitude']);
+		$region = Nullable(StripSpace($_POST['region']),true);
 		$category = $_POST['category_list'];
 		$email = Nullable(StripSpace($_POST['email']),true);
 		$telephone = CleanUp($_POST['telephone']);
@@ -198,6 +204,7 @@ SQL;
 				`name` = ?,
 				`latitude` = ?,
 				`longitude` = ?,
+				`region` = ?,
 				`category` = ?,
 				`email` = ?,
 				`telephone` = ?,
@@ -217,10 +224,11 @@ SQL;
 SQL;
 
 		if ($stmt = $db->prepare($sql)) {	
-			$stmt->bind_param("sddssssssssdsssssi",
+			$stmt->bind_param("sddsssssssssdsssssi",
 					$name,
 					$latitude,
 					$longitude,
+					$region,
 					$category,
 					$email,
 					$telephone,
@@ -288,6 +296,7 @@ SQL;
 				$name,
 				$latitude,
 				$longitude,
+				$region,
 				$category_field,
 				$email,
 				$telephone,
@@ -365,6 +374,7 @@ SQL;
 				$name,
 				$latitude,
 				$longitude,
+				$region,
 				$category_field,
 				$email,
 				$telephone,
@@ -747,6 +757,7 @@ SQL;
 			<div class="field_name">Name</div><div class="field_value"><input id="name" type="text" name="name" value="<?=$name?>"></div><br><br>
 			<div class="field_name">Latitude</div><div class="field_value"><input id="latitude" type="text" name="latitude" value="<?=$latitude?>"></div><br><br>
 			<div class="field_name">Longitude</div><div class="field_value"><input id="longitude" type="text" name="longitude" value="<?=$longitude?>"></div><br><br>
+			<div class="field_name">Region</div><div class="field_value"><input id="region" type="text" name="region" value="<?=$region?>"></div><br><br>
 			<div class="field_name">Category</div>
 			<div class="field_value">
 				<div id="db_categories">

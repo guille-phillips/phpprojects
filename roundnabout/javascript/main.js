@@ -1,5 +1,3 @@
-var marker_resource = 'resources/pin.png';
-
 var categories = [];
 
 function CategoryController() {
@@ -12,21 +10,21 @@ function CategoryController() {
 	};
 
 	this.Include = function (category) {
-console.log("CategoryController::Include");
+//console.log("CategoryController::Include");
 		self.categories[category] = true;
 		category_array = void 0;
 		has_all_category = void 0;
 	}
 
 	this.Exclude = function (category) {
-console.log("CategoryController::Exclude");
+//console.log("CategoryController::Exclude");
 		delete self.categories[category];
 		category_array = void 0;
 		has_all_category = void 0;
 	}
 
 	this.Toggle = function(category) {
-console.log("CategoryController::Toggle");
+//console.log("CategoryController::Toggle");
 		if (self.categories[category]) {
 			self.Exclude(category);
 		} else {
@@ -35,14 +33,14 @@ console.log("CategoryController::Toggle");
 	}
 
 	this.ExcludeEverything = function () {
-console.log("CategoryController::ExcludeEverything");
+//console.log("CategoryController::ExcludeEverything");
 		self.categories = {};
 		category_array = void 0;
 		has_all_category = void 0;
 	}
 
 	this.Categories = function() {
-console.log("CategoryController::Categories");
+//console.log("CategoryController::Categories");
 		if (category_array) {
 			return category_array;
 		}
@@ -54,7 +52,7 @@ console.log("CategoryController::Categories");
 	}
 
 	this.HasAllCategory = function() {
-console.log("CategoryController::HasAllCategory");
+//console.log("CategoryController::HasAllCategory");
 		if (has_all_category) {
 			return has_all_category;
 		}
@@ -94,13 +92,13 @@ function InteractionController() {
 	};
 
 	function FindElementIdFromCategory(category) {
-console.log("InteractionController::FindElementIdFromCategory");
+//console.log("InteractionController::FindElementIdFromCategory");
 		var index = Object.keys(menu_mapping).map(function(e){return menu_mapping[e];}).indexOf(category);
 		return Object.keys(menu_mapping)[index];
 	}
 
 	function DisplayCategories() {
-console.log("InteractionController::DisplayCategories");
+//console.log("InteractionController::DisplayCategories");
 		for (var filter_index in category_controller.Categories()){
 			var element_id = FindElementIdFromCategory(category_controller.Categories()[filter_index]);
 			$('#'+element_id).removeClass('switch-off');
@@ -109,9 +107,9 @@ console.log("InteractionController::DisplayCategories");
 	}
 
 	function ToggleCategory(element,category) {
-console.log("InteractionController::ToggleCategory");
+//console.log("InteractionController::ToggleCategory");
 		$('#filter li').removeClass('switch-on');
-		$('#filter li').addClass('switch-off');
+		$('#filter li:not(:first-child)').addClass('switch-off');
 
 		if (category=='All') {
 			category_controller.Toggle(category);
@@ -137,11 +135,12 @@ console.log("InteractionController::ToggleCategory");
 
 		marker_controller.marker_state_controller.Event({name:'click_category'});
 
-		place_controller.Show(category_controller.Categories());
+		place_controller.Show(map_controller.home_lat,map_controller.home_long);
+		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, map_controller.GoHome);
 	}
 
 	this.MenuClick = function() {
-console.log("InteractionController::MenuClick");
+//console.log("InteractionController::MenuClick");
 		if (menu_mapping[this.id]) {
 			ToggleCategory(this,menu_mapping[this.id]);
 		} else {
@@ -164,17 +163,13 @@ console.log("InteractionController::MenuClick");
 	}
 }
 
-function HomeMarkerClicked() {
-	alert('HomeMarkerClicked');
-}
-
 function MarkerController() {
 	var overlays = [];
 
 	this.marker_state_controller = new MarkerStateController();
 
-	this.AddMarker = function(place,id,name,lat,lon,resource,callback) {
-console.log("MarkerController::AddMarker()");
+	this.AddMarker = function(place,id,name,lat,lon,callback) {
+//console.log("MarkerController::AddMarker()");
 		var overlay;
 		
 		var pin_html = "<div class='marker-pin'>"+name+"</div>";
@@ -207,9 +202,8 @@ console.log("MarkerController::AddMarker()");
 	}
 
 	this.AddHomeMarker = function(lat,lon,callback) {
-	//alert([lat,lon]);
-console.log("MarkerController::AddHomeMarker");
-		var marker_html = "<div class='marker-home'>"+name+"</div>";
+//console.log("MarkerController::AddHomeMarker");
+		var marker_html = "<div class='marker-home'></div>";
 		var overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
 			map_controller.google_map,
@@ -223,7 +217,7 @@ console.log("MarkerController::AddHomeMarker");
 
 
 	this.RemoveAll = function() {
-console.log("MarkerController::RemoveAll");
+//console.log("MarkerController::RemoveAll");
 		for (index in overlays) {
 			overlays[index].remove();
 			delete overlays[index];
@@ -235,7 +229,7 @@ console.log("MarkerController::RemoveAll");
 	}
 
 	function CreateInfoBox(place) {
-console.log("MarkerController::CreateInfoBox");
+//console.log("MarkerController::CreateInfoBox");
 		var html_array = [];
 
 		html_array.push(Tag('img','',{class:'square'}));
@@ -268,12 +262,12 @@ function MarkerStateController(){
 	}
 	
 	this.Reset = function() {
-console.log("MarkerStateController::Reset");
+//console.log("MarkerStateController::Reset");
 		previous_id = undefined;
 		ignore_next_click_map = false;
 	}
 	this.Event = function(info) {
-console.log("MarkerStateController::Event");
+//console.log("MarkerStateController::Event");
 		switch (info.name) {
 			case 'click_marker':
 				ignore_next_click_map = true;
@@ -281,6 +275,8 @@ console.log("MarkerStateController::Event");
 					ShowBubble(info.id);
 					document.getElementById("place_"+info.id).scrollIntoView();
 					previous_id = info.id;
+					// var place = place_controller.GetPlaceById(info.id);
+					// alert(map_controller.google_map.getProjection().fromLatLngToPoint(new google.maps.LatLng(place.latitude,place.longitude)) );
 				} else if (info.id === previous_id) {
 					HideBubble(info.id);
 					previous_id = undefined;
@@ -311,6 +307,7 @@ console.log("MarkerStateController::Event");
 				ShowBubble(info.id);
 				var place = place_controller.GetPlaceById(info.id);
 				map_controller.SetCentre(place.latitude,place.longitude);
+				// alert(map_controller.google_map.getProjection().fromLatLngToPoint(new google.maps.LatLng(place.latitude,place.longitude)) );
 				previous_id = info.id;
 				break;
 			case 'click_category':
@@ -323,12 +320,12 @@ console.log("MarkerStateController::Event");
 	}
 
 	var ShowBubble = function(id) {
-console.log("MarkerStateController::ShowBubble");
+//console.log("MarkerStateController::ShowBubble");
 		document.getElementById("bubble"+id).style.display="inherit";
 	}
 
 	var HideBubble = function(id) {
-console.log("MarkerStateController::HideBubble");
+//console.log("MarkerStateController::HideBubble");
 		document.getElementById("bubble"+id).style.display="none";
 	}
 }
@@ -342,7 +339,7 @@ function AjaxController() {
 	}
 
 	this.Message = function (method,value,id) {
-console.log("AjaxController::Message");
+//console.log("AjaxController::Message");
 		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),false);
 		xmlhttp.send();
 		try {
@@ -357,13 +354,21 @@ console.log("AjaxController::Message");
 }
 
 function PlacesController() {
+	var self = this;
 	var overlays = [];
 	var ajax_controller = new AjaxController();
 	var places = [];
 
-	this.Show = function (categories) {
-console.log("PlacesController::Show");
-		places = ajax_controller.Message('GetPlaces',JSON.stringify({categories:categories,position:[map_controller.home_lat,map_controller.home_long]}) );
+	this.ShowAtCurrentPosition = function () {
+		self.Show(map_controller.centre_lat,map_controller.centre_long);
+		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, map_controller.GoHome);
+	}
+	
+	this.Show = function (this_lat,this_long) {
+//console.log("PlacesController::Show");
+		var categories = category_controller.Categories();
+		
+		places = ajax_controller.Message('GetPlaces',JSON.stringify({categories:categories,position:[this_lat,this_long]}) );
 		if (places.error) {
 			alert(places.error);
 			return;
@@ -385,7 +390,7 @@ console.log("PlacesController::Show");
 			if (place_limit!=-1 && index>=place_limit) continue;
 			var place = places[index];
 
-			marker_controller.AddMarker(place,place.id,marker_index,place.latitude,place.longitude,marker_resource,
+			marker_controller.AddMarker(place,place.id,marker_index,place.latitude,place.longitude,
 				function(place_id){
 					return function(){
 						marker_controller.marker_state_controller.Event({name:'click_marker',id:place_id});
@@ -407,13 +412,13 @@ console.log("PlacesController::Show");
 					};
 				}(place.id)
 			);
-			div.addEventListener("mouseleave",
-				function(place_id) {
-					return function(){
-						place_controller.HideAllInfo({id:place_id});
-					};
-				}(place.id)			
-			);
+			// div.addEventListener("mouseleave",
+				// function(place_id) {
+					// return function(){
+						// place_controller.HideAllInfo({id:place_id});
+					// };
+				// }(place.id)			
+			// );
 		
 			place_list.appendChild(div);
 			
@@ -424,6 +429,13 @@ console.log("PlacesController::Show");
 					};
 				}(place.id)
 			);
+			document.getElementById("opening_times_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);
 			document.getElementById("entry_rates_"+place.id).addEventListener("click",
 				function(place_id){
 					return function() {
@@ -431,28 +443,84 @@ console.log("PlacesController::Show");
 					};
 				}(place.id)
 			);
-			document.getElementById("comments_"+place.id).addEventListener("click",
+			document.getElementById("entry_rates_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);			
+			document.getElementById("more_info_"+place.id).addEventListener("click",
 				function(place_id){
 					return function() {
-						place_controller.ShowInfo({category:"comments",id:place_id});
+						place_controller.ShowInfo({category:"more_info",id:place_id});
 					};
 				}(place.id)
 			);
+			document.getElementById("more_info_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);				
+			document.getElementById("facilities_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"facilities",id:place_id});
+					};
+				}(place.id)
+			);		
+			document.getElementById("facilities_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);					
 			document.getElementById("disabled_"+place.id).addEventListener("click",
 				function(place_id){
 					return function() {
 						place_controller.ShowInfo({category:"disabled",id:place_id});
 					};
 				}(place.id)
-			);			
-			document.getElementById("email_"+place.id).addEventListener("click",
+			);
+			document.getElementById("disabled_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);					
+			document.getElementById("good_stuff_"+place.id).addEventListener("click",
 				function(place_id){
 					return function() {
-						place_controller.ShowInfo({category:"email",id:place_id});
+						place_controller.ShowInfo({category:"good_stuff",id:place_id});
 					};
 				}(place.id)
 			);
-
+			document.getElementById("good_stuff_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);					
+			document.getElementById("bad_stuff_"+place.id).addEventListener("click",
+				function(place_id){
+					return function() {
+						place_controller.ShowInfo({category:"bad_stuff",id:place_id});
+					};
+				}(place.id)
+			);	
+			document.getElementById("bad_stuff_"+place.id).addEventListener("mouseleave",
+				function(place_id) {
+					return function(){
+						place_controller.HideAllInfo({id:place_id});
+					};
+				}(place.id)			
+			);						
+			
 			var edit_element = document.getElementById("edit_"+place.id);
 			if (edit_element) {
 				edit_element.addEventListener("click",
@@ -480,7 +548,7 @@ console.log("PlacesController::Show");
 	}
 
 	this.GetPlaceById = function (id) {
-console.log("PlacesController::GetPlaceById");
+//console.log("PlacesController::GetPlaceById");
 		var place_id = places.map(function(e){return e.id;}).indexOf(id);
 		return places[place_id];
 	}
@@ -491,47 +559,63 @@ console.log("PlacesController::GetPlaceById");
 				var info_element = document.getElementById("opening_times_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
 				info_element.style.left="-2px";
 				break;
 			case "entry_rates":
 				var info_element = document.getElementById("entry_rates_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
 				info_element.style.left="-2px";				
 				break;
-			case "comments":
-				var info_element = document.getElementById("comments_info_"+info.id);
+			case "more_info":
+				var info_element = document.getElementById("more_info_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
 				info_element.style.left="-2px";
 				break;
+			case "facilities":
+				var info_element = document.getElementById("facilities_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
+				info_element.style.left="-2px";
+				break;				
 			case "disabled":
 				var info_element = document.getElementById("disabled_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
 				info_element.style.left="-2px";
 				break;				
-			case "email":
-				var info_element = document.getElementById("email_info_"+info.id);
+			case "good_stuff":
+				var info_element = document.getElementById("good_stuff_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-4)+"px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
 				info_element.style.left="-2px";
-				break;
+				break;	
+			case "bad_stuff":
+				var info_element = document.getElementById("bad_stuff_info_"+info.id);
+				info_element.style.display="block";
+				info_element.style.position="absolute";
+				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
+				info_element.style.left="-2px";
+				break;					
 		}
 	}
 	
 	this.HideAllInfo = function (info) {
-console.log("HideAllInfo");
+//console.log("HideAllInfo");
 		document.getElementById("opening_times_info_"+info.id).style.display = "none";
 		document.getElementById("entry_rates_info_"+info.id).style.display = "none";
-		document.getElementById("comments_info_"+info.id).style.display = "none";
+		document.getElementById("more_info_info_"+info.id).style.display = "none";
+		document.getElementById("facilities_info_"+info.id).style.display = "none";
 		document.getElementById("disabled_info_"+info.id).style.display = "none";
-		document.getElementById("email_info_"+info.id).style.display = "none";
+		document.getElementById("good_stuff_info_"+info.id).style.display = "none";
+		document.getElementById("bad_stuff_info_"+info.id).style.display = "none";
 	}
 	
 	this.ShowEditPage = function (place_id) {
@@ -541,7 +625,7 @@ console.log("HideAllInfo");
 
 function ListController() {
 	this.CreatePlaceListItem = function(place,marker_index) {
-console.log("ListController::CreatePlaceListItem");
+//console.log("ListController::CreatePlaceListItem");
 		var pl = document.getElementById('place_list').firstChild.innerHTML;
 
 		pl = pl.replaceBlock('index',marker_index);
@@ -556,7 +640,7 @@ console.log("ListController::CreatePlaceListItem");
 	}
 
 	this.RemoveAll = function() {
-console.log("ListController::RemoveAll");
+//console.log("ListController::RemoveAll");
 		$('#place_list > div').not(':first').remove();
 	}
 }
@@ -582,7 +666,7 @@ function MapController(centre_lat,centre_long) {
 	
 	this.EndMove = function(latlong) {
 		if (moving) {
-			//console.log(latlong);
+			////console.log(latlong);
 			moving = false;
 			self.google_map.setOptions({draggableCursor:'grab'});
 			window.open('entry.php?id='+move_place_id+'&lat='+latlong[0]+'&long='+latlong[1],'_blank');
@@ -592,7 +676,7 @@ function MapController(centre_lat,centre_long) {
 	}
 	
 	this.CentreChanged = function() {
-console.log("MapController::CentreChanged");
+//console.log("MapController::CentreChanged");
 		var centre = self.google_map.getCenter();
 
 		self.centre_lat = centre.lat();
@@ -600,37 +684,32 @@ console.log("MapController::CentreChanged");
 	}
 
 	this.SetCentre = function(lat,lon) {
-console.log("MapController::SetCentre");
+//console.log("MapController::SetCentre");
 		self.google_map.setCenter(new google.maps.LatLng(lat, lon));
 	}
 
+	this.GoHome = function() {
+		self.SetCentre(self.home_lat,self.home_long);
+		
+	}
+	
 	this.ZoomChanged = function() {
-console.log("MapController::ZoomChanged");
+//console.log("MapController::ZoomChanged");
 		self.zoom = self.google_map.getZoom();
 	}
 
 	this.Initialise = function () {
-console.log("MapController::Initialise");	
-		
-		/*
-		purple = [{"featureType":"administrative.province","elementType":"labels.text.fill","stylers":[{"color":"#00ebff"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#000000"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#ab21f2"}]},{"featureType":"road.highway.controlled_access","elementType":"geometry","stylers":[{"color":"#d900ff"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#edc3fa"}]}];
-		
-		purple2  = [{"featureType":"all","elementType":"all","stylers":[{"visibility":"on"},{"hue":"#ad00ff"},{"lightness":"0"},{"gamma":"0.59"},{"saturation":"24"}]}];
-		
-		purple3 = [{"featureType":"landscape","elementType":"all","stylers":[{"hue":"#F600FF"},{"gamma":1}]},{"featureType":"poi","elementType":"all","stylers":[{"hue":"#7200FF"},{"saturation":49},{"gamma":1}]},{"featureType":"road.highway","elementType":"all","stylers":[{"hue":"#DE00FF"},{"saturation":-4.6000000000000085},{"lightness":-1.4210854715202004e-14},{"gamma":1}]},{"featureType":"road.arterial","elementType":"all","stylers":[{"hue":"#FF009A"},{"gamma":1}]},{"featureType":"road.local","elementType":"all","stylers":[{"hue":"#FF0098"},{"gamma":1}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#EC00FF"},{"saturation":72.4},{"gamma":1}]}];
-		
-		// https://snazzymaps.com/style/134/light-dream
-		lightdream = 	[{"featureType":"landscape","stylers":[{"hue":"#FFBB00"},{"saturation":43.400000000000006},{"lightness":37.599999999999994},{"gamma":1}]},{"featureType":"road.highway","stylers":[{"hue":"#FFC200"},{"saturation":-61.8},{"lightness":45.599999999999994},{"gamma":1}]},{"featureType":"road.arterial","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":51.19999999999999},{"gamma":1}]},{"featureType":"road.local","stylers":[{"hue":"#FF0300"},{"saturation":-100},{"lightness":52},{"gamma":1}]},{"featureType":"water","stylers":[{"hue":"#0078FF"},{"saturation":-13.200000000000003},{"lightness":2.4000000000000057},{"gamma":1}]},{"featureType":"poi","stylers":[{"hue":"#00FF6A"},{"saturation":-1.0989010989011234},{"lightness":11.200000000000017},{"gamma":1}]}];
-		*/
-		
+//console.log("MapController::Initialise");	
+				
 		tony = [{"featureType": "landscape","elementType": "all","stylers": [{"hue": "#ffbb00"},{"saturation": "27"},{"lightness": 37.599999999999994},{"gamma": 1}]},{"featureType": "poi","elementType": "all","stylers": [{"hue": "#00ff6a"},{"saturation": "-2"},{"lightness": "11"},{"gamma": "0.95"},{"visibility": "on"}]},{"featureType": "poi","elementType": "labels","stylers": [{"visibility": "off"}]},{"featureType": "road.highway","elementType": "all","stylers": [{"hue": "#ffc200"},{"saturation": -61.8},{"lightness": 45.599999999999994},{"gamma": 1},{"visibility": "simplified"}]},{"featureType": "road.arterial","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 51.19999999999999},{"gamma": 1}]},{"featureType": "road.local","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 52},{"gamma": 1}]},{"featureType": "water","elementType": "all","stylers": [{"hue": "#0078ff"},{"saturation": "-3"},{"lightness": "34"},{"gamma": 1}]}];
-		
+
 		var mapOptions = {
 			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
 			zoom: self.zoom,
 			minZoom: map_min_zoom,
 			maxZoom: 18,
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: map_type_control,
 			streetViewControl: false,
 			navigationControl: false,
 			scaleControl: true,
@@ -664,7 +743,7 @@ function ConfigurationController() {
 	var max_attempts = 4;
 
 	this.Initialise = function () {
-console.log("ConfigurationController::Initialise");
+//console.log("ConfigurationController::Initialise");
 		map_controller.Initialise();
 
 		var options = {
@@ -674,7 +753,7 @@ console.log("ConfigurationController::Initialise");
 		};
 		navigator.geolocation.getCurrentPosition(LocationSuccess, LocationError, options);
 
-		$('#filter li').addClass('switch-off');
+		$('#filter li:not(:first-child)').addClass('switch-off');
 		$('#filter-all').removeClass('switch-off');
 		$('#filter-all').addClass('switch-on');
 		$('#filter-more').removeClass('switch-off');
@@ -684,18 +763,16 @@ console.log("ConfigurationController::Initialise");
 
 
 	function LocationSuccess(location_info) {
-console.log("ConfigurationController::LocationSuccess");
+//console.log("ConfigurationController::LocationSuccess");
 		map_controller.home_lat = location_info.coords.latitude;
 		map_controller.home_long = location_info.coords.longitude;
 		map_controller.SetCentre(map_controller.home_lat, map_controller.home_long);
-
-		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, HomeMarkerClicked);
-
-		place_controller.Show(category_controller.Categories());
+		place_controller.Show(map_controller.home_lat,map_controller.home_long);
+		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, map_controller.GoHome);
 	};
 
 	function LocationError(error) {
-console.log("ConfigurationController::LocationError");
+//console.log("ConfigurationController::LocationError");
 		if (attempts < max_attempts) {
 			self.Initialise();
 			attempts++;

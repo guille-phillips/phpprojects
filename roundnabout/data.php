@@ -72,11 +72,11 @@ SQL;
 						'entry_rates'=>DecodeJSONField($row['entry_rates']),
 						'opening_times'=>DecodeJSONField($row['opening_times']),
 						'rating'=>number_format((float) $row['rating'],1,'.',''),
-						'more_info'=>$row['more_info'],
-						'disabled_facilities'=>$row['disabled_facilities'],
-						'facilities'=>$row['facilities'],
-						'good_stuff'=>$row['good_stuff'],
-						'bad_stuff'=>$row['bad_stuff'],
+						'more_info'=>(($row['more_info']!='')?$row['facilities']:'Sorry no info'),
+						'disabled_facilities'=>(($row['disabled_facilities']!='')?$row['facilities']:'Sorry no info'),
+						'facilities'=>(($row['facilities']!='')?$row['facilities']:'Sorry no info'),
+						'good_stuff'=>(($row['good_stuff']!='')?$row['facilities']:'Sorry no info'),
+						'bad_stuff'=>(($row['bad_stuff']!='')?$row['facilities']:'Sorry no info'),
 						'image_url'=>$image_url
 					);
 				}

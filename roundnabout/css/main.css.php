@@ -9,6 +9,7 @@
 	$colours[1] = '#8f8f8f'; // grey
 	$colours[2] = '#0030b7'; // blue
 	$colours[3] = '#ac35f4'; // light purple
+	$colours[4] = '#F4EDFF'; // 
 
 	$filter_top = (MENU_HEIGHT).'px';
 	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
@@ -139,8 +140,7 @@ body {
 	/* border-right:1px solid #888; */
 	padding:5px 23px 1px 3px;
 	vertical-align:top;
-	cursor:default;
-
+	cursor:pointer;
 }
 
 #filter > ul > li > ul {
@@ -192,7 +192,7 @@ body {
 }
 
 .place_list_item:hover {
-	background-color:<?=$list_hover?>;
+	background-color:<?=$colours[4]?>;
 	border:4px solid <?=$colours[3]?>;
 }
 
@@ -200,7 +200,7 @@ body {
 	display:inline-block;
 	vertical-align:top;
 	width:calc(<?=$list_width?> - <?=$list_image_dimension?> - 20px - 8px);
-	height:calc(207px - 2px);
+	height:calc(170px - 2px);
 }
 
 .place_list_item > div:nth-child(2) {
@@ -218,8 +218,10 @@ body {
 	top:7px;
 	right:7px;
 	width:48px;
-	height:48px;
-	padding:0px 2px 0px 2px;
+	height:43px;
+	padding-top:5px;
+	padding-left:2px;
+	padding-right:2px;
 
 	background-color:<?=$colours[0]?>;
 	color:white;
@@ -268,11 +270,10 @@ body {
 	border-left:2px solid <?=$colours[0]?>;
 	border-right:2px solid <?=$colours[0]?>;
 	border-bottom:2px solid <?=$colours[0]?>;
-	background-color:white;
 	z-index:999;
 	display:none;
 	padding:0px 10px 3px 10px;
-	background-color:#ecf8fe;
+	background-color:<?=$colours[4]?>;
 }
 
 .place_list_item > div:nth-child(3) {
@@ -361,37 +362,37 @@ h1:hover {
 }
 
 .opening_times {
-	background-image:url('../resources/openingtimes_icon.png');
+	background-image:url('../resources/openingtimes_icon.svg');
 	background-repeat:no-repeat;
 }
 
 .entry_rates {
-	background-image:url('../resources/entryrates-icon.png');
+	background-image:url('../resources/entryrates-icon.svg');
 	background-repeat:no-repeat;
 }
 
-.comments {
-	background-image:url('../resources/moreinfo-icon.png');
+.more_info {
+	background-image:url('../resources/moreinfo-icon.svg');
 	background-repeat:no-repeat;
 }
 
 .disabled {
-	background-image:url('../resources/disabled_icon.png');
+	background-image:url('../resources/disabled-icon.svg');
 	background-repeat:no-repeat;
 }
 
-.email {
-	background-image:url('../resources/email-icon.png');
+.facilities {
+	background-image:url('../resources/facilities-icon.svg');
 	background-repeat:no-repeat;
 }
 
 .good_stuff {
-	background-image:url('../resources/goodstuff-icon.png');
+	background-image:url('../resources/goodstuff-icon.svg');
 	background-repeat:no-repeat;
 }
 
 .bad_stuff {
-	background-image:url('../resources/badstuff-icon.png');
+	background-image:url('../resources/badstuff-icon.svg');
 	background-repeat:no-repeat;
 }
 
@@ -437,16 +438,16 @@ h1:hover {
 
 .marker-bubble-left {
 	position:relative;
-	left:-51px;
-	top:-240px;
-	width:calc(443px - 30px);
-	height:calc(193px - 30px);
+	left:-115px;
+	top:-251px;
+	width:calc(430px - 30px);
+	height:calc(201px - 30px);
 	padding:15px;
 	background-image:url('../resources/bubble-left.png');
 	background-repeat:no-repeat;
 	display:none;
 	z-index:999;
-/*border:1px solid green;*/
+	*border:1px solid green;
 }
 
 
@@ -460,8 +461,30 @@ h1:hover {
 	position:absolute;
 	top:0px;
 	left:0px;
-	width:404px;
+	width:190px;
 	height:calc(<?=$body_top?> + 11px);
 	background-position: left -3px;
 	z-index: 1;
+}
+
+#current_location {
+	position:relative;
+	top:20px;
+	left:617px;
+	width:auto;
+	height:auto;
+	max-width:210px;
+	display:block;
+	cursor:pointer;
+}
+
+#search_here {
+	position:relative;
+	top:-34px;
+	left:964px;
+	width:auto;
+	height:auto;
+	max-width:150px;
+	display:block;
+	cursor:pointer;
 }

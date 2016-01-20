@@ -11,6 +11,7 @@
 		<script>
 			map_min_zoom=<?=$editable?5:11;?>;
 			place_limit=<?=$editable?-1:30;?>;
+			map_type_control=<?=$editable?'true':'false';?>;
 		</script>
 		<meta name="viewport" content="width=device-width">
 		<link rel="stylesheet" type="text/css" href="css/main.css.php">
@@ -64,29 +65,28 @@
 		</div>
 		<div id="logo">&nbsp;</div>
 		<div id="map_box"></div>
+		<img id="current_location" src="resources/current-location.png" onclick="map_controller.GoHome();">
+		<img id="search_here" src="resources/search-here.png" onclick="place_controller.ShowAtCurrentPosition();">
 		<div id="place_list"><div id="place_{id}" class="place_list_item" data-id="{id}">
 			<div>
 				<h1>{index}. {name}</h1>
 				<div class="address">{address} {postcode}</div>
-				<div class="telephone">{telephone}</div>
-				<a href="http://{website}" class="website" target="_blank">{website}</a>
+				<div class="telephone">{telephone} | <a href="http://{website}" class="*website" target="_blank">Web</a> | <a href="mailto:{email}" class="*website" target="_blank">Email</a></div>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
-				<div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="comments_{id}" class="icon comments">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="email_{id}" class="icon email">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div>
 			</div><div><img src="{image_url}">
 				<div class="rating">{rating}</div>
 				<?php if ($editable): ?>
 				<div id="edit_{id}" class="edit">EDIT</div>
 				<div id="move_{id}" class="move">MOVE</div>
 				<?php endif; ?>
-			</div>
-
+			</div><div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div></div>
 			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
 			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
-			<div id="email_info_{id}" class="info_box">{email}</div>
-			<div id="comments_info_{id}" class="info_box"><p>{more_info}</p><p>{facilities}</p></div>
+			<div id="more_info_info_{id}" class="info_box"><p>{more_info}</p></div>
+			<div id="facilities_info_{id}" class="info_box">{facilities}</div>
 			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
-			<div id="good_stuff_{id}" class="info_box">{good_stuff}</div>
+			<div id="good_stuff_info_{id}" class="info_box">{good_stuff}</div>
 			<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div> 
 		</div></div>
 	</body>
