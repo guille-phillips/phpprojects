@@ -21,12 +21,17 @@
 
 	switch ($_GET['method']) {
 		case 'GetPlaces':
+			if (!CheckKeyValid($_GET['session'])) {
+				echo "Your session has expired due to inactivity.\n\nPlease reload the page.";
+				exit;
+			}
 
 			$value = json_decode($_GET['value']);
 			$category_controller = new CategoryController($value->categories);
 			$centre_latitude = $value->position[0];
 			$centre_longitude = $value->position[1];
-
+			
+			
 			$sql = <<<SQL
 				SELECT
 					*
@@ -86,6 +91,28 @@ SQL;
 			break;
 	}
 
+	function CheckKeyValid($key) {
+		for ($minute=0; $minute<5; $minute++){
+			$dt = date('Ymdhi',strtotime("-$minute minutes",time()));
+			$session = sha1(fisherYatesShuffle($dt.'£*Fnd98s',3141));
+			if ($key == $session) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function fisherYatesShuffle($str, $seed){
+		@mt_srand($seed);
+		$items = str_split($str);
+		for ($i = count($items) - 1; $i > 0; $i--){
+			$j = @mt_rand(0, $i);
+			$tmp = $items[$i];
+			$items[$i] = $items[$j];
+			$items[$j] = $tmp;
+		}
+		return implode('',$items);
+	}	
 
 	function DecodeJSONField($field) {
 		if ($json = json_decode($field)) {

@@ -1,4 +1,25 @@
-<?php header('Content-Type: application/javascript');?>
+<?php 
+	header('Content-Type: application/javascript');
+	header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+	header("Pragma: no-cache"); // HTTP 1.0.
+	header("Expires: 0"); // Proxies.
+
+	function CreateKey() {
+		return sha1(fisherYatesShuffle(date("Ymdhi").'£*Fnd98s',3141));
+	}
+
+	function fisherYatesShuffle($str, $seed){
+		@mt_srand($seed);
+		$items = str_split($str);
+		for ($i = count($items) - 1; $i > 0; $i--){
+			$j = @mt_rand(0, $i);
+			$tmp = $items[$i];
+			$items[$i] = $items[$j];
+			$items[$j] = $tmp;
+		}
+		return implode('',$items);
+	}
+?>
 var categories = [];
 
 function CategoryController() {
@@ -341,7 +362,7 @@ function AjaxController() {
 
 	this.Message = function (method,value,id) {
 //console.log("AjaxController::Message");
-		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),false);
+		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&session=<?=CreateKey();?>"+"&date="+Date.now(),false);
 		xmlhttp.send();
 		try {
 			//alert(xmlhttp.responseText);
