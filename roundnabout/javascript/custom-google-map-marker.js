@@ -1,4 +1,4 @@
-function CustomMarker(latlng, map, args) {
+<?php header('Content-Type: application/javascript');?>function CustomMarker(latlng, map, args) {
 	this.latlng = latlng;
 	this.args = args;
 	this.setMap(map);

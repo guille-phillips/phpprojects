@@ -1,4 +1,4 @@
-String.prototype.replaceBlock = function(search,list) {
+<?php header('Content-Type: application/javascript');?>String.prototype.replaceBlock = function(search,list) {
 	var pos = 0;
 	var replaced = '';
 	var search_start = '{'+search+'/}';

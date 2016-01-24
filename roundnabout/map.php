@@ -14,7 +14,7 @@
 			map_type_control=<?=$editable?'true':'false';?>;
 		</script>
 		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="css/main.css.php">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script src="javascript/custom-google-map-marker.js"></script>
 		<script src="javascript/jquery-2.1.4.min.js"></script>

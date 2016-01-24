@@ -145,7 +145,7 @@ body {
 
 #filter > ul > li > ul {
 	position:absolute;
-	top:<?=$body_height?>;
+	top:<?=$body_top;?>;
 	left:1100px;
 	width:150px;
 	height:calc(40ex + 10px);

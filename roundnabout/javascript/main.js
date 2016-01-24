@@ -1,3 +1,4 @@
+<?php header('Content-Type: application/javascript');?>
 var categories = [];
 
 function CategoryController() {
