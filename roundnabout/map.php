@@ -1,4 +1,13 @@
 <?php
+	include 'key.php';
+	
+	if (isset($_COOKIE['session'])) {
+		RemoveKey($_COOKIE['session']);
+	}
+	RemoveExpiredKeys();
+	$key = InsertKey();
+	setcookie('session',$key,time()+5*60,'/','',false,true);	
+	
 	if (isset($_GET['pin']) && $_GET['pin']=='3141') {
 		$editable = true;
 	} else {

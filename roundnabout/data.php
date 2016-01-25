@@ -2,30 +2,34 @@
 	header('Content-Type: text/plain; charset=utf-8');
 	ini_set('html_errors', false);
 
-	switch ($_SERVER['HTTP_HOST']) {
-		case 'localhost:8080':
-			$db = new mysqli('localhost', 'root', '', 'roundnabout'); // home
-			break;
-		case 'localhost':
-			$db = new mysqli('localhost', 'root', 'almeria72', 'roundnabout'); // work
-			break;
-		default:
-			$db = new mysqli('localhost', 'rnadb', 'almeria72', 'roundnabout'); // site
-	}
-
+	require_once 'db.php';
+	
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');
 	}
-
+	
+	include 'key.php';
+	
 	$db->set_charset('utf8');
 
 	switch ($_GET['method']) {
 		case 'GetPlaces':
-			if (!CheckKeyValid($_GET['session'])) {
-				echo "Your session has expired due to inactivity.\n\nPlease reload the page.";
-				exit;
+			if (!isset($_COOKIE['session'])) {
+				die("Your session has expired due to inactivity.\n\nPlease reload the page.");
+			} else {
+				$key = $_COOKIE['session'];
+				if (IsValidKey($key)) {
+					RemoveKey($key);
+					$key = InsertKey();
+					setcookie('session',$key,time()+5*60,'/','',false,true);
+				} else {
+					setcookie('session',$key,time()-86400,'/','',false,true);
+					die("Your session has expired due to inactivity.\n\nPlease reload the page.");
+				}
 			}
-
+			
+			RemoveExpiredKeys();
+			
 			$value = json_decode($_GET['value']);
 			$category_controller = new CategoryController($value->categories);
 			$centre_latitude = $value->position[0];
@@ -91,28 +95,28 @@ SQL;
 			break;
 	}
 
-	function CheckKeyValid($key) {
-		for ($minute=0; $minute<5; $minute++){
-			$dt = date('Ymdhi',strtotime("-$minute minutes",time()));
-			$session = sha1(fisherYatesShuffle($dt.'£*Fnd98s',3141));
-			if ($key == $session) {
-				return true;
-			}
-		}
-		return false;
-	}
+	// function CheckKeyValid($key) {
+		// for ($minute=0; $minute<5; $minute++){
+			// $dt = date('Ymdhi',strtotime("-$minute minutes",time()));
+			// $session = sha1(fisherYatesShuffle($dt.'£*Fnd98s',3141));
+			// if ($key == $session) {
+				// return true;
+			// }
+		// }
+		// return false;
+	// }
 	
-	function fisherYatesShuffle($str, $seed){
-		@mt_srand($seed);
-		$items = str_split($str);
-		for ($i = count($items) - 1; $i > 0; $i--){
-			$j = @mt_rand(0, $i);
-			$tmp = $items[$i];
-			$items[$i] = $items[$j];
-			$items[$j] = $tmp;
-		}
-		return implode('',$items);
-	}	
+	// function fisherYatesShuffle($str, $seed){
+		// @mt_srand($seed);
+		// $items = str_split($str);
+		// for ($i = count($items) - 1; $i > 0; $i--){
+			// $j = @mt_rand(0, $i);
+			// $tmp = $items[$i];
+			// $items[$i] = $items[$j];
+			// $items[$j] = $tmp;
+		// }
+		// return implode('',$items);
+	// }	
 
 	function DecodeJSONField($field) {
 		if ($json = json_decode($field)) {
