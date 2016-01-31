@@ -1,18 +1,28 @@
 <?php
 	include 'key.php';
+	if (isset($_GET['pin']) && $_GET['pin']=='3141') {
+		$editable = true;
+		define('KEY_TIMEOUT',60*60); // 60 minutes
+		$key = InsertKey();
+		setcookie('master',$key,time()+KEY_TIMEOUT,'/','',false,true);
+	} else {
+		$editable = false;
+		define('KEY_TIMEOUT',5*60); // 5 minutes
+		if (isset($_COOKIE['master'])) {
+			setcookie('master',$_COOKIE['master'],time()-86400,'/','',false,true);
+		}
+	}
+
+	include 'access.php';
+	
+	InsertAccess();
 	
 	if (isset($_COOKIE['session'])) {
 		RemoveKey($_COOKIE['session']);
 	}
 	RemoveExpiredKeys();
 	$key = InsertKey();
-	setcookie('session',$key,time()+5*60,'/','',false,true);	
-	
-	if (isset($_GET['pin']) && $_GET['pin']=='3141') {
-		$editable = true;
-	} else {
-		$editable = false;
-	}
+	setcookie('session',$key,time()+KEY_TIMEOUT,'/','',false,true);
 ?>
 <!DOCTYPE html>
 <html>

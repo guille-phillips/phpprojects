@@ -1,6 +1,5 @@
 <?php
-	define('KEY_TIMEOUT',5*60);
-	
+
 	require_once 'db.php';
 	
 	function CreateKey() {

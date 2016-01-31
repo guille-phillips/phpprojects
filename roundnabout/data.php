@@ -7,8 +7,21 @@
 	if($db->connect_errno > 0){
 		Error('Unable to connect to database [' . $db->connect_error . ']');
 	}
-	
+
 	include 'key.php';
+	
+	$master = false;
+	if (isset($_COOKIE['master'])) {
+		if (IsValidKey($_COOKIE['master'])){
+			define('KEY_TIMEOUT',60*60); // 60 minutes
+			$master = true;
+		} else {
+			define('KEY_TIMEOUT',5*60); // 60 minutes
+		}
+	} else {
+		define('KEY_TIMEOUT',5*60); // 60 minutes
+	}
+	
 	
 	$db->set_charset('utf8');
 
@@ -21,7 +34,7 @@
 				if (IsValidKey($key)) {
 					RemoveKey($key);
 					$key = InsertKey();
-					setcookie('session',$key,time()+5*60,'/','',false,true);
+					setcookie('session',$key,time()+KEY_TIMEOUT,'/','',false,true);
 				} else {
 					setcookie('session',$key,time()-86400,'/','',false,true);
 					die("Your session has expired due to inactivity.\n\nPlease reload the page.");
@@ -34,8 +47,7 @@
 			$category_controller = new CategoryController($value->categories);
 			$centre_latitude = $value->position[0];
 			$centre_longitude = $value->position[1];
-			
-			
+
 			$sql = <<<SQL
 				SELECT
 					*
@@ -90,33 +102,23 @@ SQL;
 					);
 				}
 			}
-
+			
+			usort($rows,function($a,$b){return $a['distance']-$b['distance'];});
+			
+			// limit results for normal users
+			if (!$master) {
+				$count = 0;
+				foreach ($rows as $index=>$row) {
+					if ($row['distance']>=20) {
+						unset($rows[$index]);
+					}
+					$count++;
+				}
+			}
+			
 			echo json_encode($rows);
 			break;
 	}
-
-	// function CheckKeyValid($key) {
-		// for ($minute=0; $minute<5; $minute++){
-			// $dt = date('Ymdhi',strtotime("-$minute minutes",time()));
-			// $session = sha1(fisherYatesShuffle($dt.'£*Fnd98s',3141));
-			// if ($key == $session) {
-				// return true;
-			// }
-		// }
-		// return false;
-	// }
-	
-	// function fisherYatesShuffle($str, $seed){
-		// @mt_srand($seed);
-		// $items = str_split($str);
-		// for ($i = count($items) - 1; $i > 0; $i--){
-			// $j = @mt_rand(0, $i);
-			// $tmp = $items[$i];
-			// $items[$i] = $items[$j];
-			// $items[$j] = $tmp;
-		// }
-		// return implode('',$items);
-	// }	
 
 	function DecodeJSONField($field) {
 		if ($json = json_decode($field)) {

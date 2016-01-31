@@ -297,8 +297,11 @@ function MarkerStateController(){
 					ShowBubble(info.id);
 					document.getElementById("place_"+info.id).scrollIntoView();
 					previous_id = info.id;
-					// var place = place_controller.GetPlaceById(info.id);
-					// alert(map_controller.google_map.getProjection().fromLatLngToPoint(new google.maps.LatLng(place.latitude,place.longitude)) );
+					
+					var place = place_controller.GetPlaceById(info.id);
+					adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);			
+				
 				} else if (info.id === previous_id) {
 					HideBubble(info.id);
 					previous_id = undefined;
@@ -307,6 +310,10 @@ function MarkerStateController(){
 					document.getElementById("place_"+info.id).scrollIntoView();
 					HideBubble(previous_id);
 					previous_id = info.id;
+					
+					var place = place_controller.GetPlaceById(info.id);
+					adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);						
 				}
 
 				break;
@@ -329,7 +336,8 @@ function MarkerStateController(){
 				ShowBubble(info.id);
 				var place = place_controller.GetPlaceById(info.id);
 				map_controller.SetCentre(place.latitude,place.longitude);
-				// alert(map_controller.google_map.getProjection().fromLatLngToPoint(new google.maps.LatLng(place.latitude,place.longitude)) );
+				adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+				map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);
 				previous_id = info.id;
 				break;
 			case 'click_category':
@@ -362,7 +370,7 @@ function AjaxController() {
 
 	this.Message = function (method,value,id) {
 //console.log("AjaxController::Message");
-		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&session=<?=CreateKey();?>"+"&date="+Date.now(),false);
+		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),false);
 		xmlhttp.send();
 		try {
 			//alert(xmlhttp.responseText);
@@ -396,10 +404,7 @@ function PlacesController() {
 			return;
 		}
 
-		// Sort by distance
-		var temp_places = Object.keys(places).map(function(k) { return places[k] });
-		temp_places.sort(function(a,b){return a.distance-b.distance;});
-		places = temp_places;
+		places = Object.keys(places).map(function(k) { return places[k] });
 
 		marker_controller.RemoveAll();
 		list_controller.RemoveAll();
@@ -409,7 +414,7 @@ function PlacesController() {
 		var marker_index = 1;
 
 		for (var index in places) {
-			if (place_limit!=-1 && index>=place_limit) continue;
+			// if (place_limit!=-1 && index>=place_limit) continue;
 			var place = places[index];
 
 			marker_controller.AddMarker(place,place.id,marker_index,place.latitude,place.longitude,
@@ -669,6 +674,7 @@ function ListController() {
 
 function MapController(centre_lat,centre_long) {
 	var self = this;
+	this.map_box = undefined;
 	this.google_map = undefined;
 
 	this.home_lat = undefined;
@@ -676,9 +682,43 @@ function MapController(centre_lat,centre_long) {
 	this.centre_lat = centre_lat;
 	this.centre_long = centre_long;
 	this.zoom = 14;
+	this.zooms_x = [1,   1,   2.75, 5.5, 11,   22.734375, 45.46875, 90.9375, 181.875, 363.75, 727.5, 1455, 2910,  5820, 11650, 23300,  46560, 93120,  186240, 372480, 744960];
+	this.zooms_y = [1.6, 1.6, 4.4,  8.8, 17.6, 36.375,    72.75,    145.5,   291,     582,    1164,  2328, 4656,  9300, 18600, 37200,  74400, 148800, 297600, 595200, 1190400];
 	
 	var moving = false;
 	var move_place_id = undefined;
+	
+	this.GetMapCartesian = function(lat,lon) {
+		return [self.map_box.offsetWidth/2+(lon-self.centre_long)*self.zooms_x[self.zoom],self.map_box.offsetHeight/2-(lat-self.centre_lat)*self.zooms_y[self.zoom]];
+	}
+	
+	this.GetMapLatLon = function(x,y) {
+		return [(y-self.map_box.offsetHeight/2)/self.zooms_y[self.zoom]+self.centre_lat,(x-self.map_box.offsetWidth/2)/self.zooms_x[self.zoom]+self.centre_long];
+	}
+	
+	this.AdjustToStayOnMap = function(lat,lon) {
+		var cartesian = self.GetMapCartesian(lat,lon);
+		shift = [0,0];
+		if (cartesian[1]<340) { // shift down
+			shift[1] = 340-cartesian[1];
+		}
+		
+		if (cartesian[1]>(self.map_box.offsetHeight-20)) { // shift up
+			shift[1] = (self.map_box.offsetHeight-20)-cartesian[1];
+		}
+		
+		if (cartesian[0]<130) { // shift right
+			shift[0] = cartesian[0]-130;
+		}
+		
+		if (cartesian[0]>(self.map_box.offsetWidth-330)) { // shift left
+			shift[0] = cartesian[0]-(self.map_box.offsetWidth-330);
+		}
+		
+		var new_lat_lon = self.GetMapLatLon(self.map_box.offsetWidth/2+shift[0],self.map_box.offsetHeight/2+shift[1]);
+		return new_lat_lon;
+	}
+	
 	
 	this.StartMove = function(place_id) {
 		moving = true;
@@ -737,8 +777,8 @@ function MapController(centre_lat,centre_long) {
 			scaleControl: true,
 			styles: tony
 		}
-
-		self.google_map = new google.maps.Map(document.getElementById('map_box'), mapOptions);
+		self.map_box = document.getElementById('map_box');
+		self.google_map = new google.maps.Map(self.map_box, mapOptions);
 
 		google.maps.event.addListener(self.google_map, 'zoom_changed', self.ZoomChanged);
 		google.maps.event.addListener(self.google_map, 'center_changed', self.CentreChanged);
