@@ -90,16 +90,17 @@
 			<div>
 				<h1>{index}. {name}</h1>
 				<div class="address">{address} {postcode}</div>
-				<div class="telephone">{telephone} | <a href="http://{website}" class="*website" target="_blank">Web</a> | <a href="mailto:{email}" class="*website" target="_blank">Email</a></div>
+				<div class="telephone">{telephone}{website/} | <a href="http://{website}" class="website" target="_blank">website</a>{/website}{email/} | <a href="mailto:{email}" class="email" target="_blank">email</a>{/email}</div>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
+				<div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div></div>
 			</div><div><img src="{image_url}">
 				<div class="rating">{rating}</div>
 				<?php if ($editable): ?>
 				<div id="edit_{id}" class="edit">EDIT</div>
 				<div id="move_{id}" class="move">MOVE</div>
 				<?php endif; ?>
-			</div><div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div></div>
+			</div>
 			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
 			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
 			<div id="more_info_info_{id}" class="info_box"><p>{more_info}</p></div>

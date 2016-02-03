@@ -209,7 +209,7 @@ function MarkerController() {
 
 		var info_html = CreateInfoBox(place);
 
-		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-left'>"+info_html+"</div>";
+		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-middle'>"+info_html+"</div>";
 		overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
 			map_controller.google_map,
@@ -254,18 +254,20 @@ function MarkerController() {
 //console.log("MarkerController::CreateInfoBox");
 		var html_array = [];
 
-		html_array.push(Tag('img','',{class:'square'}));
-
-		html_array.push(Tag('h1',place.name));
+		var left_box_html_array = [];
+		left_box_html_array.push(Tag('h1',place.name));
 
 		if (place.category.join) {
-			html_array.push( place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
+			left_box_html_array.push(place.category.map(function(content){return Tag('div',content,{class:'category_item'});}).join('') );
 		}
 
 		if (place.address.join) {
-			html_array.push( Tag('div',place.address.join(', '),{class:'address'}) );
+			left_box_html_array.push( Tag('div',place.address.join(', '),{class:'address'}) );
 		}
 
+		html_array.push(Tag('div',left_box_html_array.join(''),{class:'bubble_left_box'}));
+		html_array.push(Tag('img','',{src:place.image_url,class:'square'}));
+		
 		return html_array.join('');
 	}
 
@@ -300,8 +302,8 @@ function MarkerStateController(){
 					
 					var place = place_controller.GetPlaceById(info.id);
 					adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
-					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);			
-				
+					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);
+					
 				} else if (info.id === previous_id) {
 					HideBubble(info.id);
 					previous_id = undefined;
@@ -334,6 +336,7 @@ function MarkerStateController(){
 					HideBubble(previous_id);
 				}
 				ShowBubble(info.id);
+				document.getElementById("place_"+info.id).scrollIntoView();
 				var place = place_controller.GetPlaceById(info.id);
 				map_controller.SetCentre(place.latitude,place.longitude);
 				adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
@@ -349,9 +352,13 @@ function MarkerStateController(){
 		}
 	}
 
-	var ShowBubble = function(id) {
+	var ShowBubble = function(id,position_class) {
 //console.log("MarkerStateController::ShowBubble");
-		document.getElementById("bubble"+id).style.display="inherit";
+		var bubble = document.getElementById("bubble"+id);
+		if (position_class) {
+			bubble.className = position_class;
+		}
+		bubble.style.display="inherit";
 	}
 
 	var HideBubble = function(id) {
@@ -439,13 +446,6 @@ function PlacesController() {
 					};
 				}(place.id)
 			);
-			// div.addEventListener("mouseleave",
-				// function(place_id) {
-					// return function(){
-						// place_controller.HideAllInfo({id:place_id});
-					// };
-				// }(place.id)			
-			// );
 		
 			place_list.appendChild(div);
 			
@@ -586,50 +586,50 @@ function PlacesController() {
 				var info_element = document.getElementById("opening_times_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;
 			case "entry_rates":
 				var info_element = document.getElementById("entry_rates_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";				
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";				
 				break;
 			case "more_info":
 				var info_element = document.getElementById("more_info_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;
 			case "facilities":
 				var info_element = document.getElementById("facilities_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;				
 			case "disabled":
 				var info_element = document.getElementById("disabled_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;				
 			case "good_stuff":
 				var info_element = document.getElementById("good_stuff_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;	
 			case "bad_stuff":
 				var info_element = document.getElementById("bad_stuff_info_"+info.id);
 				info_element.style.display="block";
 				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-8)+"px";
-				info_element.style.left="-2px";
+				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
+				info_element.style.left="-1px";
 				break;					
 		}
 	}
@@ -707,12 +707,12 @@ function MapController(centre_lat,centre_long) {
 			shift[1] = (self.map_box.offsetHeight-20)-cartesian[1];
 		}
 		
-		if (cartesian[0]<130) { // shift right
-			shift[0] = cartesian[0]-130;
+		if (cartesian[0]<230) { // shift right
+			shift[0] = cartesian[0]-230;
 		}
 		
-		if (cartesian[0]>(self.map_box.offsetWidth-330)) { // shift left
-			shift[0] = cartesian[0]-(self.map_box.offsetWidth-330);
+		if (cartesian[0]>(self.map_box.offsetWidth-230)) { // shift left
+			shift[0] = cartesian[0]-(self.map_box.offsetWidth-230);
 		}
 		
 		var new_lat_lon = self.GetMapLatLon(self.map_box.offsetWidth/2+shift[0],self.map_box.offsetHeight/2+shift[1]);

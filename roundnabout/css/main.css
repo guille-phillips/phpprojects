@@ -18,6 +18,7 @@
 	$list_width = (LIST_WIDTH).'px';
 	$menu_horiz_offset = '0px';
 	$list_image_dimension = '164px';
+	$bubble_image_dimension = '130px';
 	$list_hover = '#F4EDFF';
 ?>
 @font-face {
@@ -184,16 +185,19 @@ body {
 
 .place_list_item {
 	position:relative;
-	width:calc(<?=$list_width?> - 8px - 20px);
-	height:calc(240px - 20px);
-	border:4px solid <?=$colours[0]?>;
+	width:calc(<?=$list_width?> - 2px - 20px);
+	height:calc(190px - 20px);
+	border-bottom:1px solid <?=$colours[0]?>;
+	border-left:1px solid rgba(255,255,255,0);
+	border-right:1px solid rgba(255,255,255,0);
+	border-top:1px solid rgba(255,255,255,0);
 	padding:10px;
 	cursor:pointer;
 }
 
 .place_list_item:hover {
 	background-color:<?=$colours[4]?>;
-	border:4px solid <?=$colours[3]?>;
+	border:1px solid <?=$colours[3]?>;
 }
 
 .place_list_item > div:nth-child(1) {
@@ -266,10 +270,24 @@ body {
 	height:100%;
 }
 
+.square {
+	width:<?=$bubble_image_dimension?>;
+	height:<?=$bubble_image_dimension?>;
+	border:1px solid #ccc;
+	display:inline-block;
+	vertical-align:top;
+}
+.bubble_left_box {
+	*border:1px solid black;
+	width:calc(395px - <?=$bubble_image_dimension?>);
+	display:inline-block;
+	vertical-align:top;
+}
+
 .info_box {
-	border-left:2px solid <?=$colours[0]?>;
-	border-right:2px solid <?=$colours[0]?>;
-	border-bottom:2px solid <?=$colours[0]?>;
+	border-left:1px solid <?=$colours[0]?>;
+	border-right:1px solid <?=$colours[0]?>;
+	border-bottom:1px solid <?=$colours[0]?>;
 	z-index:999;
 	display:none;
 	padding:0px 10px 3px 10px;
@@ -332,19 +350,15 @@ h1:hover {
 	color:<?=$colours[2]?>;
 }
 
-.website {
-	display:block;
+.website, .email {
 	color:<?=$colours[2]?>;
 	text-decoration:none;
-	text-overflow:ellipsis;
-	overflow:hidden;
-	white-space:nowrap;
 }
 
-.website:hover {
+.website:hover, .email:hover {
 	text-decoration:underline;
 }
-.website:visited {
+.website:visited, .email:visited {
 	color:<?=$colours[0]?>;
 	text-decoration:underline;
 }
@@ -355,7 +369,7 @@ h1:hover {
 	width:45px;
 	height:45px;
 	*border:1px solid black;
-	margin-right:20px;
+	margin-right:10px;
 	background-size:35px;
 	background-repeat:no-repeat;
 	background-position:left bottom;
@@ -450,6 +464,33 @@ h1:hover {
 	*border:1px solid green;
 }
 
+.marker-bubble-middle {
+	position:relative;
+	left:-216px;
+	top:-251px;
+	width:calc(430px - 30px);
+	height:calc(201px - 30px);
+	padding:15px;
+	background-image:url('../resources/bubble-centre.png');
+	background-repeat:no-repeat;
+	display:none;
+	z-index:999;
+	*border:1px solid green;
+}
+
+.marker-bubble-right {
+	position:relative;
+	left:-317px;
+	top:-251px;
+	width:calc(430px - 30px);
+	height:calc(201px - 30px);
+	padding:15px;
+	background-image:url('../resources/bubble-right.png');
+	background-repeat:no-repeat;
+	display:none;
+	z-index:999;
+	*border:1px solid green;
+}
 
 
 /* Other */

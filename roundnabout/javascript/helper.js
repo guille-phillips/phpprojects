@@ -3,8 +3,12 @@
 	var replaced = '';
 	var search_start = '{'+search+'/}';
 	var search_end = '{/'+search+'}';
-
+	var remove_block = false;
+	
 	if (!isArray(list)) {
+		if (list==null) {
+			remove_block = true;
+		}
 		list = [list];
 	}
 
@@ -12,9 +16,11 @@
 		if ((pos_start = this.indexOf(search_start,pos))>-1) {
 			replaced += this.substr(pos,pos_start-pos);
 			if ((pos_end = this.indexOf(search_end,pos_start))>-1) {
-				var sub = this.substr(pos_start+search_start.length,pos_end-pos_start-search_start.length);
-				for (var index in list) {
-					replaced += sub.replace('{'+search+'}',list[index]);
+				if (!remove_block) {
+					var sub = this.substr(pos_start+search_start.length,pos_end-pos_start-search_start.length);
+					for (var index in list) {
+						replaced += sub.replace('{'+search+'}',list[index]);
+					}
 				}
 				pos = pos_end+search_end.length;
 			} else {
@@ -65,6 +71,31 @@ var isArray = (function () {
 		return objectToStringFn.call(subject) === arrayToStringResult;
 	};
 }());
+
+function divvy(array_var, number_of_sub_arrays) {
+	var mod = array_var.length%number_of_sub_arrays;
+	if (mod == 0) {
+		var in_each = Math.floor(array_var.length/number_of_sub_arrays);
+	} else {
+		var deficit = array_var.length+(number_of_sub_arrays-mod);
+		var in_each = Math.floor(deficit/number_of_sub_arrays);
+	}
+	var result = [];
+	var not_finished = true;
+	var index = 0;
+	while (not_finished) {
+		var sub_result = [];
+		for (var i=0; i<in_each; i++) {
+			if (index<array_var.length) {
+				sub_result.push(array_var[index]);
+			}
+			index++;
+		}
+		result.push(sub_result);
+	}
+	
+	return result;
+}
 
 function Whole(number) {
 	return Math.floor(number+0.5);
