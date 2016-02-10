@@ -47,6 +47,7 @@
 				<li id="menu-about-us">Claim a Business</li>
 				<li id="menu-upload-a-place">Add a Business</li>
 			</ul>
+			<input id="search" type="text" placeholder="Search a Place, County or Attraction">
 		</div>
 		<div id="filter">
 			<ul>
@@ -93,7 +94,7 @@
 				<div class="telephone">{telephone}{website/} | <a href="http://{website}" class="website" target="_blank">website</a>{/website}{email/} | <a href="mailto:{email}" class="email" target="_blank">email</a>{/email}</div>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>
-				<div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div></div>
+				<div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div>{bad_stuff/}<div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div>{/bad_stuff}</div>
 			</div><div><img src="{image_url}">
 				<div class="rating">{rating}</div>
 				<?php if ($editable): ?>
@@ -107,7 +108,7 @@
 			<div id="facilities_info_{id}" class="info_box">{facilities}</div>
 			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
 			<div id="good_stuff_info_{id}" class="info_box">{good_stuff}</div>
-			<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div> 
+			{bad_stuff/}<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div>{/bad_stuff}
 		</div></div>
 	</body>
 </html>

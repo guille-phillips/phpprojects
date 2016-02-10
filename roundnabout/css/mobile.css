@@ -1,7 +1,7 @@
 <?php
 	header('Content-Type: text/css');
 
-	define('MENU_HEIGHT',103);
+	define('MENU_HEIGHT',40);
 	define('FILTER_HEIGHT',34);
 	define('LIST_WIDTH',580);
 
@@ -12,7 +12,7 @@
 	$colours[4] = '#F4EDFF'; // 
 
 	$filter_top = (MENU_HEIGHT).'px';
-	$body_top = (MENU_HEIGHT+FILTER_HEIGHT).'px';
+	$body_top = (MENU_HEIGHT).'px';
 	$menu_height = (MENU_HEIGHT).'px';
 	$filter_height = (FILTER_HEIGHT).'px';
 	$list_width = (LIST_WIDTH).'px';
@@ -54,10 +54,10 @@ body {
 
 #map_box {
 	position:absolute;
-	left: calc(<?=$list_width?> + 17px);
+	left: 0;
 	top:<?=$body_top?>;
-	width: calc(100% - <?=$list_width?> - 17px);
-	height: calc(100% - <?=$body_top?>);
+	width: 100%;
+	height: calc(100% - <?=$body_top?> - 200px);
 	background-color: #CCC;
 }
 
@@ -96,24 +96,6 @@ body {
 
 #menu > ul > li:not(:first-child) {
 	border-left:1px solid white;
-}
-
-#search {
-	margin: 0;
-	padding: 4px;
-	position: absolute;
-	left:272px;
-	top:32px;
-	width:475px;
-	height:30px;
-	font-size:22px;
-	font-weight:0;
-	background-color:<?=$colours[4]?>;
-	border:0;
-	background-image:url('../resources/search.png');
-	background-repeat:no-repeat;
-	background-position: right center;	
-	background-size: 31px;
 }
 
 /* Filter Menu */
@@ -187,14 +169,18 @@ body {
 
 
 /* Listing */
-#place_list {
+#place_list_container {
 	position:absolute;
-	top:<?=$body_top?>;
+	bottom:0px;
 	left:0px;
-	width:calc(<?=$list_width?> + 17px);
-	height:calc(100% - <?=$body_top?>);
-	overflow-y:scroll;
-	overflow-x:hidden;
+	width:100%;
+	height:200px;
+	overflow-y:hidden;
+	overflow-x:scroll;	
+}
+
+#place_list {
+	height:200px;
 }
 
 #place_list > div:first-child {
@@ -211,6 +197,7 @@ body {
 	border-top:1px solid rgba(255,255,255,0);
 	padding:10px;
 	cursor:pointer;
+	display:inline-block;
 }
 
 .place_list_item:hover {
@@ -482,7 +469,7 @@ h1:hover {
 	*border:1px solid green;
 }
 
-.marker-bubble-centre {
+.marker-bubble-middle {
 	position:relative;
 	left:-216px;
 	top:-251px;
@@ -514,6 +501,7 @@ h1:hover {
 /* Other */
 
 #logo {
+	display:none;
 	background-image:url('../resources/logo.png');
 	background-repeat:no-repeat;
 	background-size: 192px;
@@ -529,7 +517,7 @@ h1:hover {
 #current_location {
 	position:relative;
 	top:20px;
-	left:617px;
+	left:20px;
 	width:auto;
 	height:auto;
 	max-width:210px;
@@ -540,7 +528,7 @@ h1:hover {
 #search_here {
 	position:relative;
 	top:-34px;
-	left:964px;
+	left:50%;
 	width:auto;
 	height:auto;
 	max-width:150px;

@@ -209,7 +209,7 @@ function MarkerController() {
 
 		var info_html = CreateInfoBox(place);
 
-		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-middle'>"+info_html+"</div>";
+		var bubble_html = "<div id='bubble"+id+"' class='marker-bubble-centre'>"+info_html+"</div>";
 		overlay = new CustomMarker(
 			new google.maps.LatLng(lat, lon),
 			map_controller.google_map,
@@ -296,26 +296,26 @@ function MarkerStateController(){
 			case 'click_marker':
 				ignore_next_click_map = true;
 				if (previous_id === undefined) {
-					ShowBubble(info.id);
 					document.getElementById("place_"+info.id).scrollIntoView();
 					previous_id = info.id;
-					
 					var place = place_controller.GetPlaceById(info.id);
-					adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					var adjust = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					adjust_lat_lon = adjust[0];
 					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);
+					ShowBubble(info.id,'marker-bubble-'+adjust[1]);
 					
 				} else if (info.id === previous_id) {
 					HideBubble(info.id);
 					previous_id = undefined;
 				} else {
-					ShowBubble(info.id);
 					document.getElementById("place_"+info.id).scrollIntoView();
 					HideBubble(previous_id);
-					previous_id = info.id;
-					
 					var place = place_controller.GetPlaceById(info.id);
-					adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					var adjust = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+					adjust_lat_lon = adjust[0];
 					map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);						
+					ShowBubble(info.id,'marker-bubble-'+adjust[1]);
+					previous_id = info.id;
 				}
 
 				break;
@@ -335,12 +335,13 @@ function MarkerStateController(){
 				if (previous_id !== undefined) {
 					HideBubble(previous_id);
 				}
-				ShowBubble(info.id);
-				document.getElementById("place_"+info.id).scrollIntoView();
 				var place = place_controller.GetPlaceById(info.id);
 				map_controller.SetCentre(place.latitude,place.longitude);
-				adjust_lat_lon = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+				adjust = map_controller.AdjustToStayOnMap(place.latitude,place.longitude);
+				adjust_lat_lon = adjust[0];
 				map_controller.SetCentre(adjust_lat_lon[0],adjust_lat_lon[1]);
+				ShowBubble(info.id,'marker-bubble-'+adjust[1]);
+				
 				previous_id = info.id;
 				break;
 			case 'click_category':
@@ -420,6 +421,10 @@ function PlacesController() {
 
 		var marker_index = 1;
 
+		if (typeof(mobile) !== 'undefined') {
+			$('#place_list').width(mobile_list_width = places.length*580);
+		}
+		
 		for (var index in places) {
 			// if (place_limit!=-1 && index>=place_limit) continue;
 			var place = places[index];
@@ -697,6 +702,8 @@ function MapController(centre_lat,centre_long) {
 	}
 	
 	this.AdjustToStayOnMap = function(lat,lon) {
+		var position = 'centre';
+		
 		var cartesian = self.GetMapCartesian(lat,lon);
 		shift = [0,0];
 		if (cartesian[1]<340) { // shift down
@@ -707,16 +714,18 @@ function MapController(centre_lat,centre_long) {
 			shift[1] = (self.map_box.offsetHeight-20)-cartesian[1];
 		}
 		
-		if (cartesian[0]<230) { // shift right
-			shift[0] = cartesian[0]-230;
+		if (cartesian[0]<210) { // shift right
+			shift[0] = cartesian[0]-130;
+			position = 'left';
 		}
 		
-		if (cartesian[0]>(self.map_box.offsetWidth-230)) { // shift left
-			shift[0] = cartesian[0]-(self.map_box.offsetWidth-230);
+		if (cartesian[0]>(self.map_box.offsetWidth-210)) { // shift left
+			shift[0] = cartesian[0]-(self.map_box.offsetWidth-130);
+			position = 'right';
 		}
 		
 		var new_lat_lon = self.GetMapLatLon(self.map_box.offsetWidth/2+shift[0],self.map_box.offsetHeight/2+shift[1]);
-		return new_lat_lon;
+		return [new_lat_lon,position];
 	}
 	
 	
@@ -763,7 +772,7 @@ function MapController(centre_lat,centre_long) {
 	this.Initialise = function () {
 //console.log("MapController::Initialise");	
 				
-		tony = [{"featureType": "landscape","elementType": "all","stylers": [{"hue": "#ffbb00"},{"saturation": "27"},{"lightness": 37.599999999999994},{"gamma": 1}]},{"featureType": "poi","elementType": "all","stylers": [{"hue": "#00ff6a"},{"saturation": "-2"},{"lightness": "11"},{"gamma": "0.95"},{"visibility": "on"}]},{"featureType": "poi","elementType": "labels","stylers": [{"visibility": "off"}]},{"featureType": "road.highway","elementType": "all","stylers": [{"hue": "#ffc200"},{"saturation": -61.8},{"lightness": 45.599999999999994},{"gamma": 1},{"visibility": "simplified"}]},{"featureType": "road.arterial","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 51.19999999999999},{"gamma": 1}]},{"featureType": "road.local","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 52},{"gamma": 1}]},{"featureType": "water","elementType": "all","stylers": [{"hue": "#0078ff"},{"saturation": "-3"},{"lightness": "34"},{"gamma": 1}]}];
+		tony = [{"featureType": "landscape","elementType": "all","stylers": [{"hue": "#ffbb00"},{"saturation": "27"},{"lightness": 37.6},{"gamma": 1}]},{"featureType": "poi","elementType": "all","stylers": [{"hue": "#00ff6a"},{"saturation": "-2"},{"lightness": "11"},{"gamma": "0.95"},{"visibility": "on"}]},{"featureType": "poi","elementType": "labels","stylers": [{"visibility": "off"}]},{"featureType": "road.highway","elementType": "all","stylers": [{"hue": "#ffc200"},{"saturation": -61.8},{"lightness": 45.6},{"gamma": 1},{"visibility": "simplified"}]},{"featureType": "road.arterial","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 51.2},{"gamma": 1}]},{"featureType": "road.local","elementType": "all","stylers": [{"hue": "#ff0300"},{"saturation": -100},{"lightness": 52},{"gamma": 1}]},{"featureType": "water","elementType": "all","stylers": [{"hue": "#0078ff"},{"saturation": "-3"},{"lightness": "34"},{"gamma": 1}]}];
 
 		var mapOptions = {
 			center: new google.maps.LatLng(self.centre_lat, self.centre_long),
