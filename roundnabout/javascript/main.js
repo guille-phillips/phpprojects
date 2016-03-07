@@ -281,7 +281,7 @@ function MarkerStateController(){
 	var ignore_next_click_map = false;
 
 	this.SelectedPlaceId = function() {
-		alert(previous_id);
+		//alert(previous_id);
 		return previous_id;
 	}
 	
@@ -369,12 +369,28 @@ function MarkerStateController(){
 }
 
 function AjaxController() {
+	var async_callback;
 	var xmlhttp;
 	if (window.XMLHttpRequest) {
 		xmlhttp=new XMLHttpRequest();
 	} else {
 		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	}
+
+	xmlhttp.onreadystatechange = function() {
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			if (async_callback != undefined) {
+				try {
+					//alert(xmlhttp.responseText);
+					var response = JSON.parse(xmlhttp.responseText);
+				} catch (err) {
+					alert(xmlhttp.responseText);
+					return;
+				}
+				async_callback(response);
+			}
+		}
+	};
 
 	this.Message = function (method,value,id) {
 //console.log("AjaxController::Message");
@@ -389,17 +405,61 @@ function AjaxController() {
 		}
 		return response;
 	}
+	
+	this.MessageAsync = function (callback, method, value, id) {
+		async_callback = callback;
+		xmlhttp.open("GET","data.php?method="+method+"&id="+id+"&value="+value+"&date="+Date.now(),true);
+		xmlhttp.send();	
+	}
 }
 
 function PlacesController() {
 	var self = this;
 	var overlays = [];
-	var ajax_controller = new AjaxController();
+	
 	var places = [];
 
 	this.ShowAtCurrentPosition = function () {
 		self.Show(map_controller.centre_lat,map_controller.centre_long);
 		marker_controller.AddHomeMarker(map_controller.home_lat, map_controller.home_long, map_controller.GoHome);
+	}
+	
+	this.Cluster = function () {
+		var indeces_lat = places.map(function(o,k,n){var pos=map_controller.GetMapCartesian(o.latitude,o.longitude); o.x=pos[0]; o.y=pos[1]; return k;});
+		var indeces_long = places.map(function(o,k,n){return k;});
+		
+		indeces_lat.sort(function(a,b){return places[a].latitude-places[b].latitude;});
+		indeces_long.sort(function(a,b){return places[a].longitude-places[b].longitude;});
+		
+		var tolerance = 100 // pixels
+		var tolerance2 = tolerance*tolerance;
+		var check = 0;
+		var next = 1;
+		var group = 0;
+		var max = indeces_lat.length-1;
+		
+		while (next<=max) {
+			var dx = places[next].x-places[check].x;
+			if (dx > tolerance) {
+				check = next;
+				next++;
+				group++;
+			} else {
+				dy = places[next].y-places[check].y;
+				dist = dx*dx+dy*dy;
+				if (dist > tolerance2) {
+					next++;
+				} else {
+					//alert(check);
+					places[check].group = group;
+					places[next].group = group;
+					check = next;
+					next++;
+				}
+			}
+		}
+		
+		//alert(JSON.stringify(indeces_lat));
 	}
 	
 	this.Show = function (this_lat,this_long) {
@@ -413,7 +473,9 @@ function PlacesController() {
 		}
 
 		places = Object.keys(places).map(function(k) { return places[k] });
-
+		
+		//self.Cluster();
+		
 		marker_controller.RemoveAll();
 		list_controller.RemoveAll();
 
@@ -429,7 +491,7 @@ function PlacesController() {
 			// if (place_limit!=-1 && index>=place_limit) continue;
 			var place = places[index];
 
-			marker_controller.AddMarker(place,place.id,marker_index,place.latitude,place.longitude,
+			marker_controller.AddMarker(place,place.id,marker_index+(place.group?String.fromCharCode(place.group+65):''),place.latitude,place.longitude,
 				function(place_id){
 					return function(){
 						marker_controller.marker_state_controller.Event({name:'click_marker',id:place_id});
@@ -830,6 +892,8 @@ function ConfigurationController() {
 		$('#filter-more').removeClass('switch-off');
 
 		$('li').click(interaction_controller.MenuClick);
+		
+		search_controller = new SearchController();
 	}
 
 
@@ -854,6 +918,53 @@ function ConfigurationController() {
 
 }
 
+function SearchController() {
+	var self = this;
+	var ok_to_request = true;
+	
+	$('#search').keyup(function() {self.Search();});
+	$('#search').click(function() {self.Search();});
+	
+	this.Search = function() {
+		var search_for = $('#search').val();
+		if (search_for.length >= 3 && ok_to_request) {
+			ok_to_request = false;
+			search_ajax_controller.MessageAsync(self.PopulateSearchResult,'Search',JSON.stringify({search:search_for}) ); // need callback as this is too slow for synchronous
+		}
+	};
+	
+	this.PopulateSearchResult = function(found) {
+		ok_to_request = true;
+		found = Object.keys(found).map(function(k) { return found[k] });
+		var search_results_div = document.getElementById('search_results');
+		search_results_div.innerHTML = '';
+		for (i in found) {
+			var place = found[i];
+				// alert(place);
+			var div = document.createElement('div');
+			div.id = 'found_' + place[0];
+			div.dataset.id = place[0];
+			div.className = 'found_list_item';
+			div.innerHTML = place[1];				
+			
+			div.addEventListener("click",
+				function(my_place) {
+					return function(){
+						$('#search_results').hide();
+						map_controller.SetCentre(my_place[2],my_place[3]);
+						place_controller.ShowAtCurrentPosition();
+						marker_controller.marker_state_controller.Event( {name:'click_list',id:my_place[0]} );
+					};
+				}(place)
+			);
+		
+			search_results_div.appendChild(div);				
+		}
+		
+		$('#search_results').show();
+	};
+}
+
 var configuration_controller = new ConfigurationController();
 var place_controller = new PlacesController();
 var marker_controller = new MarkerController();
@@ -861,5 +972,8 @@ var list_controller = new ListController();
 var interaction_controller = new InteractionController();
 var category_controller = new CategoryController();
 var map_controller = new MapController(51.5072,-0.1275);
+var ajax_controller = new AjaxController();
+var search_ajax_controller = new AjaxController();
+var search_controller;
 
 google.maps.event.addDomListener(window, 'load', configuration_controller.Initialise);

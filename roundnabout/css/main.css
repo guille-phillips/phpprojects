@@ -116,6 +116,24 @@ body {
 	background-size: 31px;
 }
 
+#search_results {
+	position:absolute;
+	top:70px;
+	left:272px;
+	width:477px;
+	max-height:300px;
+	overflow-y:scroll;
+	font-size:18px;
+	background-color:<?=$colours[4]?>;
+	padding-left:6px;
+	z-index:1;
+	display:none;
+}
+
+#search_results > div {
+	cursor:pointer;
+}
+
 /* Filter Menu */
 .switch-on {
 	background-image:url('../resources/check-on.png');

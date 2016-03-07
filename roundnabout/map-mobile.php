@@ -28,12 +28,13 @@
 <html>
 	<head>
 		<script>
+			mobile = true;
 			map_min_zoom=<?=$editable?5:11;?>;
 			place_limit=<?=$editable?-1:30;?>;
 			map_type_control=<?=$editable?'true':'false';?>;
 		</script>
-		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<meta name="viewport" content="width=device-width;initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="css/mobile.css">
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
 		<script src="javascript/custom-google-map-marker.js"></script>
 		<script src="javascript/jquery-2.1.4.min.js"></script>
@@ -42,15 +43,17 @@
 	</head>
 	<body>
 		<div id="menu">
+			<div id="hamburger">&nbsp;</div>
+			<div id="current_location" onclick="map_controller.GoHome();">&nbsp;</div>
+			<div id="search_here" onclick="place_controller.ShowAtCurrentPosition();">&nbsp;</div>
+			<input id="search" type="text" placeholder="Search a Place, County or Attraction">
 			<ul>
 				<li id="menu-home">About Us</li>
 				<li id="menu-about-us">Claim a Business</li>
 				<li id="menu-upload-a-place">Add a Business</li>
 			</ul>
-			<input id="search" type="text" placeholder="Search a Place, County or Attraction">
-			<div id="search_results"></div>
 		</div>
-		<div id="filter">
+		<div id="filter" style="display:none">
 			<ul>
 				<li>What day out do you fancy?&nbsp;&nbsp;&nbsp;&nbsp;</li>
 				<li id="filter-all">All</li>
@@ -86,30 +89,31 @@
 		</div>
 		<div id="logo">&nbsp;</div>
 		<div id="map_box"></div>
-		<img id="current_location" src="resources/current-location.png" onclick="map_controller.GoHome();">
-		<img id="search_here" src="resources/search-here.png" onclick="place_controller.ShowAtCurrentPosition();">
-		<div id="place_list"><div id="place_{id}" class="place_list_item" data-id="{id}">
-			<div>
-				<h1>{index}. {name}</h1>
-				<div class="address">{address} {postcode}</div>
-				<div class="telephone">{telephone}{website/} | <a href="http://{website}" class="website" target="_blank">website</a>{/website}{email/} | <a href="mailto:{email}" class="email" target="_blank">email</a>{/email}</div>
-				{category/}<div class="category_item">{category}</div>{/category}
-				<br>
-				<div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div>{bad_stuff/}<div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div>{/bad_stuff}</div>
-			</div><div><img src="{image_url}">
-				<div class="rating">{rating}</div>
-				<?php if ($editable): ?>
-				<div id="edit_{id}" class="edit">EDIT</div>
-				<div id="move_{id}" class="move">MOVE</div>
-				<?php endif; ?>
-			</div>
-			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
-			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
-			<div id="more_info_info_{id}" class="info_box"><p>{more_info}</p></div>
-			<div id="facilities_info_{id}" class="info_box">{facilities}</div>
-			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
-			<div id="good_stuff_info_{id}" class="info_box">{good_stuff}</div>
-			{bad_stuff/}<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div>{/bad_stuff}
-		</div></div>
+		
+		<div id="place_list_container">
+			<div id="place_list" style=""><div id="place_{id}" class="place_list_item" data-id="{id}">
+				<div>
+					<h1>{index}. {name}</h1>
+					<div class="address">{address} {postcode}</div>
+					<div class="telephone">{telephone}{website/} | <a href="http://{website}" class="website" target="_blank">website</a>{/website}{email/} | <a href="mailto:{email}" class="email" target="_blank">email</a>{/email}</div>
+					{category/}<div class="category_item">{category}</div>{/category}
+					<br>
+					<div><div id="opening_times_{id}" class="icon opening_times">&nbsp;</div><div id="entry_rates_{id}" class="icon entry_rates">&nbsp;</div><div id="more_info_{id}" class="icon more_info">&nbsp;</div><div id="facilities_{id}" class="icon facilities">&nbsp;</div><div id="disabled_{id}" class="icon disabled">&nbsp;</div><div id="good_stuff_{id}" class="icon good_stuff">&nbsp;</div><div id="bad_stuff_{id}" class="icon bad_stuff">&nbsp;</div></div>
+				</div><div><img src="{image_url}">
+					<div class="rating">{rating}</div>
+					<?php if ($editable): ?>
+					<div id="edit_{id}" class="edit">EDIT</div>
+					<div id="move_{id}" class="move">MOVE</div>
+					<?php endif; ?>
+				</div>
+				<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
+				<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
+				<div id="more_info_info_{id}" class="info_box"><p>{more_info}</p></div>
+				<div id="facilities_info_{id}" class="info_box">{facilities}</div>
+				<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
+				<div id="good_stuff_info_{id}" class="info_box">{good_stuff}</div>
+				<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div> 
+			</div></div>
+		</div>
 	</body>
 </html>

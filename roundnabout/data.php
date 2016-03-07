@@ -26,6 +26,58 @@
 	$db->set_charset('utf8');
 
 	switch ($_GET['method']) {
+		case 'Search':
+			if (!isset($_COOKIE['session'])) {
+				die("Your session has expired due to inactivity.\n\nPlease reload the page.1");
+			} else {
+				$key = $_COOKIE['session'];
+				if (IsValidKey($key)) {
+					RemoveKey($key);
+					$key = InsertKey();
+					setcookie('session',$key,time()+KEY_TIMEOUT,'/','',false,true);
+				} else {
+					setcookie('session',$key,time()-86400,'/','',false,true);
+					die("Your session has expired due to inactivity.\n\nPlease reload the page.2");
+				}
+			}
+			
+			RemoveExpiredKeys();
+			
+			$value = json_decode($_GET['value']);
+			$search = '%'.$value->search.'%';
+			$sql = <<<SQL
+				SELECT
+					id,
+					name,
+					latitude,
+					longitude
+				FROM
+					places
+				WHERE
+					name LIKE ?
+				ORDER BY
+					name
+SQL;
+
+			if ($stmt = $db->prepare($sql)) {
+				$stmt->bind_param("s", $search);
+				$stmt->execute();
+				$stmt->bind_result(
+					$id,
+					$name,
+					$latitude,
+					$longitude
+				);
+				
+				$search_results = array();
+				while ($stmt->fetch()) {
+					$search_results[$id] = array($id,$name,$latitude,$longitude);
+				}
+				$stmt->close();	
+				echo json_encode($search_results);
+			}
+			
+			break;
 		case 'GetPlaces':
 			if (!isset($_COOKIE['session'])) {
 				die("Your session has expired due to inactivity.\n\nPlease reload the page.");

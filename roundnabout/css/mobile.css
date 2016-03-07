@@ -1,7 +1,7 @@
 <?php
 	header('Content-Type: text/css');
 
-	define('MENU_HEIGHT',40);
+	define('MENU_HEIGHT',90);
 	define('FILTER_HEIGHT',34);
 	define('LIST_WIDTH',580);
 
@@ -84,6 +84,7 @@ body {
 	margin:0;
 	cursor:default;
 	text-align:right;
+	display:none;
 }
 #menu > ul > li {
 	display:inline-block;
@@ -500,38 +501,89 @@ h1:hover {
 
 /* Other */
 
-#logo {
-	display:none;
+#logox {
+	*display:none;
 	background-image:url('../resources/logo.png');
 	background-repeat:no-repeat;
-	background-size: 192px;
+	background-size: 100px;
 	position:absolute;
 	top:0px;
-	left:0px;
+	left:calc(50% - 50px);
 	width:190px;
 	height:calc(<?=$body_top?> + 11px);
 	background-position: left -3px;
 	z-index: 1;
 }
 
+#logo {
+    background-image: url("../resources/logo.png");
+    background-position: left -3px;
+    background-repeat: no-repeat;
+    background-size: 113px auto;
+    height: 48px;
+    left: calc(50% - 54px);
+    position: absolute;
+    top: 5px;
+    width: 108px;
+    z-index: 7;
+}
+
+#hamburger {
+    background-image: url("../resources/hamburger.svg");
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    cursor: pointer;
+    height: 56px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 58px;
+    z-index: 1;
+}
+
 #current_location {
-	position:relative;
-	top:20px;
-	left:20px;
-	width:auto;
-	height:auto;
-	max-width:210px;
-	display:block;
-	cursor:pointer;
+	background-image: url("../resources/current-location.svg");
+	background-position: -28px -21px;
+	background-repeat: no-repeat;
+	background-size: 88px auto;
+	cursor: pointer;
+	display: block;
+	position: absolute;
+	right: 74px;
+	top: 3px;
+	height: 46px;
+	width: 32px;
 }
 
 #search_here {
-	position:relative;
-	top:-34px;
-	left:50%;
-	width:auto;
-	height:auto;
-	max-width:150px;
-	display:block;
-	cursor:pointer;
+    background-image: url("../resources/search-here.svg");
+    background-position: -24px -24px;
+    background-repeat: no-repeat;
+    background-size: 91px auto;
+    cursor: pointer;
+    display: block;
+    height: 44px;
+    max-width: 150px;
+    position: absolute;
+    right: 17px;
+    top: 4px;
+    width: 43px;
+}
+
+#search {
+    background-color: #f4edff;
+    background-image: url("../resources/search.png");
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: 31px auto;
+    border: 0 none;
+    font-size: 22px;
+    height: 26px;
+    left: 0;
+    margin: 0;
+    padding: 4px;
+    position: absolute;
+    top: 52px;
+    width: calc(100% - 8px);
+    z-index: 0;
 }
