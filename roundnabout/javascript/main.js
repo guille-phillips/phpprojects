@@ -652,57 +652,44 @@ function PlacesController() {
 			case "opening_times":
 				var info_element = document.getElementById("opening_times_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);
 				break;
 			case "entry_rates":
 				var info_element = document.getElementById("entry_rates_info_"+info.id);
-				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";				
+				info_element.style.display="block";	
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);				
 				break;
 			case "more_info":
 				var info_element = document.getElementById("more_info_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);		
 				break;
 			case "facilities":
 				var info_element = document.getElementById("facilities_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);		
 				break;				
 			case "disabled":
 				var info_element = document.getElementById("disabled_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);		
 				break;				
 			case "good_stuff":
 				var info_element = document.getElementById("good_stuff_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);		
 				break;	
 			case "bad_stuff":
 				var info_element = document.getElementById("bad_stuff_info_"+info.id);
 				info_element.style.display="block";
-				info_element.style.position="absolute";
-				info_element.style.top=(info_element.parentNode.offsetHeight-2)+"px";
-				info_element.style.left="-1px";
+				$("#place_"+info.id).animate({height:info_element.offsetHeight+170+"px"},500);		
 				break;					
 		}
 	}
 	
 	this.HideAllInfo = function (info) {
 //console.log("HideAllInfo");
+		$("#place_"+info.id).animate({height:170+"px"},500);	
 		document.getElementById("opening_times_info_"+info.id).style.display = "none";
 		document.getElementById("entry_rates_info_"+info.id).style.display = "none";
 		document.getElementById("more_info_info_"+info.id).style.display = "none";

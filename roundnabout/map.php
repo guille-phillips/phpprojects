@@ -103,13 +103,13 @@
 				<div id="move_{id}" class="move">MOVE</div>
 				<?php endif; ?>
 			</div>
-			<div id="opening_times_info_{id}" class="info_box">{opening_times}</div>
-			<div id="entry_rates_info_{id}" class="info_box">{entry_rates}</div>
-			<div id="more_info_info_{id}" class="info_box"><p>{more_info}</p></div>
-			<div id="facilities_info_{id}" class="info_box">{facilities}</div>
-			<div id="disabled_info_{id}" class="info_box">{disabled_facilities}</div>
-			<div id="good_stuff_info_{id}" class="info_box">{good_stuff}</div>
-			{bad_stuff/}<div id="bad_stuff_info_{id}" class="info_box">{bad_stuff}</div>{/bad_stuff}
+			<div id="opening_times_info_{id}" class="info_box_new"><span>Opening Times</span><br>{opening_times}</div>
+			<div id="entry_rates_info_{id}" class="info_box_new"><span>Entry Rates</span><br>{entry_rates}</div>
+			<div id="more_info_info_{id}" class="info_box_new"><span>More Information</span><br><p>{more_info}</p></div>
+			<div id="facilities_info_{id}" class="info_box_new"><span>Facilities</span><br>{facilities}</div>
+			<div id="disabled_info_{id}" class="info_box_new"><span>Disabled Facilities</span><br>{disabled_facilities}</div>
+			<div id="good_stuff_info_{id}" class="info_box_new"><span>Good Stuff</span><br>{good_stuff}</div>
+			{bad_stuff/}<div id="bad_stuff_info_{id}" class="info_box_new"><span>Bad Stuff</span><br>{bad_stuff}</div>{/bad_stuff}
 		</div></div>
 	</body>
 </html>

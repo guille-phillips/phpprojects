@@ -134,6 +134,11 @@ body {
 	cursor:pointer;
 }
 
+#information {
+	height:100px;
+	border:1px solid red;
+}
+
 /* Filter Menu */
 .switch-on {
 	background-image:url('../resources/check-on.png');
@@ -328,6 +333,15 @@ body {
 	display:none;
 	padding:0px 10px 3px 10px;
 	background-color:<?=$colours[4]?>;
+}
+
+.info_box_new {
+	display:none;
+	background-color:<?=$colours[4]?>;
+}
+
+.info_box_new > span {
+	font-weight:bold;
 }
 
 .place_list_item > div:nth-child(3) {
