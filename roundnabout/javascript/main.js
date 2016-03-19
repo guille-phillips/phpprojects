@@ -689,7 +689,7 @@ function PlacesController() {
 	
 	this.HideAllInfo = function (info) {
 //console.log("HideAllInfo");
-		$("#place_"+info.id).animate({height:170+"px"},500);	
+		$("#place_"+info.id).animate({height:170+"px"},250);	
 		document.getElementById("opening_times_info_"+info.id).style.display = "none";
 		document.getElementById("entry_rates_info_"+info.id).style.display = "none";
 		document.getElementById("more_info_info_"+info.id).style.display = "none";
@@ -908,26 +908,29 @@ function ConfigurationController() {
 function SearchController() {
 	var self = this;
 	var ok_to_request = true;
+	var key_pressed = false;
 	
 	$('#search').keyup(function() {self.Search();});
 	$('#search').click(function() {self.Search();});
 	
 	this.Search = function() {
+		key_pressed = true;
 		var search_for = $('#search').val();
-		if (search_for.length >= 3 && ok_to_request) {
-			ok_to_request = false;
-			search_ajax_controller.MessageAsync(self.PopulateSearchResult,'Search',JSON.stringify({search:search_for}) ); // need callback as this is too slow for synchronous
+		if (search_for.length >= 3) {
+			if (ok_to_request) {
+				key_pressed = false;
+				ok_to_request = false;
+				search_ajax_controller.MessageAsync(self.PopulateSearchResult,'Search',JSON.stringify({search:search_for}) ); // need callback as this is too slow for synchronous
+			}
 		}
 	};
 	
 	this.PopulateSearchResult = function(found) {
-		ok_to_request = true;
 		found = Object.keys(found).map(function(k) { return found[k] });
 		var search_results_div = document.getElementById('search_results');
 		search_results_div.innerHTML = '';
 		for (i in found) {
 			var place = found[i];
-				// alert(place);
 			var div = document.createElement('div');
 			div.id = 'found_' + place[0];
 			div.dataset.id = place[0];
@@ -937,6 +940,7 @@ function SearchController() {
 			div.addEventListener("click",
 				function(my_place) {
 					return function(){
+						$('#search').val(my_place[1]);
 						$('#search_results').hide();
 						map_controller.SetCentre(my_place[2],my_place[3]);
 						place_controller.ShowAtCurrentPosition();
@@ -949,6 +953,10 @@ function SearchController() {
 		}
 		
 		$('#search_results').show();
+		ok_to_request = true;		
+		if (key_pressed) {
+			self.Search();
+		}
 	};
 }
 

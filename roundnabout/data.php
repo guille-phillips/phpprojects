@@ -45,6 +45,42 @@
 			
 			$value = json_decode($_GET['value']);
 			$search = '%'.$value->search.'%';
+			$search_results = array();
+
+			$sql = <<<SQL
+				SELECT
+					id,
+					name,
+					shortname,
+					latitude,
+					longitude,
+					placetype
+				FROM
+					placenames
+				WHERE
+					name LIKE ?
+				ORDER BY
+					name
+SQL;
+
+			if ($stmt = $db->prepare($sql)) {
+				$stmt->bind_param("s", $search);
+				$stmt->execute();
+				$stmt->bind_result(
+					$id,
+					$name,
+					$shortname,
+					$latitude,
+					$longitude,
+					$placetype
+				);
+				
+				while ($stmt->fetch()) {
+					$search_results[] = array(0,$name,$latitude,$longitude);
+				}
+				$stmt->close();
+			}	
+			
 			$sql = <<<SQL
 				SELECT
 					id,
@@ -69,13 +105,13 @@ SQL;
 					$longitude
 				);
 				
-				$search_results = array();
 				while ($stmt->fetch()) {
-					$search_results[$id] = array($id,$name,$latitude,$longitude);
+					$search_results[] = array($id,$name,$latitude,$longitude);
 				}
-				$stmt->close();	
-				echo json_encode($search_results);
+				$stmt->close();
 			}
+		
+			echo json_encode($search_results);
 			
 			break;
 		case 'GetPlaces':
@@ -130,6 +166,8 @@ SQL;
 				$categories_json = DecodeJSONField($row['category']);
 				
 				if ($category_controller->Accept($categories_json)) {
+					$address_divvy = Divvy(array_merge(DecodeJSON($row['address'],true),array($row['postcode'])), 2);
+					$address_split = array_map(function($el){return implode(', ',$el);},$address_divvy);
 					$rows[(int) $row['id']]=array(
 						'id'=>(int) $row['id'],
 						'name'=>$row['name'],
@@ -141,6 +179,8 @@ SQL;
 						'telephone'=>DecodeJSONField($row['telephone']),
 						'address'=>DecodeJSONField($row['address']),
 						'postcode'=>$row['postcode'],
+						'address1'=>$address_split[0],
+						'address2'=>$address_split[1],
 						'website'=>$row['website'],
 						'entry_rates'=>DecodeJSONField($row['entry_rates']),
 						'opening_times'=>DecodeJSONField($row['opening_times'],"<br>"),
@@ -182,6 +222,50 @@ SQL;
 		} else {
 			return $field;
 		}
+	}
+	function DecodeJSON($field,$remove_blank=false) {
+		if ($json = json_decode($field,true)) {
+			if (!$remove_blank) {
+				return $json;
+			} else {
+				return array_filter($json,function($el){return $el!='';});
+			}
+		} else {
+			return array();
+		}
+	}
+	
+	function Divvy($array_var, $number_of_sub_arrays) {
+		$result = array();
+		if (count($array_var)>0) {
+			$mod = count($array_var)%$number_of_sub_arrays;
+			if ($mod == 0) {
+				$in_each = floor(count($array_var)/$number_of_sub_arrays);
+			} else {
+				$deficit = count($array_var)+($number_of_sub_arrays-$mod);
+				$in_each = floor($deficit/$number_of_sub_arrays);
+			}
+			$not_finished = true;
+			$index = 0;
+			while ($not_finished) {
+				$sub_result = array();
+				for ($i=0; $i<$in_each; $i++) {
+					if ($index<count($array_var)) {
+						$sub_result[]=$array_var[$index];
+					} else {
+						$not_finished = false;
+					}
+					$index++;
+				}
+				if (count($sub_result)>0) {
+					$result[] = $sub_result;
+				}
+			}
+		}
+		while (count($result)<$number_of_sub_arrays) {
+			$result[]=array();
+		}
+		return $result;
 	}
 	
 	class CategoryController {

@@ -91,7 +91,8 @@
 		<div id="place_list"><div id="place_{id}" class="place_list_item" data-id="{id}">
 			<div>
 				<h1>{index}. {name}</h1>
-				<div class="address">{address} {postcode}</div>
+				<div class="address">{address1}</div>
+				<div class="address">{address2}</div>
 				<div class="telephone">{telephone}{website/} | <a href="http://{website}" class="website" target="_blank">website</a>{/website}{email/} | <a href="mailto:{email}" class="email" target="_blank">email</a>{/email}</div>
 				{category/}<div class="category_item">{category}</div>{/category}
 				<br>

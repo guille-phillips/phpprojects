@@ -72,7 +72,7 @@ var isArray = (function () {
 	};
 }());
 
-function divvy(array_var, number_of_sub_arrays) {
+function Divvy(array_var, number_of_sub_arrays) {
 	var mod = array_var.length%number_of_sub_arrays;
 	if (mod == 0) {
 		var in_each = Math.floor(array_var.length/number_of_sub_arrays);
@@ -88,10 +88,14 @@ function divvy(array_var, number_of_sub_arrays) {
 		for (var i=0; i<in_each; i++) {
 			if (index<array_var.length) {
 				sub_result.push(array_var[index]);
+			} else {
+				not_finished = false;
 			}
 			index++;
 		}
-		result.push(sub_result);
+		if (sub_result.length>0) {
+			result.push(sub_result);
+		}
 	}
 	
 	return result;

@@ -97,7 +97,7 @@
 					name,
 					latitude,
 					longitude,
-					region
+					region,
 					category,
 					email,
 					telephone,
@@ -108,13 +108,13 @@
 					opening_times,
 					rating,
 					more_info,
-					facilities,
 					disabled_facilities,
+					facilities,
 					good_stuff,
-					bad_stuff)
+					bad_stuff
+				)
 			VALUES
-				(
-					?,
+				(	?,
 					?,
 					?,
 					?,
@@ -135,7 +135,7 @@
 				)
 SQL;
 
-		if ($stmt = $db->prepare($sql)) {
+		if ($stmt = $db->prepare($sql)) {		
 			/* bind parameters for markers */
 			$stmt->bind_param("sddsssssssssdsssss",
 					$name,
@@ -152,12 +152,13 @@ SQL;
 					$opening_times,
 					$rating,
 					$more_info,
-					$facilities,
 					$disabled_facilities,
+					$facilities,
 					$good_stuff,
 					$bad_stuff);
 
 			$stmt->execute();
+
 			$id = $db->insert_id;
 			$stmt->close();
 
@@ -172,9 +173,32 @@ SQL;
 			$image_url = FindImageURLFromName($name);
 			
 			echo 'New record inserted<br><br>';
+			
 		} else {
 			echo htmlspecialchars($db->error);
 		}
+		$id = 0;
+		$name = '';
+		$latitude = '';
+		$longitude = '';
+		$region = '';
+		$category = '[]';
+		$email = '';
+		$telephone = '';
+		$address = '';
+		$postcode = '';
+		$website = '';
+		$entry_rates = '';
+		$opening_times = '';
+		$rating = '';
+		$more_info = '';
+		$facilities = '';
+		$disabled_facilities = '';
+		$good_stuff = '';
+		$bad_stuff = '';
+		$category_array = array();
+		$category_field = '[]';
+		$category_js = '';		
 	} elseif (isset($_POST['entry']) && $_POST['id']!='0') {
 //echo '<pre>';print_r($_POST);echo '</pre>';exit;
 		$id = $_POST['id'];
@@ -274,7 +298,7 @@ SQL;
 		}
 	} elseif (isset($_POST['search'])) {
 		$name = '%'.StripSpace($_POST['name']).'%';
-		
+
 		$id = 0;
 
 		$sql = <<<SQL
@@ -288,6 +312,7 @@ SQL;
 			ORDER BY
 				id
 SQL;
+
 		if ($stmt = $db->prepare($sql)) {
 			$stmt->bind_param("si",$name,$id);
 			$stmt->execute();
@@ -313,12 +338,13 @@ SQL;
 				$bad_stuff);
 
 			$count = 0;
+
 			while ($stmt->fetch()) {
 				echo "<div class='selectname' onclick='location=\"entry.php?id=$id\";'>$name</div>";
 				$count++;
 			}
 			$stmt->close();
-			
+
 			if ($count==1) {
 				$telephone = implode(', ',json_decode($telephone));
 				$address = implode(",\n",json_decode($address));
@@ -330,9 +356,11 @@ SQL;
 				$image_url = FindImageURLFromName($name);
 			} elseif ($count>1) {
 				$exit_early = true;
+			} elseif ($count==0) {
+				echo 'No records match your search<br>';
+				$name='';
 			}
 		}
-		
 	} elseif (isset($_POST['delete'])) {
 		$id = $_POST['id'];
 		
